@@ -44,4 +44,4 @@ RUN chmod +x /server/init.sh
 
 CMD ["/server/init.sh"]
 
-EXPOSE 47512
+EXPOSE 47512 8099
