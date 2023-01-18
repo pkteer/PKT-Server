@@ -1,5 +1,7 @@
 #!/bin/bash
 # Set up iptables rules
+echo "Cjdns port is: "
+echo $(cat cjdroute.conf | grep bind | awk '/"0\.0\.0\.0:/' | cut -d':' -f3 | cut -d'"' -f1)
 echo "Setting up iptables rules"
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 iptables -A FORWARD -i eth0 -o tun0 -m state --state RELATED,ESTABLISHED -j ACCEPT
