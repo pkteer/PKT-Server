@@ -40,7 +40,9 @@ RUN apt-get install -y iptables
 WORKDIR /server
 RUN cd /server
 COPY init.sh /server/init.sh
+COPY vpn_info.sh /server/vpn_info.sh
 RUN chmod +x /server/init.sh
+RUN chmod +x /server/vpn_info.sh
 
 CMD ["/server/init.sh"]
 
