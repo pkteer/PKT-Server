@@ -37,6 +37,9 @@ RUN cat config.example.js | sed "s/dryrun: true/dryrun: false/" > config.js
 #Networking
 RUN apt-get install -y net-tools
 RUN apt-get install -y iptables
+RUN apt-get install -y iproute2
+RUN apt-get install -y psmisc
+
 WORKDIR /server
 RUN cd /server
 COPY init.sh /server/init.sh
