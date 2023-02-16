@@ -7,6 +7,8 @@ login=$(cat /server/cjdns/cjdroute.conf | jq -r .authorizedPasswords[0].user)
 password=$(cat /server/cjdns/cjdroute.conf | jq -r .authorizedPasswords[0].password)
 
 echo "-----------------Anode VPN Exit Info-----------------"
+echo "Name: $PKTEER_NAME"
+echo "Country: $PKTEER_COUNTRY"
 echo "Public key: $publickey"
 echo "Cjdns public ip: $cjdnsip"
 echo "Public ip: $publicip"
@@ -15,5 +17,3 @@ echo "Authorization server url: http://$publicip:8099"
 echo "login: $login"
 echo "password: $password"
 echo "-----------------------------------------------------"
-
-curl -X POST -H "Host: pkt.chat" -H "Content-Type: application/json" -d '{"text":"Name: '$PKTEER_NAME' \nCountry: '$PKTEER_COUNTRY'\nPublic key: '$publickey' \nCjdns public ip: '$cjdnsip' \nPublic ip: '$publicip' \nCjdns public port: 47512 \nAuthorization server url: http://'$publicip':8099 \nlogin: '$login' \npassword: '$password'"}' https://pkt.chat/hooks/$PKTEER_WEBHOOK
