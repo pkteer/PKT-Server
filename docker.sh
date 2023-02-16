@@ -25,4 +25,5 @@ docker run -d \
         -e PKTEER_COUNTRY=$country \
         --name pkt-server pkt-server
 
+docker exec -e PKTEER_SECRET=$secret pkt-server /server/init.sh
 docker exec -e PKTEER_NAME=$name -e PKTEER_COUNTRY=$country pkt-server /server/vpn_info.sh

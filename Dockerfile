@@ -35,10 +35,7 @@ RUN cat config.example.js | sed "s/dryrun: true/dryrun: false/" > config.js
 
 
 #Networking
-RUN apt-get install -y net-tools
-RUN apt-get install -y iptables
-RUN apt-get install -y iproute2
-RUN apt-get install -y psmisc
+RUN apt-get install -y net-tools iputils-ping iptables iproute2 psmisc
 
 WORKDIR /server
 RUN cd /server
@@ -47,6 +44,6 @@ COPY vpn_info.sh /server/vpn_info.sh
 RUN chmod +x /server/init.sh
 RUN chmod +x /server/vpn_info.sh
 
-CMD ["/server/init.sh"]
+#CMD ["/server/init.sh"]
 
 EXPOSE 47512 8099
