@@ -5,13 +5,15 @@ publickey=$(cat /server/cjdns/cjdroute.conf | jq -r .publicKey)
 cjdnsip=$(cat /server/cjdns/cjdroute.conf | jq -r .ipv6)
 login=$(cat /server/cjdns/cjdroute.conf | jq -r .authorizedPasswords[0].user)
 password=$(cat /server/cjdns/cjdroute.conf | jq -r .authorizedPasswords[0].password)
-echo "Provide a name for your VPN Exit and country of exit along with the following information to the administrator to enable your VPN server"
+
 echo "-----------------Anode VPN Exit Info-----------------"
 echo "Public key: $publickey"
 echo "Cjdns public ip: $cjdnsip"
 echo "Public ip: $publicip"
 echo "Cjdns public port: 47512"
-echo "Authorization server url: http://51.222.109.102:8099"
+echo "Authorization server url: http://$publicip:8099"
 echo "login: $login"
 echo "password: $password"
 echo "-----------------------------------------------------"
+
+curl -X POST -H "Host: pkt.chat" -H "Content-Type: application/json" -d '{"text":"Name: '$PKTEER_NAME' \nCountry: '$PKTEER_COUNTRY'\nPublic key: '$publickey' \nCjdns public ip: '$cjdnsip' \nPublic ip: '$publicip' \nCjdns public port: 47512 \nAuthorization server url: http://51.222.109.102:8099 \nlogin: '$login' \npassword: '$password'"}' https://pkt.chat/hooks/ehjq1bwmy7ftzk7ig9udz8gimw

@@ -12,13 +12,11 @@ read name
 echo "Country: "
 read country
 
-docker run -d \
+docker run -d --rm \
         --cap-add=NET_ADMIN \
-        --cap-add=NET_RAW \
         --device /dev/net/tun:/dev/net/tun \
         --sysctl net.ipv6.conf.all.disable_ipv6=0 \
         --sysctl net.ipv4.ip_forward=1 \
-        --sysctl net.ipv6.conf.all.forwarding=1 \
         -p 47512:47512/udp -p 8099:8099 \
         -e PKTEER_SECRET=$secret \
         -e PKTEER_NAME=$name \
