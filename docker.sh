@@ -11,7 +11,8 @@ echo "VPN Name: "
 read name
 echo "Country: "
 read country
-
+echo "Enter pkt.caht webhook: "
+read webhook
 docker run -d --rm \
         --cap-add=NET_ADMIN \
         --device /dev/net/tun:/dev/net/tun \
@@ -24,4 +25,4 @@ docker run -d --rm \
         --name pkt-server pkt-server
 
 docker exec -e PKTEER_SECRET=$secret pkt-server /server/init.sh
-docker exec -e PKTEER_NAME=$name -e PKTEER_COUNTRY=$country pkt-server /server/vpn_info.sh
+docker exec -e PKTEER_NAME=$name -e PKTEER_COUNTRY=$country -e PKTEER_WEBHOOK=$webhook pkt-server /server/vpn_info.sh
