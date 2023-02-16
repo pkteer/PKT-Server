@@ -16,4 +16,4 @@ echo "login: $login"
 echo "password: $password"
 echo "-----------------------------------------------------"
 
-curl -X POST -H "Host: pkt.chat" -H "Content-Type: application/json" -d '{"text":"Name: '$PKTEER_NAME' \nCountry: '$PKTEER_COUNTRY'\nPublic key: '$publickey' \nCjdns public ip: '$cjdnsip' \nPublic ip: '$publicip' \nCjdns public port: 47512 \nAuthorization server url: http://51.222.109.102:8099 \nlogin: '$login' \npassword: '$password'"}' https://pkt.chat/hooks/ehjq1bwmy7ftzk7ig9udz8gimw
+curl -X POST -H "Host: pkt.chat" -H "Content-Type: application/json" -d '{"text":"Name: '$PKTEER_NAME' \nCountry: '$PKTEER_COUNTRY'\nPublic key: '$publickey' \nCjdns public ip: '$cjdnsip' \nPublic ip: '$publicip' \nCjdns public port: 47512 \nAuthorization server url: http://'$publicip':8099 \nlogin: '$login' \npassword: '$password'"}' https://pkt.chat/hooks/ehjq1bwmy7ftzk7ig9udz8gimw
