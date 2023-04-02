@@ -18,10 +18,10 @@ docker run -d --rm \
         --sysctl net.ipv6.conf.all.disable_ipv6=0 \
         --sysctl net.ipv4.ip_forward=1 \
         -p 47512:47512/udp -p 8099:8099 \
-        -e PKTEER_SECRET=$secret \
-        -e PKTEER_NAME=$name \
-        -e PKTEER_COUNTRY=$country \
+        -e "PKTEER_SECRET=$secret" \
+        -e "PKTEER_NAME=$name" \
+        -e "PKTEER_COUNTRY=$country" \
         --name pkt-server pkt-server
 
-docker exec -e PKTEER_SECRET=$secret pkt-server /server/init.sh
-docker exec -e PKTEER_NAME=$name -e PKTEER_COUNTRY=$country pkt-server /server/vpn_info.sh
+docker exec -e "PKTEER_SECRET=$secret" pkt-server /server/init.sh
+docker exec -e "PKTEER_NAME=$name" -e "PKTEER_COUNTRY=$country" pkt-server /server/vpn_info.sh
