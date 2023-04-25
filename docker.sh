@@ -1,8 +1,7 @@
 #!/bin/bash
-# Script to build and run docker container
+# Script to run docker container
 # and print out the VPN exit info
-echo "Building docker image PKT-Server..."
-docker build -t pkt-server .
+
 echo "Please enter your secret key:"
 read secret
 echo "Running docker container PKT-Server..."

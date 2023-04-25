@@ -14,9 +14,14 @@ Run the following command to copy the PKT-Server repository to your machine.
 ```git clone https://github.com/pkteer/PKT-Server```
 
 
-Then enter the PKT-Server directory, make the docker.sh script executable and run it.
+Then enter the PKT-Server directory and build the docker image
 ```
 cd PKT-Server
+docker build -t pkt-server .
+```
+
+now run the docker.sh script.
+```
 ./docker.sh
 ```
 
