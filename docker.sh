@@ -17,10 +17,11 @@ docker run -d --rm \
         --device /dev/net/tun:/dev/net/tun \
         --sysctl net.ipv6.conf.all.disable_ipv6=0 \
         --sysctl net.ipv4.ip_forward=1 \
-        -p 47512:47512/udp -p 8099:8099 \
+        -p $ANODE_SERVER_PORT:$ANODE_SERVER_PORT \
         -e PKTEER_SECRET=$secret \
         -e PKTEER_NAME=$name \
         -e PKTEER_COUNTRY=$country \
+        -e ANODE_SERVER_PORT=$ANODE_SERVER_PORT \
         --name pkt-server pkt-server
 
 docker exec -e PKTEER_SECRET=$secret pkt-server /server/init.sh

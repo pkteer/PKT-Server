@@ -2,6 +2,9 @@
 FROM clickhouse/clickhouse-server
 WORKDIR /server
 
+ARG SERVER_PORT
+ENV ANODE_SERVER_PORT $SERVER_PORT
+
 #Rust
 RUN apt-get update && apt-get install -y curl
 RUN apt-get install build-essential -y
@@ -21,7 +24,7 @@ RUN apt-get -y install jq moreutils
 
 RUN cd /server/cjdns
 RUN ./do
-RUN ./cjdroute --genconf | ./cjdroute --cleanconf > cjdroute.conf | jq '.interfaces.UDPInterface[0].bind = "0.0.0.0:47512"' cjdroute.conf | sponge cjdroute.conf
+RUN ./cjdroute --genconf | ./cjdroute --cleanconf > cjdroute.conf | jq '.interfaces.UDPInterface[0].bind = "0.0.0.0:'"$ANODE_SERVER_PORT"'"' cjdroute.conf | sponge cjdroute.conf
 #Edit cjdns port
 RUN cd /server
 WORKDIR /server
@@ -33,7 +36,6 @@ WORKDIR /server/anodevpn-server
 RUN npm install
 RUN cat config.example.js | sed "s/dryrun: true/dryrun: false/" > config.js
 
-
 #Networking
 RUN apt-get install -y net-tools iputils-ping iptables iproute2 psmisc
 
@@ -43,7 +45,3 @@ COPY init.sh /server/init.sh
 COPY vpn_info.sh /server/vpn_info.sh
 RUN chmod +x /server/init.sh
 RUN chmod +x /server/vpn_info.sh
-
-#CMD ["/server/init.sh"]
-
-EXPOSE 47512 8099

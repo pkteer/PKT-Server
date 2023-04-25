@@ -14,22 +14,22 @@ Run the following command to copy the PKT-Server repository to your machine.
 ```git clone https://github.com/pkteer/PKT-Server```
 
 
-Then enter the PKT-Server directory and build the docker image
+Then enter the PKT-Server directory and build the docker image, you can edit the SERVER_PORT to your desired port.
 ```
 cd PKT-Server
-docker build -t pkt-server .
+docker build --build-arg SERVER_PORT=8099 -t pkt-server .
 ```
 
-now run the docker.sh script.
+now run the docker.sh script, you can edit the ANODE_SERVER_PORT, use the same as the one used when building the server above.
 ```
-./docker.sh
+ANODE_SERVER_PORT=8099 ./docker.sh
 ```
 
 This will create the docker image.
 
 Before running the container as pkt-server it will prompt you to enter your **secret**. 
 
-The container will publish ports 47512 and 8099 and finally will print out all the necessary information for you to register your VPN Exit with Anode servers.
+The container will publish the SERVER_PORT (default: 8099) and finally will print out all the necessary information for you to register your VPN Exit with Anode servers.
 
 For example:
 
@@ -38,7 +38,7 @@ Provide a name for your VPN Exit and country of exit along with the following in
 Public key: 2g1btbtf8uzbvglmx7c3hd8vbg6ssxwsrlvq3g1pxvj3283c2j90.k
 Cjdns public ip: fcf6:ca71:5b4d:aab9:d9c4:b834:5d55:9d09
 Public ip: 188.4.236.209
-Cjdns public port: 47512
+Cjdns public port: 8099
 Authorization server url: http://51.222.109.102:8099
 login: default-login
 password: 8qzpszn02r5c1vwyww9k9tkqj3v9ghm
