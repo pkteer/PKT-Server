@@ -9,7 +9,7 @@ echo "Setting up iptables rules"
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 iptables -A FORWARD -i eth0 -o tun0 -m state --state RELATED,ESTABLISHED -j ACCEPT
 iptables -A FORWARD -i tun0 -o eth0 -j ACCEPT
-iptables -A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1264
+iptables -A FORWARD -i docker0 -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1264
 echo "Starting cjdns..."
 sed -i 's/"setuser": "nobody"/"setuser": 0/' /server/cjdns/cjdroute.conf
 /server/cjdns/cjdroute < /server/cjdns/cjdroute.conf
