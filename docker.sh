@@ -18,6 +18,7 @@ docker run -d --rm \
         --sysctl net.ipv6.conf.all.disable_ipv6=0 \
         --sysctl net.ipv4.ip_forward=1 \
         -p $ANODE_SERVER_PORT:$ANODE_SERVER_PORT \
+        -p $ANODE_SERVER_PORT:$ANODE_SERVER_PORT/udp \
         -e PKTEER_SECRET=$secret \
         -e PKTEER_NAME=$name \
         -e PKTEER_COUNTRY=$country \
