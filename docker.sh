@@ -19,11 +19,10 @@ docker run -d --rm \
         --sysctl net.ipv4.ip_forward=1 \
         -p $ANODE_SERVER_PORT:$ANODE_SERVER_PORT \
         -p $ANODE_SERVER_PORT:$ANODE_SERVER_PORT/udp \
-        -e PKTEER_SECRET=$secret \
-        -e PKTEER_NAME=$name \
-        -e PKTEER_COUNTRY=$country \
-        -e ANODE_SERVER_PORT=$ANODE_SERVER_PORT \
+        -e "PKTEER_SECRET=$secret" \
+        -e "PKTEER_NAME=$name" \
+        -e "PKTEER_COUNTRY=$country" \
         --name pkt-server pkt-server
 
-docker exec -e PKTEER_SECRET=$secret pkt-server /server/init.sh
-docker exec -e PKTEER_NAME=$name -e PKTEER_COUNTRY=$country pkt-server /server/vpn_info.sh
+docker exec -e "PKTEER_SECRET=$secret" pkt-server /server/init.sh
+docker exec -e "PKTEER_NAME=$name" -e "PKTEER_COUNTRY=$country" pkt-server /server/vpn_info.sh
