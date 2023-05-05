@@ -4,13 +4,15 @@
 
 echo "Please enter your secret key:"
 read secret
-echo "Running docker container PKT-Server..."
-echo "Provide a name for your VPN Exit and country of exit"
+echo "Provide a name for your VPN Exit"
 echo "VPN Name: "
 read name
-echo "Country: "
+echo "Country of VPN Exit: "
 read country
+echo "Enter your pkt.chat username in order to get direct notifications about changes to your VPN Server:"
+read username
 
+echo "Running docker container PKT-Server..."
 docker run -d --rm \
         --log-driver 'local' \
         --cap-add=NET_ADMIN \
@@ -22,6 +24,7 @@ docker run -d --rm \
         -e "PKTEER_SECRET=$secret" \
         -e "PKTEER_NAME=$name" \
         -e "PKTEER_COUNTRY=$country" \
+        -e "PKTEER_CHAT_USERNAME=$username" \
         --name pkt-server pkt-server
 
 docker exec -e "PKTEER_SECRET=$secret" pkt-server /server/init.sh
