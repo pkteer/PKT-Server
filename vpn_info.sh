@@ -33,7 +33,7 @@ curl -X POST -H 'content-type: application/json' -d '{"text":"Adding VPN Server:
 
 echo "Getting country code..."
 country_code=$(get_country_code "$PKTEER_COUNTRY")
-output=$(curl -X POST -H "Content-Type: application/json" -d '{"vpn_server": {"name":"'$PKTEER_NAME'","country_code":"'$country_code'","public_key":"'$publickey'","cjdns_public_ip":"'$cjdnsip'","public_ip":"'$publicip'","cjdns_public_port":"'$ANODE_SERVER_PORT'","authorization_server_url":"http://'$publicip':'$ANODE_SERVER_PORT'"}, "peeringline": {"name": "'$PKTEER_CHAT_USERNAME'","login":"'$login'","password":"'$password'"}' https://vpn.anode.co/api/0.3/vpn/servers/addcjdnsvpnserver )
+output=$(curl -X POST -H "Content-Type: application/json" -d '{"vpn_server": {"name":"'"$PKTEER_NAME"'","country_code":"'$country_code'","public_key":"'$publickey'","cjdns_public_ip":"'$cjdnsip'","public_ip":"'$publicip'","cjdns_public_port":"'$ANODE_SERVER_PORT'","authorization_server_url":"http://'$publicip':'$ANODE_SERVER_PORT'"}, "peeringline": {"name": "'$PKTEER_CHAT_USERNAME'","login":"'$login'","password":"'$password'"}' https://vpn.anode.co/api/0.3/vpn/servers/addcjdnsvpnserver )
 if [ "${output,,}" = "ok" ]; then
     echo "VPN Server successfully added to ANODE VPN"
     curl -X POST -H 'content-type: application/json' -d '{"text":"New VPN Server **'"$PKTEER_NAME"'** added."}' https://pkt.chat/hooks/5tx5ebhuzpgh3dk5ys9rpt5yxr
