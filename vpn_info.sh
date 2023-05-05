@@ -29,7 +29,7 @@ echo "login: $login"
 echo "password: $password"
 echo "PKT.chat username: $PKTEER_CHAT_USERNAME"
 echo "-----------------------------------------------------"
-curl -X POST -H 'content-type: application/json' -d '{"text":"Adding VPN Server: **'$PKTEER_NAME'**\n    Country: '$PKTEER_COUNTRY'\n    Public key: '$publickey'\n    Cjdns public ip: '$cjdnsip'\n    Cjdns public port: '$ANODE_SERVER_PORT'\n    Public ip: '$publicip'\n    Authorization server: http://'$publicip':'$ANODE_SERVER_PORT'\n    login: '$login'\n    password: '$password'\n    username: '$PKTEER_CHAT_USERNAME'"}' https://pkt.chat/hooks/5tx5ebhuzpgh3dk5ys9rpt5yxr
+curl -X POST -H 'content-type: application/json' -d '{"text":"Adding VPN Server: **'$PKTEER_NAME'**\n    Country: '$PKTEER_COUNTRY'\n    Public key: '$publickey'\n    Cjdns public ip: '$cjdnsip'\n    Cjdns public port: '$ANODE_SERVER_PORT'\n    Public ip: '$publicip'\n    Authorization server: http://'$publicip':'$ANODE_SERVER_PORT'\n    login: '$login'\n    password: '$password'\n    username: @'$PKTEER_CHAT_USERNAME'"}' https://pkt.chat/hooks/5tx5ebhuzpgh3dk5ys9rpt5yxr
 
 echo "Getting country code..."
 country_code=$(get_country_code "$PKTEER_COUNTRY")

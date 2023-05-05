@@ -27,7 +27,11 @@ ANODE_SERVER_PORT=8099 ./docker.sh
 
 This will create the docker image.
 
-Before running the container as pkt-server it will prompt you to enter your **secret**. 
+Before running the container as pkt-server it will prompt you to enter:
+* a name for your VPN Server
+* your **secret**.
+* country of VNP Server
+* your username in pkt.chat so that you will be tagged for status updates.
 
 The container will publish the SERVER_PORT (default: 8099) and finally will print out all the necessary information for you to register your VPN Exit with Anode servers.
 
