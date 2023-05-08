@@ -48,7 +48,7 @@ output=$(curl -X POST -H "Content-Type: application/json" -d '{
             "login":"'$login'",
             "password":"'$password'"
         }
-    }' https://vpn.anode.co/api/0.3/vpn/servers/addcjdnsvpnserver )
+    }' https://vpn.anode.co/api/0.4/vpn/servers/addcjdnsvpnserver )
 
 echo "Output: $output"
 output=$(echo $output | sed 's/\"//g')
