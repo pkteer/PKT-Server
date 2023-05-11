@@ -22,6 +22,9 @@ ENV PATH="/server/cjdns:${PATH}"
 #Utils
 RUN apt-get -y install jq moreutils
 
+# Nfttables and pythons2 for cexec
+RUN apt-get -y install nftables python2
+
 RUN cd /server/cjdns
 RUN ./do
 RUN ./cjdroute --genconf | ./cjdroute --cleanconf > cjdroute.conf | jq '.interfaces.UDPInterface[0].bind = "0.0.0.0:'"$ANODE_SERVER_PORT"'"' cjdroute.conf | sponge cjdroute.conf
@@ -42,6 +45,8 @@ RUN apt-get install -y net-tools iputils-ping iptables iproute2 psmisc
 WORKDIR /server
 RUN cd /server
 COPY init.sh /server/init.sh
+COPY init_nft.sh /server/init_nft.sh
+COPY monitor_cjdns.sh /server/monitor_cjdns.sh
 COPY vpn_info.sh /server/vpn_info.sh
-RUN chmod +x /server/init.sh
-RUN chmod +x /server/vpn_info.sh
+COPY .cjdnsadmin /root/.cjdnsadmin
+COPY pfi.nft /server/pfi.nft
