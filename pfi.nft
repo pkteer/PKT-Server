@@ -13,7 +13,7 @@ table ip pfi {
   }
 
   chain default_lease {
-    meta priority set "1:2" counter accept
+    meta priority set "1:ffff" counter accept
   }
 
   chain vpn {

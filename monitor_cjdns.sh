@@ -11,7 +11,10 @@ while true; do
     output=$(echo "$output" | sed "s/'/\"/g")
     #"
     conn_ids=$(echo "$output" | jq -r '.connections[]')
-    
+    if [ -z "$conn_ids" ]; then
+        echo "connections array is empty"
+        exit 1
+    fi
     # Loop over the connection IDs and extract the IPv4 address for each one
     for conn_id in $conn_ids; do
         output=$($cexec 'IpTunnel_showConnection('$conn_id')')
@@ -30,12 +33,15 @@ while true; do
     #tc qdisc del dev $DEVICE root
 
     # Create a tc class for the source IP address
-    if [ "$paid" = true ]; then
-        tc class add dev $DEVICE parent 1:1 classid 1:$HEX hfsc ls m2 $lsLimitPaid ul m2 $lsLimitPaid
+    echo "Creating tc class for $ipv4_addr"
+    if [ "$paid" = false ]; then
+        echo "Give limited bandwidth to $ipv4_addr"
+        tc class replace dev $DEVICE parent 1:fffe classid 1:$HEX hfsc ls m2 $lsLimitPaid ul m2 $lsLimitPaid
     else
-        tc class add dev $DEVICE parent 1:1 classid 1:$HEX hfsc ls m2 $lsLimitFree m2 $lsLimitFree
+        echo "Give unlimited bandwidth to $ipv4_addr"
+        tc class replace dev $DEVICE parent 1:fffe classid 1:$HEX hfsc ls m2 $lsLimitFree 
     fi
-    tc qdisc add dev $DEVICE parent 1:$HEX handle $HEX: cake
+    tc qdisc replace dev $DEVICE parent 1:$HEX handle $HEX: cake
 
-    sleep 2
+    sleep 30
 done
