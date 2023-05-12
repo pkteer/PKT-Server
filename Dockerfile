@@ -5,25 +5,20 @@ WORKDIR /server
 ARG SERVER_PORT
 ENV ANODE_SERVER_PORT $SERVER_PORT
 
-#Rust
-RUN apt-get update && apt-get install -y curl
-RUN apt-get install build-essential -y
-
+# Install Rust, nodejs, git, utils, networking etc
+RUN apt-get update 
+RUN apt-get upgrade -y 
+RUN apt-get install -y curl build-essential 
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
+RUN apt-get install -y nodejs git npm jq moreutils net-tools iputils-ping iptables iproute2 psmisc nftables python2
+
 #Cjdns
-RUN apt-get -y install nodejs git npm
 RUN apt-get install -y --no-install-recommends python3.9
 RUN git clone https://github.com/cjdelisle/cjdns.git
 WORKDIR /server/cjdns
 ENV PATH="/server/cjdns:${PATH}"
-
-#Utils
-RUN apt-get -y install jq moreutils
-
-# Nfttables and pythons2 for cexec
-RUN apt-get -y install nftables python2
 
 RUN cd /server/cjdns
 RUN ./do
@@ -39,8 +34,6 @@ WORKDIR /server/anodevpn-server
 RUN npm install
 RUN cat config.example.js | sed "s/dryrun: true/dryrun: false/" > config.js
 
-#Networking
-RUN apt-get install -y net-tools iputils-ping iptables iproute2 psmisc
 
 WORKDIR /server
 RUN cd /server

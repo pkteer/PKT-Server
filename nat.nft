@@ -1,0 +1,17 @@
+table ip nat {
+    chain postrouting {
+        type nat hook postrouting priority 100;
+
+        oif eth0 masquerade;
+    }
+}
+
+table ip filter {
+    chain forward {
+        type filter hook forward priority 0;
+
+        iif eth0 oif tun0 ct state {related, established} accept;
+        iif tun0 oif eth0 accept;
+        iif eth0 tcp flags & (tcp-syn|tcp-rst) == tcp-syn tcp option maxseg size set 1264;
+    }
+}
