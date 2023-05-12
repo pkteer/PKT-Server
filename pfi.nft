@@ -16,15 +16,14 @@ table ip pfi {
     ip saddr @s_client_leases counter accept
   }
 
+  chain default_lease {
+    meta priority set "1:2" counter accept
+  }
+
   chain forward {
     type filter hook forward priority filter; # 0
     tcp flags syn tcp option maxseg size set rt mtu
     ip saddr @s_client_leases meta priority set ip saddr map @m_client_leases counter accept
-    counter goto handle_reject
-  }
-  chain route_output {
-    type route hook output priority mangle; # -150
-    skuid speedtest counter meta priority set "1:2" mark set $nocjdns_mark accept
-    counter meta priority set "1:ffff" accept
+    counter goto default_lease
   }
 }

@@ -31,21 +31,11 @@ while true; do
 
     # Create a tc class for the source IP address
     if [ "$paid" = true ]; then
-        tc class add dev $DEVICE parent 1:1 classid 1:$HEX hfsc ls m2 $lsLimitPaid
+        tc class add dev $DEVICE parent 1:1 classid 1:$HEX hfsc ls m2 $lsLimitPaid ul m2 $lsLimitPaid
     else
-        tc class add dev $DEVICE parent 1:1 classid 1:$HEX hfsc ls m2 $lsLimitFree
+        tc class add dev $DEVICE parent 1:1 classid 1:$HEX hfsc ls m2 $lsLimitFree m2 $lsLimitFree
     fi
     tc qdisc add dev $DEVICE parent 1:$HEX handle $HEX: cake
 
     sleep 2
 done
-
-# Delete anything which already exists
-# tc qdisc add dev tun0 root handle 1:0 hfsc default ffff
-#   tc class add dev br-br parent 1:0 classid 1:1 hfsc ls m2 100mbit ul m2 100mbit
-#     tc class add dev br-br parent 1:1 classid 1:11 hfsc ls m2 1kbit # 1:11 = mining
-#       tc qdisc add dev br-br parent 1:11 handle 11: fq_codel noecn # Don't spend too much CPU on this
-#     tc class add dev br-br parent 1:1 classid 1:12 hfsc ls m2 100kbit # 1:12 = cjdns
-#     tc class add dev br-br parent 1:1 classid 1:f254 hfsc ls m2 100kbit # 1:f254 = management
-#       tc qdisc add dev br-br parent 1:ffff handle ffff: cake
-#   tc class add dev br-br parent 1:0 classid 1:2 hfsc ls m2 100mbit # speedtest, no upper limit O_O
