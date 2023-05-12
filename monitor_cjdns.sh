@@ -1,9 +1,8 @@
 #!/bin/sh
-paid=false
 DEVICE="tun0"
 cexec="/server/cjdns/contrib/python/cexec"
 lsLimitFree=100kbit
-lsLimitPaid=100mbit
+lsLimitPaid=950mbit
 
 # Listen for clients
 while true; do
@@ -28,20 +27,18 @@ while true; do
 
     # Convert the octets to hex
     HEX=$(printf '%02x' $OCTETS)
-    
-    # remove all existing entries
-    #tc qdisc del dev $DEVICE root
 
     # Create a tc class for the source IP address
     echo "Creating tc class for $ipv4_addr"
-    if [ "$paid" = false ]; then
-        echo "Give limited bandwidth to $ipv4_addr"
-        tc class replace dev $DEVICE parent 1:fffe classid 1:$HEX hfsc ls m2 $lsLimitPaid ul m2 $lsLimitPaid
-    else
+    if [ "$PAID" = true ]; then
         echo "Give unlimited bandwidth to $ipv4_addr"
-        tc class replace dev $DEVICE parent 1:fffe classid 1:$HEX hfsc ls m2 $lsLimitFree 
+        echo "dev $DEVICE parent 1:ffff classid 1:$HEX hfsc ls m2 $lsLimitPaid ul m2 $lsLimitPaid"
+        tc class replace dev $DEVICE parent 1:ffff classid 1:$HEX hfsc ls m2 $lsLimitPaid ul m2 $lsLimitPaid
+        nft add element pfi m_client_leases { $ipv4_addr : "1:$HEX" }
+    else
+        tc class delete dev $DEVICE parent 1:ffff classid 1:$HEX hfsc ls m2 $lsLimitPaid ul m2 $lsLimitPaid
+        nft delete element pfi m_client_leases { $ipv4_addr : "1:$HEX" }
     fi
-    tc qdisc replace dev $DEVICE parent 1:$HEX handle $HEX: cake
 
-    sleep 30
+    sleep 5
 done
