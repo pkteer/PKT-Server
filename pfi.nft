@@ -11,19 +11,19 @@ table ip pfi {
   set s_client_leases {
     type ipv4_addr;
   }
-  # Prerouting
-  chain pre_nat {
-    ip saddr @s_client_leases counter accept
-  }
 
   chain default_lease {
     meta priority set "1:2" counter accept
   }
 
-  chain forward {
-    type filter hook forward priority filter; # 0
+  chain vpn {
     tcp flags syn tcp option maxseg size set rt mtu
     ip saddr @s_client_leases meta priority set ip saddr map @m_client_leases counter accept
     counter goto default_lease
+  }
+
+  chain forward {
+    type filter hook forward priority filter; 
+    oifname == tun0 counter goto vpn
   }
 }
