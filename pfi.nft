@@ -11,69 +11,20 @@ table ip pfi {
   set s_client_leases {
     type ipv4_addr;
   }
-  set s_internal_addr {
-    type ipv4_addr;
-    elements = {
-      51.222.109.178 comment "vpn.anode.co",
-      51.161.117.162 comment "my.pktpal.com",
-      141.193.213.10 comment "pktpal.com",
-    };
-  }
-
-  # Custom chains
-  chain handle_reject {
-    meta l4proto tcp reject with tcp reset comment "Reject TCP traffic"
-    reject with icmp type admin-prohibited comment "Reject any other traffic"
-  }
-  chain rate_limited {
-    limit rate 25/second burst 50 packets counter return
-    counter drop
-  }
-
-  # See https://wiki.nftables.org/wiki-nftables/index.php/Netfilter_hooks#Priority_within_hook
-  # for priority mappings, lower priority numbers are executed first.
-
   # Prerouting
   chain pre_nat {
-    type nat hook prerouting priority dstnat; # -100
-    iifname != br-lan counter accept
     ip saddr @s_client_leases counter accept
-    ip daddr @s_internal_addr counter accept
-    tcp dport 80 counter redirect to 80
   }
 
-  # Main (input/forward/output)
-  chain input {
-    type filter hook input priority filter; # 0
-    iifname lo counter accept
-    meta l4proto icmp counter goto rate_limited comment "accept icmp with rate limit"
-    # ct state established,related accept ## These are unnecessary because we default accept
-    # ct state invalid drop
-    tcp flags & (fin | syn | rst | ack) == syn counter jump rate_limited
-  }
   chain forward {
     type filter hook forward priority filter; # 0
     tcp flags syn tcp option maxseg size set rt mtu
-    oifname br-lan ct state established,related counter accept
-    iifname != br-lan counter goto handle_reject
-    oifname != cjdns0 counter goto handle_reject
     ip saddr @s_client_leases meta priority set ip saddr map @m_client_leases counter accept
-    ip daddr @s_internal_addr meta priority set "1:12" counter accept
     counter goto handle_reject
   }
   chain route_output {
     type route hook output priority mangle; # -150
-    skuid cjdns counter meta priority set "1:12" mark set $nocjdns_mark accept
     skuid speedtest counter meta priority set "1:2" mark set $nocjdns_mark accept
-    counter meta priority set "1:f254" accept
-  }
-
-  # Postrouting
-  chain srcnat {
-    type nat hook postrouting priority srcnat; # 300
-    oifname cjdns0 counter masquerade
-    # We must masquerade br-br because local traffic is being pushed over to it using policy
-    # rules and it ends up having the wrong source address.
-    oifname br-br counter masquerade
+    counter meta priority set "1:ffff" accept
   }
 }
