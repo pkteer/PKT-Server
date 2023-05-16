@@ -3,8 +3,6 @@ DEVICE="tun0"
 cexec="/server/cjdns/contrib/python/cexec"
 lsLimitFree=100kbit
 lsLimitPaid=950mbit
-pkteer_ip="$PKTEER_IP"
-pkteer_paid="$PKTEER_PAID"
 
 get_hex_from_ip() {
     decimal_to_hex() {
@@ -31,8 +29,12 @@ output=$(echo "$output" | sed "s/'/\"/g")
 conn_ids=$(echo "$output" | jq -r '.connections[]')
 if [ -z "$conn_ids" ]; then
     echo "No connections found"
-    sleep 2
-    continue
+    exit 1
+fi
+# check if PKTEER_IP has a value
+if [ -z "$PKTEER_IP" ]; then
+    echo "PKTEER_IP is not set"
+    exit
 fi
 # Loop over the connection IDs and extract the IPv4 address for each one
 for conn_id in $conn_ids; do
@@ -43,12 +45,12 @@ for conn_id in $conn_ids; do
     echo "Connection $conn_id has IPv4 address $ipv4_addr"
     HEX=$(get_hex_from_ip "$ipv4_addr")
 
-    # Create a tc class for the source IP address
-    if [[ "$pkteer_ip" == "$ipv4_addr" ]] && [[ "$pkteer_paid" = "true" ]]; then
+    # compare the IP address to the PKTEER_IP
+    if [ "$PKTEER_IP" = "$ipv4_addr" ] && [ "$PKTEER_PAID" = "true" ]; then
         echo "PAID $ipv4_addr"
         tc class replace dev $DEVICE parent 1:fffe classid 1:$HEX hfsc ls m2 $lsLimitPaid ul m2 $lsLimitPaid
         nft add element pfi m_client_leases { $ipv4_addr : "1:$HEX" }
-    elif [[ "$pkteer_ip" == "$ipv4_addr" ]] && [[ "$pkteer_paid" = "false" ]]; then
+    elif [ "$PKTEER_IP" = "$ipv4_addr" ] && [ "$PKTEER_PAID" = "false" ]; then
         echo "FREE $ipv4_addr"
         tc class delete dev $DEVICE parent 1:fffe classid 1:$HEX hfsc ls m2 $lsLimitPaid ul m2 $lsLimitPaid
     fi
