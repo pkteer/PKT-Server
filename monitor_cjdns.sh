@@ -42,11 +42,11 @@ for conn_id in $conn_ids; do
     HEX=$(get_hex_from_ip "$ipv4_addr")
 
     # Create a tc class for the source IP address
-    if [ "$1" = "$ipv4_addr" ] && [ "$2" = "true" ]; then
+    if [ "$PKTEER_IP" = "$ipv4_addr" ] && [ "$PKTEER_PAID" = "true" ]; then
         echo "PAID $ipv4_addr"
         tc class replace dev $DEVICE parent 1:fffe classid 1:$HEX hfsc ls m2 $lsLimitPaid ul m2 $lsLimitPaid
         nft add element pfi m_client_leases { $ipv4_addr : "1:$HEX" }
-    elif [ "$1" = "$ipv4_addr" ] && [ "$2" = "false" ]; then
+    elif [ "$PKTEER_IP" = "$ipv4_addr" ] && [ "$PKTEER_PAID" = "false" ]; then
         echo "FREE $ipv4_addr"
         tc class delete dev $DEVICE parent 1:fffe classid 1:$HEX hfsc ls m2 $lsLimitPaid ul m2 $lsLimitPaid
     fi
