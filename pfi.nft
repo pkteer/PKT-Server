@@ -19,11 +19,13 @@ table ip pfi {
   chain vpn {
     tcp flags syn tcp option maxseg size set rt mtu
     ip daddr @s_client_leases meta priority set ip daddr map @m_client_leases counter accept
+    ip saddr @s_client_leases meta priority set ip saddr map @m_client_leases counter accept
     counter goto default_lease
   }
 
   chain forward {
     type filter hook forward priority filter; 
     oifname == tun0 counter goto vpn
+    iifname == tun0 counter goto vpn
   }
 }
