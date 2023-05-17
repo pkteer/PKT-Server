@@ -53,5 +53,6 @@ for conn_id in $conn_ids; do
     elif [ "$PKTEER_IP" = "$ipv4_addr" ] && [ "$PKTEER_PAID" = "false" ]; then
         echo "FREE $ipv4_addr"
         tc class delete dev $DEVICE parent 1:fffe classid 1:$HEX hfsc ls m2 $lsLimitPaid ul m2 $lsLimitPaid
+        nft delete element pfi m_client_leases { $ipv4_addr : "1:$HEX" }
     fi
 done
