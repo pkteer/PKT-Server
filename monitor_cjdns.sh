@@ -1,7 +1,7 @@
 #!/bin/sh
 DEVICE="tun0"
 cexec="/server/cjdns/contrib/python/cexec"
-lsLimitFree=100kbit
+lsLimitFree=1mbit
 lsLimitPaid=950mbit
 
 get_hex_from_ip() {
