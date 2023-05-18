@@ -34,6 +34,21 @@ WORKDIR /server/anodevpn-server
 RUN npm install
 RUN cat config.example.js | sed "s/dryrun: true/dryrun: false/" > config.js
 
+# Go
+WORKDIR /server
+RUN cd /server
+RUN wget https://golang.org/dl/go1.20.4.linux-amd64.tar.gz
+RUN tar -C /usr/local -xzf go1.20.4.linux-amd64.tar.gz
+ENV PATH="/usr/local/go/bin:${PATH}"
+RUN rm go1.20.4.linux-amd64.tar.gz
+
+# PKT Wallet
+WORKDIR /server
+RUN cd /server
+RUN git clone https://github.com/pkt-cash/pktd.git
+RUN cd /server/pktd
+WORKDIR /server/pktd
+RUN ./do
 
 WORKDIR /server
 RUN cd /server

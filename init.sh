@@ -17,3 +17,6 @@ echo "route add..."
 route add -net 10.66.0.0/16 tun0
 echo "Starting anodevpn-server..."
 node /server/anodevpn-server/index.js &
+/server/pktd/pld &
+# Unlock wallet
+#PKTEER_WALLET_PASSPHRASE=password ./unlock_wallet
