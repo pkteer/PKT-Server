@@ -56,5 +56,6 @@ COPY init.sh /server/init.sh
 COPY init_nft.sh /server/init_nft.sh
 COPY monitor_cjdns.sh /server/monitor_cjdns.sh
 COPY vpn_info.sh /server/vpn_info.sh
+COPY create_wallet.sh /server/create_wallet.sh
 COPY .cjdnsadmin /root/.cjdnsadmin
 COPY pfi.nft /server/pfi.nft
