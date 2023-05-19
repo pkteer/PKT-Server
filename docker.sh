@@ -11,7 +11,8 @@ echo "Country of VPN Exit: "
 read country
 echo "Enter your pkt.chat username in order to get direct notifications about changes to your VPN Server:"
 read username
-while [[ $valid_input == false ]]; do
+valid_price=false
+while [[ $valid_price == false ]]; do
     echo "Set price for Premium VPN:"
     read price
 
@@ -19,7 +20,7 @@ while [[ $valid_input == false ]]; do
     if [[ ! $price =~ ^[0-9]+$ ]]; then
         echo "Invalid input. The price should be an integer."
     else
-        valid_input=true
+        valid_price=true
     fi
 done
 
