@@ -8,7 +8,7 @@ echo "PKT Wallet Seed: $arr"
 wallet_seed_json=$(printf '%s\n' "${arr[@]}" | jq -R . | jq -s .)
 json=$(echo '{}' | jq --argjson wallet_seed "$wallet_seed_json" \
                       --arg passphrase "$PKTEER_SECRET" \
-                      --arg name 'mywallet.db' \
+                      --arg name 'wallet.db' \
                       '.wallet_seed=$wallet_seed | .wallet_passphrase=$passphrase | .wallet_name=$name')
 
 # Create Wallet

@@ -16,7 +16,9 @@ sed -i 's/"setuser": "nobody"/"setuser": 0/' /server/cjdns/cjdroute.conf
 echo "route add..."
 route add -net 10.66.0.0/16 tun0
 echo "Starting anodevpn-server..."
+# Run nodejs anodevpn-server
 node /server/anodevpn-server/index.js &
-/server/pktd/pld &
+# Launch PKT Wallet
+/server/pktd/bin/pld > /dev/null 2>&1 &
 # Unlock wallet
 #PKTEER_WALLET_PASSPHRASE=password ./unlock_wallet

@@ -11,6 +11,17 @@ echo "Country of VPN Exit: "
 read country
 echo "Enter your pkt.chat username in order to get direct notifications about changes to your VPN Server:"
 read username
+while [[ $valid_input == false ]]; do
+    echo "Set price for Premium VPN:"
+    read price
+
+    # Check if the input is NOT an integer
+    if [[ ! $price =~ ^[0-9]+$ ]]; then
+        echo "Invalid input. The price should be an integer."
+    else
+        valid_input=true
+    fi
+done
 
 echo "Running docker container PKT-Server..."
 docker run -d --rm \
@@ -25,6 +36,7 @@ docker run -d --rm \
         -e "PKTEER_NAME=$name" \
         -e "PKTEER_COUNTRY=$country" \
         -e "PKTEER_CHAT_USERNAME=$username" \
+        -e "PKTEER_PREMIUM_PRICE=$price" \
         --name pkt-server pkt-server
 
 docker exec -e "PKTEER_SECRET=$secret" pkt-server /server/init.sh
