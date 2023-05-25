@@ -25,9 +25,9 @@ table ip pfi {
 
   chain forward {
     type filter hook forward priority filter; 
-    oifname == tun0 tcp sport 65764 counter accept
+    oifname == tun0 tcp sport 64764 counter accept
     oifname == tun0 counter goto vpn
-    iifname == tun0 tcp dport 65764 counter accept 
+    iifname == tun0 tcp dport 64764 counter accept
     iifname == tun0 counter goto vpn
   }
 }
