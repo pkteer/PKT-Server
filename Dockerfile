@@ -33,11 +33,12 @@ WORKDIR /server/pktd
 RUN ./do
 
 #Cjdns
+WORKDIR /server
+RUN cd /server
 RUN apt-get install -y --no-install-recommends python3.9
 RUN git clone https://github.com/cjdelisle/cjdns.git
-WORKDIR /server/cjdns
 ENV PATH="/server/cjdns:${PATH}"
-
+WORKDIR /server/cjdns
 RUN cd /server/cjdns
 RUN ./do
 RUN ./cjdroute --genconf | ./cjdroute --cleanconf > cjdroute.conf | jq '.interfaces.UDPInterface[0].bind = "0.0.0.0:'"$ANODE_SERVER_PORT"'"' cjdroute.conf | sponge cjdroute.conf
