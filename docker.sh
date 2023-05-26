@@ -37,5 +37,12 @@ docker run -d --rm \
         -e "PKTEER_PREMIUM_PRICE=$price" \
         --name pkt-server pkt-server
 
+# Launch PKT Wallet
+echo "Starting PKT Wallet..."
+docker exec pkt-server /server/pktd/bin/pld > /dev/null 2>&1 &
+sleep 1
+docker exec pkt-server /server/create_wallet.sh
+echo "After saving your seed, press any key to continue..."
+read -n 1 -s
 docker exec pkt-server /server/init.sh
 docker exec pkt-server /server/vpn_info.sh

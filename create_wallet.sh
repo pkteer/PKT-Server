@@ -7,8 +7,6 @@ arr=$(echo $seed | jq -r '.seed[]')
 echo "**************** THIS IS IMPORTANT - SAVE THIS SEED! ****************"
 echo "Your PKT Wallet seed is: $arr"
 echo "**************** THIS IS IMPORTANT - SAVE THIS SEED! ****************"
-echo "After saving your seed, press any key to continue..."
-read -n 1 -s
 wallet_seed_json=$(printf '%s\n' "${arr[@]}" | jq -R . | jq -s .)
 json=$(echo '{}' | jq --argjson wallet_seed "$wallet_seed_json" \
                       --arg passphrase "$PKTEER_WALLET_PASSPHRASE" \
@@ -18,5 +16,4 @@ json=$(echo '{}' | jq --argjson wallet_seed "$wallet_seed_json" \
 # Create Wallet
 echo "Creating wallet with password: $PKTEER_WALLET_PASSPHRASE"
 wallet=$(curl -X POST -H "Content-Type: application/json" -d "$json" http://localhost:8080/api/v1/wallet/create)
-echo "Response: $wallet"
-
+#echo "Response: $wallet"

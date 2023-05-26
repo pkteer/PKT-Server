@@ -1,12 +1,4 @@
 #!/bin/bash
-# Set up iptables rules
-# Launch PKT Wallet
-echo "Starting PKT Wallet..."
-/server/pktd/bin/pld > /dev/null 2>&1 &
-sleep 1
-# Create wallet
-/server/create_wallet.sh 
-sleep 1
 # Get secret
 PKTEER_SECRET=""
 while [ -z "$PKTEER_SECRET" ]; do
