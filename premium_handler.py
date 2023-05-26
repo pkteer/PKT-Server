@@ -90,21 +90,21 @@ def isValidPayment(address, ip):
                     
 def main():
     waitingTime = 5 * 60 # 5 minutes
-    # Read the clients.json file
-    clients = read_db()
-    for client in clients["clients"]:
-        print("Checking client {}".format(client["ip"]))
-        # Check the time for each client
-        startTime = client["time"] / 1000 # convert to seconds
-        if hasDurationEnded(startTime, client["duration"]):
-            removePremium(client["ip"])
-        currentTime = time.time()
-        valid = isValidPayment(client["address"], client["ip"])
-        if not valid and (startTime + waitingTime) < currentTime:
-            print("Request came at {} but after waiting for {} the payment has not come through yet".format(startTime, waitingTime))
-            removePremium(client["ip"])
-        
-    return
+    while True:
+        # Read the clients.json file
+        clients = read_db()
+        for client in clients["clients"]:
+            print("Checking client {}".format(client["ip"]))
+            # Check the time for each client
+            startTime = client["time"] / 1000 # convert to seconds
+            if hasDurationEnded(startTime, client["duration"]):
+                removePremium(client["ip"])
+            currentTime = time.time()
+            valid = isValidPayment(client["address"], client["ip"])
+            if not valid and (startTime + waitingTime) < currentTime:
+                print("Request came at {} but after waiting for {} the payment has not come through yet".format(startTime, waitingTime))
+                removePremium(client["ip"])
+        time.sleep(10) 
     
 if __name__ == "__main__":
     main()
