@@ -35,10 +35,19 @@ def get_hex_from_ip(ip_address):
 
     return hex_ip
 
+def addPremium(ip):
+    lsLimitPaid = "950mbit"
+    hex = get_hex_from_ip(ip)
+    print("Enable premium for {} from class 1:{}".format(ip,hex))
+    cmd = "tc class replace dev tun0 parent 1:fffe classid 1:{} hfsc ls m2 {} ul m2 {}".format(hex, lsLimitPaid, lsLimitPaid)
+    subprocess.check_output(cmd, shell=True).decode('utf-8').rstrip()
+    cmd = "nft add element pfi m_client_leases { "+ip+" : \"1:"+hex+"\" }"
+    subprocess.check_output(cmd, shell=True).decode('utf-8').rstrip()
+    
 def removePremium(ip):
     lsLimitPaid = "950mbit"
     hex = get_hex_from_ip(ip)
-    print("Removing premium for {} from class 1:{}".format(ip,hex))
+    print("Disable premium for {} from class 1:{}".format(ip,hex))
     cmd = "tc class delete dev tun0 parent 1:fffe classid 1:{} hfsc ls m2 {} ul m2 {}".format(hex, lsLimitPaid, lsLimitPaid)
     subprocess.check_output(cmd, shell=True).decode('utf-8').rstrip()
     cmd = "nft delete element pfi m_client_leases { "+ip+" : \"1:"+hex+"\" }"
@@ -97,13 +106,16 @@ def main():
             print("Checking client {}".format(client["ip"]))
             # Check the time for each client
             startTime = client["time"] / 1000 # convert to seconds
-            if hasDurationEnded(startTime, client["duration"]):
+            durationEnded = hasDurationEnded(startTime, client["duration"])
+            if durationEnded:
                 removePremium(client["ip"])
             currentTime = time.time()
             valid = isValidPayment(client["address"], client["ip"])
             if not valid and (startTime + waitingTime) < currentTime:
                 print("Request came at {} but after waiting for {} the payment has not come through yet".format(startTime, waitingTime))
                 removePremium(client["ip"])
+            elif valid and not durationEnded:
+                addPremium(client["ip"])
         time.sleep(10) 
     
 if __name__ == "__main__":
