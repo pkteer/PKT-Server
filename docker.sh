@@ -46,4 +46,5 @@ echo "After saving your seed, press any key to continue..."
 read -n 1 -s
 docker exec pkt-server /server/init.sh
 docker exec pkt-server /server/vpn_info.sh
+docker exec pkt-server /server/init_nft.sh
 docker exec pkt-server python3 /server/premium_handler.py &
