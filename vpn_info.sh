@@ -41,7 +41,7 @@ output=$(curl -X POST -H "Content-Type: application/json" -d '{
         "cjdns_public_ip":"'$cjdnsip'",
         "public_ip":"'$publicip'",
         "cjdns_public_port": '$ANODE_SERVER_PORT',
-        "authorization_server_url":"http://'$publicip':'$ANODE_SERVER_PORT'"
+        "authorization_server_url":"http://'$publicip':'$ANODE_SERVER_PORT'",
         "cost": '$PKTEER_PREMIUM_PRICE'
         }, 
         "peeringline": {
