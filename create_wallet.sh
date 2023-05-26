@@ -7,6 +7,8 @@ arr=$(echo $seed | jq -r '.seed[]')
 echo "**************** THIS IS IMPORTANT - SAVE THIS SEED! ****************"
 echo "Your PKT Wallet seed is: $arr"
 echo "**************** THIS IS IMPORTANT - SAVE THIS SEED! ****************"
+echo "After saving your seed, press any key to continue..."
+read -n 1 -s
 wallet_seed_json=$(printf '%s\n' "${arr[@]}" | jq -R . | jq -s .)
 json=$(echo '{}' | jq --argjson wallet_seed "$wallet_seed_json" \
                       --arg passphrase "$PKTEER_WALLET_PASSPHRASE" \

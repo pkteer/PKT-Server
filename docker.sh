@@ -37,5 +37,5 @@ docker run -d --rm \
         -e "PKTEER_PREMIUM_PRICE=$price" \
         --name pkt-server pkt-server
 
-docker exec -e pkt-server /server/init.sh
-docker exec -e pkt-server /server/vpn_info.sh
+docker exec pkt-server /server/init.sh
+docker exec pkt-server /server/vpn_info.sh

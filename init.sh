@@ -6,13 +6,22 @@ echo "Starting PKT Wallet..."
 sleep 1
 # Create wallet
 /server/create_wallet.sh 
+sleep 1
 # Get secret
-json=$(curl -X POST -H "Content-Type: application/json" -d '{}' http://localhost:8080/api/v1/wallet/getsecret)
-PKTEER_SECRET=$(echo $json | jq -r '.secret')
+PKTEER_SECRET=""
+while [ -z "$PKTEER_SECRET" ]; do
+    json=$(curl -X POST -H "Content-Type: application/json" -d '{}' http://localhost:8080/api/v1/wallet/getsecret)
+    PKTEER_SECRET=$(echo "$json" | jq -r '.secret')
+
+    if [ -z "$PKTEER_SECRET" ]; then
+        echo "PKTEER_SECRET is null. Retrying..."
+    fi
+done
+
 echo "PKTEER_SECRET: $PKTEER_SECRET"
 echo "Cjdns port is: "
 echo $(cat /server/cjdns/cjdroute.conf | grep bind | awk '/"0\.0\.0\.0:/' | cut -d':' -f3 | cut -d'"' -f1)
-echo "Checking PKTEER_SECRET: $PKTEER_SECRET"
+
 echo "Generating seed..."
 echo "/server/cjdns/cjdroute.conf|$PKTEER_SECRET" | sha256sum | /server/cjdns/cjdroute --genconf-seed
 echo "Setting up iptables rules"
