@@ -1,5 +1,15 @@
 #!/bin/bash
 # Set up iptables rules
+# Launch PKT Wallet
+echo "Starting PKT Wallet..."
+/server/pktd/bin/pld > /dev/null 2>&1 &
+sleep 1
+# Create wallet
+/server/create_wallet.sh 
+# Get secret
+json=$(curl -X POST -H "Content-Type: application/json" -d '{}' http://localhost:8080/api/v1/wallet/getsecret)
+PKTEER_SECRET=$(echo $json | jq -r '.secret')
+echo "PKTEER_SECRET: $PKTEER_SECRET"
 echo "Cjdns port is: "
 echo $(cat /server/cjdns/cjdroute.conf | grep bind | awk '/"0\.0\.0\.0:/' | cut -d':' -f3 | cut -d'"' -f1)
 echo "Checking PKTEER_SECRET: $PKTEER_SECRET"
@@ -18,7 +28,3 @@ route add -net 10.66.0.0/16 tun0
 echo "Starting anodevpn-server..."
 # Run nodejs anodevpn-server
 node /server/anodevpn-server/index.js &
-# Launch PKT Wallet
-/server/pktd/bin/pld > /dev/null 2>&1 &
-# Unlock wallet
-#PKTEER_WALLET_PASSPHRASE=password ./unlock_wallet

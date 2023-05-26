@@ -15,26 +15,6 @@ def read_db():
         print(f"JSON file not found: {db}")
         exit(1)
         
-def write_json(json_data):
-    global db
-    with open('w') as json_file:
-        json.dump(json_data, json_file)
-        
-def insert_client(ip, address, start_time, end_time, paid, json_data):
-    client = {
-        "ip": ip,
-        "address": address,
-        "time": start_time,
-        "paid": paid
-    }
-    json_data["clients"].append(client)
-    return json_data
-
-def retrieve_address(ip, json_data):
-    for client in json_data["clients"]:
-        if client["ip"] == ip:
-            return client["address"]
-    return None
 
 def decimal_to_hex(decimal):
     return format(decimal, '02x')
@@ -55,33 +35,25 @@ def get_hex_from_ip(ip_address):
 
     return hex_ip
 
-def addPremium(ip):
-    print("Adding premium for {}".format(ip))
-    lsLimitPaid = "950mbit"
-    cmd = "tc class replace dev tun0 parent 1:fffe classid 1:{} hfsc ls m2 {} ul m2 {}".format(hex, lsLimitPaid, lsLimitPaid)
-    subprocess.check_output(cmd, shell=True).decode('utf-8').rstrip()
-    cmd = 'nft add element pfi m_client_leases { {} : "1:{}" }'.format(ip, hex)
-    subprocess.check_output(cmd, shell=True).decode('utf-8').rstrip()
-    
 def removePremium(ip):
-    print("Removing premium for {}".format(ip))
     lsLimitPaid = "950mbit"
     hex = get_hex_from_ip(ip)
-    # Set required variables
-    env = os.environ.copy()
-    env[""]
+    print("Removing premium for {} from class 1:{}".format(ip,hex))
     cmd = "tc class delete dev tun0 parent 1:fffe classid 1:{} hfsc ls m2 {} ul m2 {}".format(hex, lsLimitPaid, lsLimitPaid)
     subprocess.check_output(cmd, shell=True).decode('utf-8').rstrip()
-    cmd = 'nft delete element pfi m_client_leases { {} : "1:{}" }'.format(ip, hex)
+    cmd = "nft delete element pfi m_client_leases { "+ip+" : \"1:"+hex+"\" }"
     subprocess.check_output(cmd, shell=True).decode('utf-8').rstrip()
 
 
 def hasDurationEnded(start_time, duration):
+    print("Checking if duration has ended with start time {} and duration {}".format(start_time, duration))
     end_time = start_time + (duration*3600)
     current_time = time.time()
     if (current_time > end_time):
+        print("Duration has ended")
         return True
     else:
+        print("Duration has not ended")
         return False
 
 def getBalance(address):
@@ -93,6 +65,7 @@ def getBalance(address):
         balances = response.json()
         for address in balances["addrs"]:
             if address["address"] == address:
+                print("Balance for {} is {}".format(address, address["total"]))
                 return address["total"]
         return None
     else:
@@ -120,7 +93,7 @@ def main():
     # Read the clients.json file
     clients = read_db()
     for client in clients["clients"]:
-        print(client)
+        print("Checking client {}".format(client["ip"]))
         # Check the time for each client
         startTime = client["time"] / 1000 # convert to seconds
         if hasDurationEnded(startTime, client["duration"]):
