@@ -4,6 +4,8 @@ import subprocess, os
 import requests
 import logging
 import fcntl
+import base64
+import codecs
 
 db = "anodevpn-server/clients.json"
 
@@ -127,8 +129,13 @@ def isValidPayment(address, ip):
 
 def bcastTransaction(tx):
     url = "http://localhost:8080/api/v1/neutrino/bcasttransaction"
+    hex_data = codecs.encode(base64.b64decode(tx), 'hex')
+    utf8_str = codecs.decode(hex_data, 'utf-8')
+    enc_data = base64.b64encode(utf8_str.encode('utf-8'))
+    b64tx = enc_data.decode('utf-8')
     try:
-        response = requests.post(url, json={"tx": tx}, headers={"Content-Type": "application/json"})
+        logging.info("Broadcasting transaction: {}".format(b64tx))
+        response = requests.post(url, json={"tx": b64tx}, headers={"Content-Type": "application/json"})
         if response.status_code == 200:
             json_response = response.json()
             return json_response["txnHash"]
@@ -148,11 +155,12 @@ def main():
             # print("Checking client {}".format(client["ip"]))
             # check for clients that have transaction but not txid, means transaction has not been broadcasted,
             # try to broadcast it again, check error and reject client if it fails
-            if (client.has_key("txid") and client["txid"] == ""):
+            if client["txid"] is None or client["txid"] == "":
                 logging.info("Client has transaction but no txid")
                 print("Client has transaction but no txid, trying to broadcast it again")
                 client["txid"] = bcastTransaction(client["transaction"])
                 logging.info("Broadcasted transaction: {} got txid {}".format(client["transaction"], client["txid"]))
+                write_db(clients)
 
             # Check the time for each client
             startTime = client["time"] / 1000 # convert to seconds
@@ -173,7 +181,7 @@ def main():
                 addPremium(client["ip"])
         time.sleep(10) 
 
-        write_db(clients)
+        
     
 if __name__ == "__main__":
     main()
