@@ -16,6 +16,15 @@ def read_db():
         exit(1)
         
 
+def write_db(json_data):
+    global db
+    try:
+        with open(db, 'w') as json_file:
+            json.dump(json_data, json_file)
+    except FileNotFoundError:
+        print(f"JSON file not found: {db}")
+        exit(1)
+
 def decimal_to_hex(decimal):
     return format(decimal, '02x')
 
@@ -96,6 +105,15 @@ def isValidPayment(address, ip):
         print("Payment may not have come throught yet...")
         return False
 
+def bcastTransaction(tx):
+    url = "http://localhost:8080/api/v1/neutrino/bcasttransaction"
+    response = requests.post(url, json={"tx": tx}, headers={"Content-Type": "application/json"})
+    if response.status_code == 200:
+        json_response = response.json()
+        return json_response["txnHash"]
+    else:
+        print("Error getting response")
+        return None
                     
 def main():
     waitingTime = 5 * 60 # 5 minutes
@@ -104,11 +122,18 @@ def main():
         clients = read_db()
         for client in clients["clients"]:
             print("Checking client {}".format(client["ip"]))
+            # check for clients that have transaction but not txid, means transaction has not been broadcasted,
+            # try to broadcast it again, check error and reject client if it fails
+            if (client.has_key("txid") and client["txid"] == ""):
+                print("Client has transaction but no txid, trying to broadcast it again")
+                client["txid"] = bcastTransaction(client["transaction"])
+
             # Check the time for each client
             startTime = client["time"] / 1000 # convert to seconds
             durationEnded = hasDurationEnded(startTime, client["duration"])
             if durationEnded:
                 removePremium(client["ip"])
+
             currentTime = time.time()
             valid = isValidPayment(client["address"], client["ip"])
             if not valid and (startTime + waitingTime) < currentTime:
@@ -117,6 +142,8 @@ def main():
             elif valid and not durationEnded:
                 addPremium(client["ip"])
         time.sleep(10) 
+
+        write_db(clients)
     
 if __name__ == "__main__":
     main()
