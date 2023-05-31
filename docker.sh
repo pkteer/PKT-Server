@@ -11,12 +11,12 @@ echo "Enter your pkt.chat username in order to get direct notifications about ch
 read username
 valid_price=false
 while [[ $valid_price == false ]]; do
-    echo "Set price for Premium VPN:"
+    echo "Set price for Premium VPN in PKT (range of 1-100):"
     read price
 
-    # Check if the input is NOT an integer
-    if [[ ! $price =~ ^[0-9]+$ ]]; then
-        echo "Invalid input. The price should be an integer."
+    # Check if the input is NOT an integer or is not within the range of 1 to 100
+    if [[ ! $price =~ ^[0-9]+$ ]] || [[ $price -lt 1 ]] || [[ $price -gt 100 ]]; then
+        echo "Invalid input. The price should be an integer within the range of 1 to 100 PKT."
     else
         valid_price=true
     fi
