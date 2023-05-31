@@ -100,7 +100,7 @@ def getBalance(address):
     logging.info("Getting balance for {}".format(address))
     # Get balance from the PKT blockchain
     url = "http://localhost:8080/api/v1/wallet/address/balances"
-    response = requests.post(url, json={"showzerobalance": "false"}, headers={"Content-Type": "application/json"})
+    response = requests.post(url, json={"showzerobalance": false}, headers={"Content-Type": "application/json"})
     if response.status_code == 200:
         balances = response.json()
         for addr in balances["addrs"]:
@@ -151,7 +151,9 @@ def main():
     while True:
         # Read the clients.json file
         clients = read_db()
+        remainingClients = []
         for client in clients["clients"]:
+            remove = False
             # print("Checking client {}".format(client["ip"]))
             # check for clients that have transaction but not txid, means transaction has not been broadcasted,
             # try to broadcast it again, check error and reject client if it fails
@@ -160,28 +162,34 @@ def main():
                 print("Client has transaction but no txid, trying to broadcast it again")
                 client["txid"] = bcastTransaction(client["transaction"])
                 logging.info("Broadcasted transaction: {} got txid {}".format(client["transaction"], client["txid"]))
-                write_db(clients)
 
             # Check the time for each client
             startTime = client["time"] / 1000 # convert to seconds
             durationEnded = hasDurationEnded(startTime, client["duration"])
+            currentTime = time.time()
+            valid = isValidPayment(client["address"], client["ip"])
             if durationEnded:
                 logging.info("Duration has ended for client {}".format(client["ip"]))
                 removePremium(client["ip"])
-
-            currentTime = time.time()
-            valid = isValidPayment(client["address"], client["ip"])
-            if not valid and (startTime + waitingTime) < currentTime:
+                remove = True
+            elif not valid and (startTime + waitingTime) < currentTime:
                 logging.info("Request came at {} but after waiting for {} the payment has not come through yet".format(startTime, waitingTime))
                 #print("Request came at {} but after waiting for {} the payment has not come through yet".format(startTime, waitingTime))
                 removePremium(client["ip"])
                 logging.info("Removed premium for client {}".format(client["ip"]))
+                remove = True
             elif valid and not durationEnded:
                 logging.info("Add client to premium: {}".format(client["ip"]))
                 addPremium(client["ip"])
+        
+            if not remove:
+                remainingClients.append(client)
+
+        clients["clients"] = remainingClients        
+        # Remove clients that have duration ended
+        write_db(clients)
         time.sleep(10) 
 
-        
     
 if __name__ == "__main__":
     main()
