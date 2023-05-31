@@ -118,10 +118,10 @@ def isValidPayment(address, ip):
     balance = int(getBalance(address))
     if (balance is not None):
         if balance < premiumPrice:
-            logging.info("Client paid less than the premium price of {}: {}".format(premiumPrice, address["total"]))
+            logging.info("Client paid {}, less than the premium price of {}".format(balance, premiumPrice))
             return False
         elif balance >= premiumPrice:
-            logging.info("Client paid the premium price of {}: {}".format(premiumPrice, address["total"]))
+            logging.info("Client paid the correct premium price of {}".format(premiumPrice))
             return True
     else:
         logging.info("Payment may not have come throught yet...")
