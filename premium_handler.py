@@ -106,7 +106,7 @@ def getBalance(address):
         for addr in balances["addrs"]:
             if addr["address"] == address:
                 logging.info("Balance for {} is {}".format(address, addr["total"]))
-                return address["total"]
+                return addr["total"]
         return None
     else:
         logging.error("Error getting response")
