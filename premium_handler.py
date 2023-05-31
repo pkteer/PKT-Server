@@ -100,7 +100,7 @@ def getBalance(address):
     logging.info("Getting balance for {}".format(address))
     # Get balance from the PKT blockchain
     url = "http://localhost:8080/api/v1/wallet/address/balances"
-    response = requests.post(url, json={"showzerobalance": false}, headers={"Content-Type": "application/json"})
+    response = requests.post(url, json={"showzerobalance": False}, headers={"Content-Type": "application/json"})
     if response.status_code == 200:
         balances = response.json()
         for addr in balances["addrs"]:
