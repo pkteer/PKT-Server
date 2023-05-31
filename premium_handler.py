@@ -113,9 +113,9 @@ def getBalance(address):
         return None
     
 def isValidPayment(address, ip):
-    premiumPrice = os.environ.get('PKTEER_PREMIUM_PRICE')
+    premiumPrice = int(os.environ.get('PKTEER_PREMIUM_PRICE'))
     # Check balance for the address
-    balance = getBalance(address)
+    balance = int(getBalance(address))
     if (balance is not None):
         if balance < premiumPrice:
             logging.info("Client paid less than the premium price of {}: {}".format(premiumPrice, address["total"]))
