@@ -1,6 +1,7 @@
 import json
 import time
-import subprocess, os
+import subprocess
+import os
 import requests
 import logging
 import fcntl
@@ -9,84 +10,93 @@ import codecs
 
 db = "anodevpn-server/clients.json"
 
+
 def read_db():
-    global db
+    """Function reading the JSON database file and returning the data as a dictionary"""
     try:
-        with open(db) as json_file:
+        with open(db, encoding="utf-8") as json_file:
             json_data = json.load(json_file)
             return json_data
     except FileNotFoundError:
-        logging.error(f"JSON file not found: {db}")
-        print(f"JSON file not found: {db}")
+        logging.error("JSON file not found: %s",db)
+        print("JSON file not found: %s", db)
         exit(1)
-        
+
 
 def write_db(json_data):
-    global db
-    for i in range(5):
+    """Function writing the JSON database file with the given dictionary"""
+    for _ in range(5):
         try:
-            with open(db, 'w') as json_file:
+            with open(db, 'w', encoding="utf-8") as json_file:
                 try:
                     fcntl.flock(json_file, fcntl.LOCK_EX)
                     json.dump(json_data, json_file)
                     return
-                except IOError as e:
-                    logging.info("Error writing to clients.json: {}".format(e))
+                except IOError as error:
+                    logging.info("Error writing to clients.json: %s",format(error))
                     time.sleep(0.2)
                 finally:
                     fcntl.flock(json_file, fcntl.LOCK_UN)  
         except FileNotFoundError:
-            logging.error(f"JSON file not found: {db}")
-            print(f"JSON file not found: {db}")
+            logging.error("JSON file not found: %s", db)
+            print("JSON file not found: %s",db)
             exit(1)
 
-def decimal_to_hex(decimal):
+
+def decimal_to_hex(decimal: int) -> str:
+    """Function converting a decimal number to hexadecimal"""
     return format(decimal, '02x')
 
-def get_hex_from_ip(ip_address):
-    # Extract the last two octets of the source IP address
+
+def get_hex_from_ip(ip_address: str) -> str:
+    """Function converting last two octets of IP address to hexadecimal"""
     last_two_parts = ip_address.split('.')[-2:]
 
     part1 = last_two_parts[0]
     part2 = last_two_parts[1]
 
     # Convert each part to hexadecimal
-    hex_part1 = decimal_to_hex(int(part1))
-    hex_part2 = decimal_to_hex(int(part2))
+    hex_part1 = hex(int(part1))[2:]
+    hex_part2 = hex(int(part2))[2:]
 
     # Concatenate the hexadecimal parts
     hex_ip = hex_part1 + hex_part2
 
     return hex_ip
 
-def addPremium(ip):
+
+def add_premium(ip: str):
+    """Function adding premium for the given IP address"""
     lsLimitPaid = "950mbit"
-    hex = get_hex_from_ip(ip)
-    logging.info("Enable premium for {} from class 1:{}".format(ip,hex))
-    cmd = "tc class replace dev tun0 parent 1:fffe classid 1:{} hfsc ls m2 {} ul m2 {}".format(hex, lsLimitPaid, lsLimitPaid)
+    hex_str = get_hex_from_ip(ip)
+    logging.info("Enable premium for %s from class 1:%s", ip, hex_str)
+    cmd = "tc class replace dev tun0 parent 1:fffe classid 1:%s hfsc ls m2 %s ul m2 %s", hex_str, lsLimitPaid, lsLimitPaid
     try:
         subprocess.check_output(cmd, shell=True).decode('utf-8').rstrip()
-        cmd = "nft add element pfi m_client_leases { "+ip+" : \"1:"+hex+"\" }"
+        cmd = "nft add element pfi m_client_leases { "+ip+" : \"1:"+hex_str+"\" }"  # type: ignore
         subprocess.check_output(cmd, shell=True).decode('utf-8').rstrip()
-    except subprocess.CalledProcessError as e:
-        logging.error("Error adding premium: {}".format(e.output))
+    except subprocess.CalledProcessError as error:
+        logging.error("Error adding premium: %s", error.output)
     
-def removePremium(ip):
+
+def remove_premium(ip: str):
+    """Function removing premium for the given IP address"""
     lsLimitPaid = "950mbit"
-    hex = get_hex_from_ip(ip)
-    logging.info("Disable premium for {} from class 1:{}".format(ip,hex))
-    cmd = "tc class delete dev tun0 parent 1:fffe classid 1:{} hfsc ls m2 {} ul m2 {}".format(hex, lsLimitPaid, lsLimitPaid)
+    hex_str = get_hex_from_ip(ip)
+    logging.info("Disable premium for %s from class 1:%s", ip, hex_str)
+    cmd = "tc class delete dev tun0 parent 1:fffe classid 1:%s hfsc ls m2 %s ul m2 %s", hex_str, lsLimitPaid, lsLimitPaid
     try:
         subprocess.check_output(cmd, shell=True).decode('utf-8').rstrip()
-        cmd = "nft delete element pfi m_client_leases { "+ip+" : \"1:"+hex+"\" }"
+        cmd = "nft delete element pfi m_client_leases { "+ip+" : \"1:"+hex_str+"\" }"
         subprocess.check_output(cmd, shell=True).decode('utf-8').rstrip()
-    except subprocess.CalledProcessError as e:
-        logging.error("Error removing premium: {}".format(e.output))
+    except subprocess.CalledProcessError as error:
+        logging.error("Error removing premium: %s", error.output)
 
 
 
-def hasDurationEnded(start_time, duration):
-    logging.info("Checking if duration has ended with start time {} and duration {}".format(start_time, duration))
+def has_duration_ended(start_time: int, duration: int) -> bool:
+    """Function checking if the duration has ended"""
+    logging.info("Checking if duration has ended with start time %d and duration %d", start_time, duration)
     end_time = start_time + (duration*3600)
     current_time = time.time()
     if (current_time > end_time):
@@ -96,62 +106,72 @@ def hasDurationEnded(start_time, duration):
         logging.info("Duration has not ended")
         return False
 
-def getBalance(address):
-    logging.info("Getting balance for {}".format(address))
+
+def get_balance(address: str) -> int:
+    """Function getting the balance for the given address"""
+    logging.info("Getting balance for %s", address)
     # Get balance from the PKT blockchain
     url = "http://localhost:8080/api/v1/wallet/address/balances"
-    response = requests.post(url, json={"showzerobalance": False}, headers={"Content-Type": "application/json"})
+    response = requests.post(url, json={"showzerobalance": False}, headers={"Content-Type": "application/json"}, timeout=5)
     if response.status_code == 200:
         balances = response.json()
         for addr in balances["addrs"]:
             if addr["address"] == address:
-                logging.info("Balance for {} is {}".format(address, addr["total"]))
+                logging.info("Balance for %s is %d", address, addr["total"])
                 return addr["total"]
-        return None
+        return 0
     else:
         logging.error("Error getting response")
-        return None
-    
-def isValidPayment(address, ip):
-    premiumPrice = int(os.environ.get('PKTEER_PREMIUM_PRICE'))
+        return 0
+
+
+def is_valid_payment(address: str) -> bool:
+    """Function checking if the payment is valid"""
+    premium_price: int = int(str(os.environ.get('PKTEER_PREMIUM_PRICE')))
     # Check balance for the address
-    balance = int(getBalance(address))
-    if (balance is not None):
-        if balance < premiumPrice:
-            logging.info("Client paid {}, less than the premium price of {}".format(balance, premiumPrice))
+    balance = get_balance(address)
+    if (balance is not 0):
+        if balance < premium_price:
+            logging.info("Client paid %d, less than the premium price of %d", balance, premium_price)
             return False
-        elif balance >= premiumPrice:
-            logging.info("Client paid the correct premium price of {}".format(premiumPrice))
+        elif balance >= premium_price:
+            logging.info("Client paid the correct premium price of %d", premium_price)
             return True
     else:
-        logging.info("Payment may not have come throught yet...")
+        logging.info("Payment may not have come through yet...")
         return False
+    return False
 
-def bcastTransaction(tx):
+
+def bcast_transaction(tx: str) -> str:
+    """Function broadcasting the transaction to the PKT blockchain"""
     url = "http://localhost:8080/api/v1/neutrino/bcasttransaction"
     hex_data = codecs.encode(base64.b64decode(tx), 'hex')
     utf8_str = codecs.decode(hex_data, 'utf-8')
     enc_data = base64.b64encode(utf8_str.encode('utf-8'))
     b64tx = enc_data.decode('utf-8')
     try:
-        logging.info("Broadcasting transaction: {}".format(b64tx))
-        response = requests.post(url, json={"tx": b64tx}, headers={"Content-Type": "application/json"})
+        logging.info("Broadcasting transaction: %s", b64tx)
+        response = requests.post(url, json={"tx": b64tx}, headers={"Content-Type": "application/json"}, timeout=30)
         if response.status_code == 200:
             json_response = response.json()
             return json_response["txnHash"]
         else:
-            logging.error("Error getting response: {}".format(response.status_code))
-            return None
-    except requests.exceptions.RequestException as e:
-        logging.error("Error broadcasting transaction: {}".format(e))
-                    
+            logging.error("Error getting response: %d", response.status_code)
+            return ""
+    except requests.exceptions.RequestException as error:
+        logging.error("Error broadcasting transaction: %s", error)
+        return ""
+
+
 def main():
+    """Main function"""
     logging.basicConfig(filename='premium_handler.log', level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
-    waitingTime = 5 * 60 # 5 minutes
+    waiting_time = 5 * 60 # 5 minutes
     while True:
         # Read the clients.json file
         clients = read_db()
-        remainingClients = []
+        remaining_clients = []
         for client in clients["clients"]:
             remove = False
             # print("Checking client {}".format(client["ip"]))
@@ -160,36 +180,35 @@ def main():
             if client["txid"] is None or client["txid"] == "":
                 logging.info("Client has transaction but no txid")
                 print("Client has transaction but no txid, trying to broadcast it again")
-                client["txid"] = bcastTransaction(client["transaction"])
-                logging.info("Broadcasted transaction: {} got txid {}".format(client["transaction"], client["txid"]))
+                client["txid"] = bcast_transaction(client["transaction"])
+                logging.info("Broadcasted transaction: %s got txid %s", client["transaction"], client["txid"])
 
             # Check the time for each client
-            startTime = client["time"] / 1000 # convert to seconds
-            durationEnded = hasDurationEnded(startTime, client["duration"])
-            currentTime = time.time()
-            valid = isValidPayment(client["address"], client["ip"])
-            if durationEnded:
-                logging.info("Duration has ended for client {}".format(client["ip"]))
-                removePremium(client["ip"])
+            start_time: int= client["time"] / 1000 # convert to seconds
+            duration_ended: bool= has_duration_ended(start_time, int(client["duration"]))
+            current_time = time.time()
+            valid = is_valid_payment(client["address"])
+            if duration_ended:
+                logging.info("Duration has ended for client %s", client["ip"])
+                remove_premium(client["ip"])
                 remove = True
-            elif not valid and (startTime + waitingTime) < currentTime:
-                logging.info("Request came at {} but after waiting for {} the payment has not come through yet".format(startTime, waitingTime))
-                #print("Request came at {} but after waiting for {} the payment has not come through yet".format(startTime, waitingTime))
-                removePremium(client["ip"])
-                logging.info("Removed premium for client {}".format(client["ip"]))
+            elif not valid and (start_time + waiting_time) < current_time:
+                logging.info("Request came at %d but after waiting for %d the payment has not come through yet", start_time, waiting_time)
+                remove_premium(client["ip"])
+                logging.info("Removed premium for client %s", client["ip"])
                 remove = True
-            elif valid and not durationEnded:
-                logging.info("Add client to premium: {}".format(client["ip"]))
-                addPremium(client["ip"])
-        
-            if not remove:
-                remainingClients.append(client)
+            elif valid and not duration_ended:
+                logging.info("Add client to premium: %s", client["ip"])
+                add_premium(client["ip"])
 
-        clients["clients"] = remainingClients        
+            if not remove:
+                remaining_clients.append(client)
+
+        clients["clients"] = remaining_clients        
         # Remove clients that have duration ended
         write_db(clients)
-        time.sleep(10) 
+        time.sleep(10)
 
-    
+
 if __name__ == "__main__":
     main()
