@@ -34,12 +34,12 @@ This will create the docker image.
 
 Before running the container as pkt-server it will prompt you to enter:
 * a name for your VPN Server
-* country of VNP Server
+* country of VPN Server
 * your username in pkt.chat so that you will be tagged for status updates.
 * and the cost in PKT that clients will be required to pay for 1 hour of Premium VPN service. This should be in the range from 1-100 PKT.
 * your pkt.chat username
 
-The container will publish the SERVER_PORT (default: 8099) and finally will print out all the necessary information. The VPN Server information will be posted on the #anode-vpn channel on pkt.chat and the VPN Server should be ready to be used.
+The container will publish the SERVER_PORT (default: 8099) and finally will print out all the necessary information. It will be registered and tested by our bot periodically for its working status. The server's information and its changing status will be posted on the #anode-vpn channel on pkt.chat.
 
 For example:
 
