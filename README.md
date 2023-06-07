@@ -21,6 +21,10 @@ cd PKT-Server
 docker build --build-arg SERVER_PORT=8099 -t pkt-server .
 ```
 
+During this process a PKT Wallet will be created and its seed phrase will be printed for you to write down.
+**NOTE**: Make sure to safely store your seed phrase in order to be able to import your wallet on your computer.
+The seed phrase password is "password".
+
 now run the docker.sh script, you can edit the ANODE_SERVER_PORT, use the same as the one used when building the server above.
 ```
 ANODE_SERVER_PORT=8099 ./docker.sh
