@@ -29,9 +29,9 @@ This will create the docker image.
 
 Before running the container as pkt-server it will prompt you to enter:
 * a name for your VPN Server
-* your **secret**.
 * country of VNP Server
 * your username in pkt.chat so that you will be tagged for status updates.
+* and the cost in PKT that clients will be required to pay for 1 hour of Premium VPN service. This should be in the range from 1-100 PKT.
 
 The container will publish the SERVER_PORT (default: 8099) and finally will print out all the necessary information for you to register your VPN Exit with Anode servers.
 

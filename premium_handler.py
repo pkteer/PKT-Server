@@ -2,11 +2,11 @@ import json
 import time
 import subprocess
 import os
-import requests
 import logging
 import fcntl
 import base64
 import codecs
+import requests
 
 db = "anodevpn-server/clients.json"
 
@@ -51,14 +51,11 @@ def decimal_to_hex(decimal: int) -> str:
 def get_hex_from_ip(ip_address: str) -> str:
     """Function converting last two octets of IP address to hexadecimal"""
     last_two_parts = ip_address.split('.')[-2:]
-
     part1 = last_two_parts[0]
     part2 = last_two_parts[1]
-
     # Convert each part to hexadecimal
     hex_part1 = hex(int(part1))[2:]
     hex_part2 = hex(int(part2))[2:]
-
     # Concatenate the hexadecimal parts
     hex_ip = hex_part1 + hex_part2
 
@@ -96,49 +93,62 @@ def remove_premium(ip: str):
 
 def has_duration_ended(start_time: int, duration: int) -> bool:
     """Function checking if the duration has ended"""
-    logging.info("Checking if duration has ended with start time %d and duration %d", start_time, duration)
-    end_time = start_time + (duration*3600)
-    current_time = time.time()
-    if (current_time > end_time):
-        logging.info("Duration has ended")
-        return True
-    else:
-        logging.info("Duration has not ended")
+    try:
+        logging.info("Checking if duration has ended with start time %d and duration %d", start_time, duration)
+        end_time = start_time + (duration*3600)
+        current_time = time.time()
+        if (current_time > end_time):
+            logging.info("Duration has ended")
+            return True
+        else:
+            logging.info("Duration has not ended")
+            return False
+    except Exception as error:
+        logging.error("Error checking if duration has ended: %s", error)
         return False
 
 
 def get_balance(address: str) -> int:
     """Function getting the balance for the given address"""
-    logging.info("Getting balance for %s", address)
-    # Get balance from the PKT blockchain
-    url = "http://localhost:8080/api/v1/wallet/address/balances"
-    response = requests.post(url, json={"showzerobalance": False}, headers={"Content-Type": "application/json"}, timeout=5)
-    if response.status_code == 200:
-        balances = response.json()
-        for addr in balances["addrs"]:
-            if addr["address"] == address:
-                logging.info("Balance for %s is %d", address, addr["total"])
-                return addr["total"]
+    try:
+        logging.info("Getting balance for %s", address)
+        # Get balance from the PKT blockchain
+        url = "http://localhost:8080/api/v1/wallet/address/balances"
+        response = requests.post(url, json={"showzerobalance": True}, headers={"Content-Type": "application/json"}, timeout=5)
+        if response.status_code == 200:
+            balances = response.json()
+            for addr in balances["addrs"]:
+                if addr["address"] == address:
+                    logging.info("Balance for %s is %d", address, addr["total"])
+                    return addr["total"]
+            return 0
+        else:
+            logging.error("Error getting response")
+            return 0
+    except Exception as error:
+        logging.error("Error getting balance: %s", error)
         return 0
-    else:
-        logging.error("Error getting response")
-        return 0
+            
 
 
 def is_valid_payment(address: str) -> bool:
     """Function checking if the payment is valid"""
-    premium_price: int = int(str(os.environ.get('PKTEER_PREMIUM_PRICE')))
-    # Check balance for the address
-    balance = get_balance(address)
-    if (balance is not 0):
-        if balance < premium_price:
-            logging.info("Client paid %d, less than the premium price of %d", balance, premium_price)
+    try:
+        premium_price: int = int(str(os.environ.get('PKTEER_PREMIUM_PRICE')))
+        # Check balance for the address
+        balance = get_balance(address)
+        if (balance is not 0):
+            if balance < premium_price:
+                logging.info("Client paid %d, less than the premium price of %d", balance, premium_price)
+                return False
+            elif balance >= premium_price:
+                logging.info("Client paid the correct premium price of %d", premium_price)
+                return True
+        else:
+            logging.info("Payment may not have come through yet...")
             return False
-        elif balance >= premium_price:
-            logging.info("Client paid the correct premium price of %d", premium_price)
-            return True
-    else:
-        logging.info("Payment may not have come through yet...")
+    except Exception as error:
+        logging.error("Error checking for valid payment: %s", error)
         return False
     return False
 
