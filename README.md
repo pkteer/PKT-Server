@@ -6,6 +6,7 @@ This should help you to easily set up an Anode VPN Exit using cjdns.
 - Linux based machine.
 - Install docker follow these [instructions](https://docs.docker.com/engine/install/)
 - Install git follow these [instructions](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+- Have your account on pkt.chat (to get notified for your server status)
 
 # Steps
 
@@ -32,8 +33,9 @@ Before running the container as pkt-server it will prompt you to enter:
 * country of VNP Server
 * your username in pkt.chat so that you will be tagged for status updates.
 * and the cost in PKT that clients will be required to pay for 1 hour of Premium VPN service. This should be in the range from 1-100 PKT.
+* your pkt.chat username
 
-The container will publish the SERVER_PORT (default: 8099) and finally will print out all the necessary information for you to register your VPN Exit with Anode servers.
+The container will publish the SERVER_PORT (default: 8099) and finally will print out all the necessary information. The VPN Server information will be posted on the #anode-vpn channel on pkt.chat and the VPN Server should be ready to be used.
 
 For example:
 
@@ -46,9 +48,9 @@ Cjdns public port: 8099
 Authorization server url: http://51.222.109.102:8099
 login: default-login
 password: 8qzpszn02r5c1vwyww9k9tkqj3v9ghm
+username: VpnUser
+cost: 10
 ```
 
-Copy the VPN Exit information and post them to [#anode-vpn](https://pkt.chat/pkt/channels/anode-vpn) channel in pkt.chat together with a name for your VPN Exit and the country where the VPN Exit is located.
+Check the [#anode-vpn](https://pkt.chat/pkt/channels/anode-vpn) channel in pkt.chat for updates on your VPN Server.
 
-
-The VPN Exit will be tested and you will be informed of its activation.
