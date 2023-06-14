@@ -25,7 +25,7 @@ echo "Starting cjdns..."
 sed -i 's/"setuser": "nobody"/"setuser": 0/' /server/cjdns/cjdroute.conf
 /server/cjdns/cjdroute < /server/cjdns/cjdroute.conf
 echo "route add..."
-route add -net 10.66.0.0/16 tun0
+route add -net 10.0.0.0/8 tun0
 echo "Initializing nftables..."
 ./init_nft.sh
 echo "Starting anodevpn-server..."
