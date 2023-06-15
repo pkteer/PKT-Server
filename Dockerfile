@@ -50,6 +50,7 @@ WORKDIR /server
 RUN git clone https://github.com/anode-co/anodevpn-server
 RUN cd /server/anodevpn-server
 WORKDIR /server/anodevpn-server
+RUN git pull
 RUN npm install
 RUN npm install proper-lockfile
 RUN cat config.example.js | sed "s/dryrun: true/dryrun: false/" > config.js
