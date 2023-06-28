@@ -22,6 +22,7 @@ while [[ $valid_price == false ]]; do
     fi
 done
 
+IPERF_PORT=5201
 echo "Running docker container PKT-Server..."
 docker run -d --rm \
         --log-driver 'local' \
@@ -31,6 +32,8 @@ docker run -d --rm \
         --sysctl net.ipv4.ip_forward=1 \
         -p $ANODE_SERVER_PORT:$ANODE_SERVER_PORT \
         -p $ANODE_SERVER_PORT:$ANODE_SERVER_PORT/udp \
+        -p $IPERF_PORT:$IPERF_PORT \
+        -p $IPERF_PORT:$IPERF_PORT/udp \
         -e "PKTEER_NAME=$name" \
         -e "PKTEER_COUNTRY=$country" \
         -e "PKTEER_CHAT_USERNAME=$username" \
@@ -47,3 +50,5 @@ read -n 1 -s
 docker exec pkt-server /server/init.sh
 docker exec pkt-server /server/vpn_info.sh
 docker exec pkt-server python3 /server/premium_handler.py &
+docker exec pkt-server /server/run_iperf3.sh &
+docker exec pkt-server /server/kill_iperf3.sh &

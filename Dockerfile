@@ -54,6 +54,8 @@ RUN git pull
 RUN npm install
 RUN npm install proper-lockfile
 RUN cat config.example.js | sed "s/dryrun: true/dryrun: false/" > config.js
+#Speedtest server
+RUN apt-get install -y iperf3
 
 WORKDIR /server
 RUN cd /server
@@ -65,3 +67,6 @@ COPY premium_handler.py /server/premium_handler.py
 COPY create_wallet.sh /server/create_wallet.sh
 COPY .cjdnsadmin /root/.cjdnsadmin
 COPY pfi.nft /server/pfi.nft
+#Speedtest server
+COPY run_iperf3.sh /server/run_iperf3.sh
+COPY kill_iperf3.sh /server/kill_iperf3.sh
