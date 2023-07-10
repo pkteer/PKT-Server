@@ -58,3 +58,17 @@ cost: 10
 
 Check the [#anode-vpn](https://pkt.chat/pkt/channels/anode-vpn) channel in pkt.chat for updates on your VPN Server.
 
+# Use it as a CJDNS Node
+
+If you want to use it as a CJDNS Node, you can edit the port in the build_docker_cjdns.sh and then build it by running this script:
+
+``` 
+./build_docker_cjdns.sh
+```
+
+use the same port number in the run_docker_cjdns.sh and use this script to **run** or **start** the container:
+
+```
+./run_docker_cjdns.sh
+
+```
