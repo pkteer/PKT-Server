@@ -1,8 +1,7 @@
 #!/bin/bash
 while true; do
     # use timeout in case cjdroute is not running
-    output=$(timeout 2s /server/cjdns/tools/cexec 'ping()' | grep pong)
-    if [ -z "$output" ]; then
+    if ! timeout 2s /server/cjdns/tools/cexec 'ping()' | grep -q pong; then
         echo "cjdns is not running, restarting..."
         # Get the cjdroute PID
         pid=$(pidof cjdroute)
