@@ -31,3 +31,5 @@ echo "Initializing nftables..."
 echo "Starting anodevpn-server..."
 # Run nodejs anodevpn-server
 node /server/anodevpn-server/index.js &
+# Run watchdog
+/server/cjdns_watchdog.sh

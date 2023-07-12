@@ -70,3 +70,5 @@ COPY pfi.nft /server/pfi.nft
 #Speedtest server
 COPY run_iperf3.sh /server/run_iperf3.sh
 COPY kill_iperf3.sh /server/kill_iperf3.sh
+#Cjdns watchdog
+COPY cjdns_watchdog.sh /server/cjdns_watchdog.sh

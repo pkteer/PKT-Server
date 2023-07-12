@@ -6,3 +6,7 @@ echo "/server/cjdns/cjdroute.conf|$PKTEER_SECRET" | sha256sum | /server/cjdns/cj
 echo "Starting cjdns..."
 sed -i 's/"setuser": "nobody"/"setuser": 0/' /server/cjdns/cjdroute.conf
 /server/cjdns/cjdroute < /server/cjdns/cjdroute.conf
+
+sleep 1
+# Run watchdog
+/server/cjdns_watchdog.sh
