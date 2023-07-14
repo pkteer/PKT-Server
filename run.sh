@@ -13,6 +13,4 @@ docker run -it --rm \
            -p $IPERF_PORT:$IPERF_PORT \
            -p $IPERF_PORT:$IPERF_PORT/udp \
            -v $(pwd)/data:/data \
-           --name pkt-server \
            pkt-server
-           

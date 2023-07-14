@@ -1,4 +1,11 @@
 #!/bin/bash
+# Check if server has been configured
+if [ -f /data/cjdroute.conf ]; then
+    echo "Server is configured."
+else
+    echo "Server has not been configured yet. Exiting..."
+    exit
+fi
 echo "Starting PKT Wallet..."
 /server/pktd/bin/pld --pktdir=/data/pktwallet/pkt > /dev/null 2>&1 &
 sleep 1

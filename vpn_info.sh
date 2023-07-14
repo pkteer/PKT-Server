@@ -1,16 +1,32 @@
 #!/bin/bash
 # Print out VPN Exit info
 publicip=$(curl http://v4.vpn.anode.co/api/0.3/vpn/clients/ipaddress/ 2>/dev/null | jq -r .ipAddress)
-publickey=$(cat /data/cjdroute.conf | jq -r .publicKey)
-cjdnsip=$(cat /data/cjdroute.conf | jq -r .ipv6)
-login=$(cat /data/cjdroute.conf | jq -r .authorizedPasswords[0].user)
-password=$(cat /data/cjdroute.conf | jq -r .authorizedPasswords[0].password)
+publickey=$(cat ./data/cjdroute.conf | jq -r .publicKey)
+cjdnsip=$(cat ./data/cjdroute.conf | jq -r .ipv6)
+login=$(cat ./data/cjdroute.conf | jq -r .authorizedPasswords[0].user)
+password=$(cat ./data/cjdroute.conf | jq -r .authorizedPasswords[0].password)
 
 CJDNS_PORT=$(cat /data/env/port)
 PKTEER_NAME=$(cat /data/env/vpnname)
+if [ -z "$PKTEER_NAME" ]; then
+    echo "Enter VPN Server name:"
+    read PKTEER_NAME
+fi
 PKTEER_COUNTRY=$(cat /data/env/vpncountry)
+if [ -z "$PKTEER_COUNTRY" ]; then
+    echo "Enter VPN Server country:"
+    read PKTEER_COUNTRY
+fi
 PKTEER_CHAT_USERNAME=$(cat /data/env/vpnusername)
+if [ -z "$PKTEER_CHAT_USERNAME" ]; then
+    echo "Enter PKT.chat username:"
+    read PKTEER_CHAT_USERNAME
+fi
 PKTEER_PREMIUM_PRICE=$(cat /data/env/vpnprice)
+if [ -z "$PKTEER_PREMIUM_PRICE" ]; then
+    echo "Enter VPN Server price:"
+    read PKTEER_PREMIUM_PRICE
+fi
 
 get_country_code() {
     local country_name="$1"
