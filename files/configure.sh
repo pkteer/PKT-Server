@@ -1,5 +1,10 @@
 #!/bin/bash
-
+if [ -f /data/env/port ]; then
+    CJDNS_PORT=$(cat data/env/port)
+else 
+    echo "Enter server's port:"
+    read CJDNS_PORT
+fi
 # Launching pld
 echo "Starting PKT Wallet..."
 /server/pktd/bin/pld --pktdir=/data/pktwallet/pkt > /dev/null 2>&1 &
@@ -21,11 +26,6 @@ while [ -z "$PKTEER_SECRET" ]; do
         echo "PKTEER_SECRET is null. Retrying..."
     fi
 done
-
-# Get port
-if [ -f /serer/data/env/port ]; then
-    CJDNS_PORT=$(cat data/env/port)
-fi
 
 # Check for existing cjdroute.conf
 if [ -f /data/cjdroute.conf ]; then
