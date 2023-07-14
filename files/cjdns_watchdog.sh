@@ -11,11 +11,12 @@ while true; do
         /server/cjdns/cjdroute < /server/cjdns/cjdroute.conf
         # If anodevpnserver is running restart it
         if pidof node; then
+            echo "anodevpn-server is running, restarting..."
             pkill node
             node /server/anodevpn-server/index.js &
         fi
     else
-        echo "cjdns is running."
+        echo "$(date): cjdns is running."
     fi
     sleep 5
 done

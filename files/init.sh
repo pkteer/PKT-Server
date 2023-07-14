@@ -31,11 +31,9 @@ echo "Initializing nftables..."
 # Run nodejs anodevpn-server
 echo "Starting anodevpn-server..."
 node /server/anodevpn-server/index.js &
-
+echo "Starting premium_handler..."
 python3 /server/premium_handler.py &
 /server/run_iperf3.sh &
 /server/kill_iperf3.sh &
 
-/server/cjdns_watchdog.sh &
-
-/entrypoint.sh
+/server/cjdns_watchdog.sh 
