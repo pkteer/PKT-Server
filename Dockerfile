@@ -58,4 +58,13 @@ COPY files/* /server
 RUN mv /server/configure.sh /configure.sh
 RUN mkdir /data
 
+# Cleanup: Delete cjdns and rustup after build
+RUN cp /server/cjdns/cjdroute /server/cjdroute
+RUN cp -r /server/cjdns/tools /server/tools
+RUN rm -rf /server/cjdns
+RUN mkdir /server/cjdns
+RUN mv /server/cjdroute /server/cjdns/cjdroute
+RUN mv /server/tools /server/cjdns/tools
+RUN rustup self uninstall -y
+
 CMD ["/bin/bash", "/server/init.sh"]
