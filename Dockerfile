@@ -55,4 +55,4 @@ RUN apt-get install -y iperf3
 WORKDIR /server
 RUN cd /server
 COPY files/* /server
-RUN mkdir /server/data
+RUN mkdir /data

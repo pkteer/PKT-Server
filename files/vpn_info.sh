@@ -1,16 +1,16 @@
 #!/bin/bash
 # Print out VPN Exit info
 publicip=$(curl http://v4.vpn.anode.co/api/0.3/vpn/clients/ipaddress/ 2>/dev/null | jq -r .ipAddress)
-publickey=$(cat /server/cjdns/cjdroute.conf | jq -r .publicKey)
-cjdnsip=$(cat /server/cjdns/cjdroute.conf | jq -r .ipv6)
-login=$(cat /server/cjdns/cjdroute.conf | jq -r .authorizedPasswords[0].user)
-password=$(cat /server/cjdns/cjdroute.conf | jq -r .authorizedPasswords[0].password)
+publickey=$(cat /data/cjdroute.conf | jq -r .publicKey)
+cjdnsip=$(cat /data/cjdroute.conf | jq -r .ipv6)
+login=$(cat /data/cjdroute.conf | jq -r .authorizedPasswords[0].user)
+password=$(cat /data/cjdroute.conf | jq -r .authorizedPasswords[0].password)
 
-CJDNS_PORT=$(cat /server/data/env/port)
-PKTEER_NAME=$(cat /server/data/env/vpnname)
-PKTEER_COUNTRY=$(cat /server/data/env/vpncountry)
-PKTEER_CHAT_USERNAME=$(cat /server/data/env/vpnusername)
-PKTEER_PREMIUM_PRICE=$(cat /server/data/env/vpnprice)
+CJDNS_PORT=$(cat /data/env/port)
+PKTEER_NAME=$(cat /data/env/vpnname)
+PKTEER_COUNTRY=$(cat /data/env/vpncountry)
+PKTEER_CHAT_USERNAME=$(cat /data/env/vpnusername)
+PKTEER_PREMIUM_PRICE=$(cat /data/env/vpnprice)
 
 get_country_code() {
     local country_name="$1"
