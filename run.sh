@@ -1,5 +1,5 @@
 #!/bin/bash
-CJDNS_PORT=$(cat /home/d/PKT-Server/data/env/port)
+CJDNS_PORT=$(cat ./data/env/port)
 IPERF_PORT=5281
 
 docker run -it --rm \
