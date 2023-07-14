@@ -4,6 +4,7 @@ if [ -f /data/env/port ]; then
 else 
     echo "Enter server's port:"
     read CJDNS_PORT
+    mkdir /data/env
     echo $CJDNS_PORT > /data/env/port
 fi
 # Launching pld
