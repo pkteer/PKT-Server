@@ -137,7 +137,7 @@ def is_valid_payment(address: str) -> bool:
         premium_price: int = int(str(os.environ.get('PKTEER_PREMIUM_PRICE')))
         # Check balance for the address
         balance = get_balance(address)
-        if (balance is not 0):
+        if (balance != 0):
             if balance < premium_price:
                 logging.info("Client paid %d, less than the premium price of %d", balance, premium_price)
                 return False
