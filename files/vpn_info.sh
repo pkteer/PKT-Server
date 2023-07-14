@@ -6,6 +6,12 @@ cjdnsip=$(cat /server/cjdns/cjdroute.conf | jq -r .ipv6)
 login=$(cat /server/cjdns/cjdroute.conf | jq -r .authorizedPasswords[0].user)
 password=$(cat /server/cjdns/cjdroute.conf | jq -r .authorizedPasswords[0].password)
 
+CJDNS_PORT=$(cat /server/data/env/port)
+PKTEER_NAME=$(cat /server/data/env/vpnname)
+PKTEER_COUNTRY=$(cat /server/data/env/vpncountry)
+PKTEER_CHAT_USERNAME=$(cat /server/data/env/vpnusername)
+PKTEER_PREMIUM_PRICE=$(cat /server/data/env/vpnprice)
+
 get_country_code() {
     local country_name="$1"
     local country_code=$(curl -s "https://restcountries.com/v2/name/$country_name?fullText=true" | jq -r '.[0].alpha2Code')
@@ -23,13 +29,13 @@ echo "Country: $PKTEER_COUNTRY"
 echo "Public key: $publickey"
 echo "Cjdns public ip: $cjdnsip"
 echo "Public ip: $publicip"
-echo "Cjdns public port: $ANODE_SERVER_PORT"
-echo "Authorization server url: http://$publicip:$ANODE_SERVER_PORT"
+echo "Cjdns public port: $CJDNS_PORT"
+echo "Authorization server url: http://$publicip:$CJDNS_PORT"
 echo "login: $login"
 echo "password: $password"
 echo "PKT.chat username: $PKTEER_CHAT_USERNAME"
 echo "-----------------------------------------------------"
-curl -X POST -H 'content-type: application/json' -d '{"text":"Adding VPN Server: **'"$PKTEER_NAME"'**\n    Country: '"$PKTEER_COUNTRY"'\n    Public key: '"$publickey"'\n    Cjdns public ip: '"$cjdnsip"'\n    Cjdns public port: '$ANODE_SERVER_PORT'\n    Public ip: '"$publicip"'\n    Authorization server: http://'$publicip':'$ANODE_SERVER_PORT'\n    login: '"$login"'\n    password: '"$password"'\n    username: @'$PKTEER_CHAT_USERNAME'\n    cost: '$PKTEER_PREMIUM_PRICE'"}' https://pkt.chat/hooks/5tx5ebhuzpgh3dk5ys9rpt5yxr
+curl -X POST -H 'content-type: application/json' -d '{"text":"Adding VPN Server: **'"$PKTEER_NAME"'**\n    Country: '"$PKTEER_COUNTRY"'\n    Public key: '"$publickey"'\n    Cjdns public ip: '"$cjdnsip"'\n    Cjdns public port: '$CJDNS_PORT'\n    Public ip: '"$publicip"'\n    Authorization server: http://'$publicip':'$CJDNS_PORT'\n    login: '"$login"'\n    password: '"$password"'\n    username: @'$PKTEER_CHAT_USERNAME'\n    cost: '$PKTEER_PREMIUM_PRICE'"}' https://pkt.chat/hooks/5tx5ebhuzpgh3dk5ys9rpt5yxr
 
 echo "Getting country code..."
 country_code=$(get_country_code "$PKTEER_COUNTRY")
@@ -40,8 +46,8 @@ output=$(curl -X POST -H "Content-Type: application/json" -d '{
         "public_key":"'$publickey'",
         "cjdns_public_ip":"'$cjdnsip'",
         "public_ip":"'$publicip'",
-        "cjdns_public_port": '$ANODE_SERVER_PORT',
-        "authorization_server_url":"http://'$publicip':'$ANODE_SERVER_PORT'",
+        "cjdns_public_port": '$CJDNS_PORT',
+        "authorization_server_url":"http://'$publicip':'$CJDNS_PORT'",
         "cost": '$PKTEER_PREMIUM_PRICE'
         }, 
         "peeringline": {

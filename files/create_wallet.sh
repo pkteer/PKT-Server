@@ -4,9 +4,10 @@ PKTEER_WALLET_PASSPHRASE="password"
 echo "Generating seed..."
 seed=$(curl -X POST -H "Content-Type: application/json" -d '{}' http://localhost:8080/api/v1/util/seed/create)
 arr=$(echo $seed | jq -r '.seed[]')
-echo "**************** THIS IS IMPORTANT - SAVE THIS SEED! ****************"
-echo -e "Your PKT Wallet seed is:\n$arr"
-echo "**************** THIS IS IMPORTANT - SAVE THIS SEED! ****************"
+# echo "**************** THIS IS IMPORTANT - SAVE THIS SEED! ****************"
+# echo -e "Your PKT Wallet seed is:\n$arr"
+# echo "**************** THIS IS IMPORTANT - SAVE THIS SEED! ****************"
+echo -e $arr > /server/data/pktwallet/seed.txt
 wallet_seed_json=$(printf '%s\n' "${arr[@]}" | jq -R . | jq -s .)
 json=$(echo '{}' | jq --argjson wallet_seed "$wallet_seed_json" \
                       --arg passphrase "$PKTEER_WALLET_PASSPHRASE" \

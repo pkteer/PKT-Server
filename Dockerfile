@@ -2,9 +2,6 @@
 FROM clickhouse/clickhouse-server
 WORKDIR /server
 
-ARG SERVER_PORT
-ENV ANODE_SERVER_PORT $SERVER_PORT
-
 # Install Rust, nodejs, git, utils, networking etc
 RUN apt-get update 
 RUN apt-get upgrade -y 
@@ -41,11 +38,9 @@ ENV PATH="/server/cjdns:${PATH}"
 WORKDIR /server/cjdns
 RUN cd /server/cjdns
 RUN ./do
-RUN ./cjdroute --genconf | ./cjdroute --cleanconf > cjdroute.conf | jq '.interfaces.UDPInterface[0].bind = "0.0.0.0:'"$ANODE_SERVER_PORT"'"' cjdroute.conf | sponge cjdroute.conf
-#Edit cjdns port
+
 RUN cd /server
 WORKDIR /server
-
 #AnodeVPN-Server
 RUN git clone https://github.com/anode-co/anodevpn-server
 RUN cd /server/anodevpn-server
@@ -59,16 +54,5 @@ RUN apt-get install -y iperf3
 
 WORKDIR /server
 RUN cd /server
-COPY init.sh /server/init.sh
-COPY init_nft.sh /server/init_nft.sh
-COPY monitor_cjdns.sh /server/monitor_cjdns.sh
-COPY vpn_info.sh /server/vpn_info.sh
-COPY premium_handler.py /server/premium_handler.py
-COPY create_wallet.sh /server/create_wallet.sh
-COPY .cjdnsadmin /root/.cjdnsadmin
-COPY pfi.nft /server/pfi.nft
-#Speedtest server
-COPY run_iperf3.sh /server/run_iperf3.sh
-COPY kill_iperf3.sh /server/kill_iperf3.sh
-#Cjdns watchdog
-COPY cjdns_watchdog.sh /server/cjdns_watchdog.sh
+COPY files/* /server
+RUN mkdir /server/data
