@@ -1,6 +1,6 @@
 #!/bin/bash
 if [ -f /data/env/port ]; then
-    CJDNS_PORT=$(cat data/env/port)
+    CJDNS_PORT=$(cat /data/env/port)
 else 
     echo "Enter server's port:"
     read CJDNS_PORT
