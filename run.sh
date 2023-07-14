@@ -15,5 +15,4 @@ docker run -it --rm \
            -v $(pwd)/data:/data \
            --name pkt-server \
            pkt-server
-
-docker exec pkt-server /server/init.sh
+           

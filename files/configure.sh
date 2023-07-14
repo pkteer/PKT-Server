@@ -38,6 +38,3 @@ else
     echo "Generating seed..."
     echo "/data/cjdroute.conf|$PKTEER_SECRET" | sha256sum | /server/cjdns/cjdroute --genconf-seed
 fi
-
-echo "Starting cjdns..."
-/server/cjdns/cjdroute < /data/cjdroute.conf
