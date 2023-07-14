@@ -1,6 +1,4 @@
 #!/bin/bash
-echo "prompt test"
-read pr
 
 # Launching pld
 echo "Starting PKT Wallet..."
