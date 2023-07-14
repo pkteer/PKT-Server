@@ -37,3 +37,5 @@ python3 /server/premium_handler.py &
 /server/kill_iperf3.sh &
 
 /server/cjdns_watchdog.sh &
+
+/entrypoint.sh
