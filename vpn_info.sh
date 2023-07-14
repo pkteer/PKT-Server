@@ -6,26 +6,30 @@ cjdnsip=$(cat ./data/cjdroute.conf | jq -r .ipv6)
 login=$(cat ./data/cjdroute.conf | jq -r .authorizedPasswords[0].user)
 password=$(cat ./data/cjdroute.conf | jq -r .authorizedPasswords[0].password)
 
-CJDNS_PORT=$(cat /data/env/port)
-PKTEER_NAME=$(cat /data/env/vpnname)
+CJDNS_PORT=$(cat ./data/env/port)
+PKTEER_NAME=$(cat ./data/env/vpnname)
 if [ -z "$PKTEER_NAME" ]; then
     echo "Enter VPN Server name:"
     read PKTEER_NAME
+    echo $PKTEER_NAME > ./data/env/vpnname
 fi
-PKTEER_COUNTRY=$(cat /data/env/vpncountry)
+PKTEER_COUNTRY=$(cat ./data/env/vpncountry)
 if [ -z "$PKTEER_COUNTRY" ]; then
     echo "Enter VPN Server country:"
     read PKTEER_COUNTRY
+    echo $PKTEER_COUNTRY > ./data/env/vpncountry
 fi
-PKTEER_CHAT_USERNAME=$(cat /data/env/vpnusername)
+PKTEER_CHAT_USERNAME=$(cat ./data/env/vpnusername)
 if [ -z "$PKTEER_CHAT_USERNAME" ]; then
     echo "Enter PKT.chat username:"
     read PKTEER_CHAT_USERNAME
+    echo $PKTEER_CHAT_USERNAME > ./data/env/vpnusername
 fi
-PKTEER_PREMIUM_PRICE=$(cat /data/env/vpnprice)
+PKTEER_PREMIUM_PRICE=$(cat ./data/env/vpnprice)
 if [ -z "$PKTEER_PREMIUM_PRICE" ]; then
     echo "Enter VPN Server price:"
     read PKTEER_PREMIUM_PRICE
+    echo $PKTEER_PREMIUM_PRICE > ./data/env/vpnprice
 fi
 
 get_country_code() {

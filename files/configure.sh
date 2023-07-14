@@ -4,6 +4,7 @@ if [ -f /data/env/port ]; then
 else 
     echo "Enter server's port:"
     read CJDNS_PORT
+    echo $CJDNS_PORT > data/env/port
 fi
 # Launching pld
 echo "Starting PKT Wallet..."
