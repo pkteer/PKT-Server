@@ -5,35 +5,35 @@ publickey=$(cat ./data/cjdroute.conf | jq -r .publicKey)
 cjdnsip=$(cat ./data/cjdroute.conf | jq -r .ipv6)
 login=$(cat ./data/cjdroute.conf | jq -r .authorizedPasswords[0].user)
 password=$(cat ./data/cjdroute.conf | jq -r .authorizedPasswords[0].password)
-if [ -f /data/env/port ]; then
+if [ -f ./data/env/port ]; then
     CJDNS_PORT=$(cat ./data/env/port)
 else
     echo "Server has not been configured. Exiting..."
     echo "RUN: docker run -it --rm -v $(pwd)/data:/data pkt-server /configure.sh"
     exit
 fi
-if [ -f /data/env/vpnname ]; then
+if [ -f ./data/env/vpnname ]; then
     PKTEER_NAME=$(cat ./data/env/vpnname)
 else
     echo "Enter VPN Server name:"
     read PKTEER_NAME
     echo $PKTEER_NAME > ./data/env/vpnname
 fi
-if [ -f /data/env/vpncountry ]; then
+if [ -f ./data/env/vpncountry ]; then
     PKTEER_COUNTRY=$(cat ./data/env/vpncountry)
 else
     echo "Enter VPN Server country:"
     read PKTEER_COUNTRY
     echo $PKTEER_COUNTRY > ./data/env/vpncountry
 fi
-if [ -f /data/env/vpnusername ]; then
+if [ -f ./data/env/vpnusername ]; then
     PKTEER_CHAT_USERNAME=$(cat ./data/env/vpnusername)
 else
     echo "Enter PKT.chat username:"
     read PKTEER_CHAT_USERNAME
     echo $PKTEER_CHAT_USERNAME > ./data/env/vpnusername
 fi
-if [ -f /data/env/vpnprice ]; then
+if [ -f ./data/env/vpnprice ]; then
     PKTEER_PREMIUM_PRICE=$(cat ./data/env/vpnprice)
 else
     echo "Enter VPN Server price:"
