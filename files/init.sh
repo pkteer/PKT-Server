@@ -30,7 +30,7 @@ echo "Initializing nftables..."
 /server/init_nft.sh
 # Run nodejs anodevpn-server
 export ANODE_SERVER_PORT=$(cat /data/env/port)
-echo "Starting anodevpn-server..."
+echo "Starting anodevpn-server with port $ANODE_SERVER_PORT"
 node /server/anodevpn-server/index.js &
 echo "Starting premium_handler..."
 python3 /server/premium_handler.py &
