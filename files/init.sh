@@ -29,8 +29,6 @@ route add -net 10.0.0.0/8 tun0
 echo "Initializing nftables..."
 /server/init_nft.sh
 
-cp /server/run.sh /data/run.sh
-rp /server/vpn_info.sh /data/vpn_info.sh
 # Run nodejs anodevpn-server
 export ANODE_SERVER_PORT=$(cat /data/env/port)
 echo "Starting anodevpn-server with port $ANODE_SERVER_PORT"
