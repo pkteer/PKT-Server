@@ -41,5 +41,5 @@ else
     echo "/data/cjdroute.conf|$PKTEER_SECRET" | sha256sum | /server/cjdns/cjdroute --genconf-seed
 fi
 
-cp /server/run.sh /data/run.sh
-cp /server/vpn_info.sh /data/vpn_info.sh
+cp /server/start_vpn.sh /data/start_vpn.sh
+cp /server/publish_vpn.sh /data/publish_vpn.sh
