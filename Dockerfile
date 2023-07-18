@@ -55,7 +55,7 @@ COPY --from=builder /server/anodevpn-server /server/anodevpn-server
 
 # Install packages
 RUN apt-get update 
-RUN apt-get install -y --no-install-recommends curl nodejs jq iptables nftables iperf3 iproute2 net-tools psmisc
+RUN apt-get install -y --no-install-recommends curl nodejs jq iptables nftables iperf3 iproute2 net-tools psmisc python3.9
 
 RUN cd /server
 COPY files/* /server
