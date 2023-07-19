@@ -10,7 +10,7 @@ echo "Starting PKT Wallet..."
 /server/pktd/bin/pld --pktdir=/data/pktwallet/pkt > /dev/null 2>&1 &
 sleep 1
 # Check if wallet already exists
-if [ -f /data/.pktwallet/wallet.db ]; then
+if [ -f /data/pktwallet/pkt/wallet.db ]; then
     echo "wallet.db exists. Skipping wallet creation..."
     # unlock wallet
     curl -X POST -H "Content-Type: application/json" -d '{"wallet_passphrase":"password"}' http://localhost:8080/api/v1/wallet/unlock
