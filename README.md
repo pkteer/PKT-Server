@@ -19,6 +19,7 @@ The configure process will create:
 * a cjdroute.conf at data/cjdroute.conf
 * PKT wallet at data/pktwallet/pkt/wallet.db
 * store the wallet's seed phrase at data/pktwallet/pkt/seed.txt
+
 **NOTE**: Make sure to safely store your seed phrase in order to be able to import your wallet on your computer. And delete the seed.txt file after.
 
 3. Run the server by running the following commands:
