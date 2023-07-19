@@ -1,6 +1,6 @@
 #!/bin/sh
 DEVICE="tun0"
-cexec="/server/cjdns/contrib/python/cexec"
+cexec="/server/cjdns/tools/cexec"
 lsLimitFree=1mbit
 lsLimitPaid=950mbit
 
