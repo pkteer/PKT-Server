@@ -31,6 +31,7 @@ echo "Initializing nftables..."
 
 # Run nodejs anodevpn-server
 export ANODE_SERVER_PORT=$(cat /data/env/port)
+export PKTEER_PREMIUM_PRICE=$(cat /data/env/vpnprice)
 echo "Starting anodevpn-server with port $ANODE_SERVER_PORT"
 node /server/anodevpn-server/index.js &
 echo "Starting premium_handler..."
