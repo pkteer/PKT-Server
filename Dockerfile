@@ -1,20 +1,12 @@
 # support_server docker image for VPN exit server
-FROM clickhouse/clickhouse-server
+FROM clickhouse/clickhouse-server as builder
 WORKDIR /server
-
-ARG SERVER_PORT
-ENV ANODE_SERVER_PORT $SERVER_PORT
 
 # Install Rust, nodejs, git, utils, networking etc
 RUN apt-get update 
-RUN apt-get upgrade -y 
-RUN apt-get install -y curl build-essential 
+RUN apt-get install -y --no-install-recommends curl build-essential git nodejs npm python3.9 python3-pip python2 jq
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
-
-RUN apt-get install -y nodejs git npm jq moreutils net-tools iputils-ping iptables iproute2 psmisc nftables python2
-RUN apt-get install -y python3.9 python3-pip
-RUN pip3 install requests
 
 # Go
 WORKDIR /server
@@ -35,40 +27,40 @@ RUN ./do
 #Cjdns
 WORKDIR /server
 RUN cd /server
-RUN apt-get install -y --no-install-recommends python3.9
 RUN git clone https://github.com/cjdelisle/cjdns.git
 ENV PATH="/server/cjdns:${PATH}"
 WORKDIR /server/cjdns
 RUN cd /server/cjdns
 RUN ./do
-RUN ./cjdroute --genconf | ./cjdroute --cleanconf > cjdroute.conf | jq '.interfaces.UDPInterface[0].bind = "0.0.0.0:'"$ANODE_SERVER_PORT"'"' cjdroute.conf | sponge cjdroute.conf
-#Edit cjdns port
-RUN cd /server
-WORKDIR /server
+RUN rm -rf /server/cjdns/target
 
 #AnodeVPN-Server
+WORKDIR /server
+RUN cd /server
 RUN git clone https://github.com/anode-co/anodevpn-server
 RUN cd /server/anodevpn-server
 WORKDIR /server/anodevpn-server
 RUN git pull
 RUN npm install
 RUN npm install proper-lockfile
+RUN npm install nthen
 RUN cat config.example.js | sed "s/dryrun: true/dryrun: false/" > config.js
-#Speedtest server
-RUN apt-get install -y iperf3
 
+FROM ubuntu:22.04
 WORKDIR /server
+# Copy cjdns and pktd 
+COPY --from=builder /server/cjdns /server/cjdns
+COPY --from=builder /server/pktd /server/pktd
+COPY --from=builder /server/anodevpn-server /server/anodevpn-server
+
+# Install packages
+RUN apt-get update 
+RUN apt-get install -y --no-install-recommends curl nodejs jq iptables nftables iperf3 iproute2 net-tools psmisc python3.9 python3-pip moreutils
+RUN pip3 install requests
+
 RUN cd /server
-COPY init.sh /server/init.sh
-COPY init_nft.sh /server/init_nft.sh
-COPY monitor_cjdns.sh /server/monitor_cjdns.sh
-COPY vpn_info.sh /server/vpn_info.sh
-COPY premium_handler.py /server/premium_handler.py
-COPY create_wallet.sh /server/create_wallet.sh
-COPY .cjdnsadmin /root/.cjdnsadmin
-COPY pfi.nft /server/pfi.nft
-#Speedtest server
-COPY run_iperf3.sh /server/run_iperf3.sh
-COPY kill_iperf3.sh /server/kill_iperf3.sh
-#Cjdns watchdog
-COPY cjdns_watchdog.sh /server/cjdns_watchdog.sh
+COPY files/* /server
+RUN mv /server/configure.sh /configure.sh
+RUN mkdir /data
+
+CMD ["/bin/bash", "/server/init.sh"]
