@@ -48,6 +48,7 @@ RUN npm install http-proxy
 RUN cat config.example.js | sed "s/dryrun: true/dryrun: false/" > config.js
 
 # Prometheus Node Exporter
+WORKDIR /server
 RUN cd /server
 RUN wget https://github.com/prometheus/node_exporter/releases/download/v1.6.1/node_exporter-1.6.1.linux-amd64.tar.gz
 RUN tar -xvf node_exporter-1.6.1.linux-amd64.tar.gz
@@ -66,7 +67,6 @@ RUN apt-get install -y --no-install-recommends curl nodejs jq iptables nftables 
 RUN pip3 install requests
 
 RUN cd /server
-RUN mkdir node_exporter
 COPY files/* /server
 RUN mv /server/configure.sh /configure.sh
 RUN mkdir /data
