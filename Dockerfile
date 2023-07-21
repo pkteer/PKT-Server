@@ -48,7 +48,9 @@ RUN npm install http-proxy
 RUN cat config.example.js | sed "s/dryrun: true/dryrun: false/" > config.js
 
 # Prometheus Node Exporter
+RUN cd /server
 RUN wget https://github.com/prometheus/node_exporter/releases/download/v1.6.1/node_exporter-1.6.1.linux-amd64.tar.gz
+RUN tar -xvf node_exporter-1.6.1.linux-amd64.tar.gz
 
 FROM ubuntu:22.04
 WORKDIR /server
@@ -56,7 +58,7 @@ WORKDIR /server
 COPY --from=builder /server/cjdns /server/cjdns
 COPY --from=builder /server/pktd /server/pktd
 COPY --from=builder /server/anodevpn-server /server/anodevpn-server
-COPY --from=builder /server/node_exporter-1.6.1.linux-amd64.tar.gz /server
+COPY --from=builder /server/node_exporter-1.6.1.linux-amd64 /server/node_exporter
 
 # Install packages
 RUN apt-get update 
