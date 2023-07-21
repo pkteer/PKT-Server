@@ -18,4 +18,4 @@ docker run -it --rm \
         -p 5281:5281 \
         -p 5281:5281/udp \
         -v $(pwd):/data \
-        dimitris2023/pkt-server
+        pkteer/pkt-server

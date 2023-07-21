@@ -11,7 +11,7 @@ if [ -f ./env/port ]; then
     CJDNS_PORT=$(cat ./env/port)
 else
     echo "Server has not been configured. Exiting..."
-    echo "RUN: docker run -it --rm -v $(pwd)/vpn_data:/data dimitris2023/pkt-server /configure.sh"
+    echo "RUN: docker run -it --rm -v $(pwd)/vpn_data:/data pkteer/pkt-server /configure.sh"
     exit
 fi
 if [ -f ./env/vpnname ]; then

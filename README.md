@@ -11,7 +11,7 @@ This should help you to easily set up an Anode VPN Exit using cjdns.
 
 2. Configure the server by running the following command:
 
-```docker run -it --rm -v $(pwd)/vpn_data:/data dimitris2023/pkt-server /configure.sh```
+```docker run -it --rm -v $(pwd)/vpn_data:/data pkteer/pkt-server /configure.sh```
 
 It will ask you for which port to use, select a port that is not used by any other service on your machine and that is publicly accessible, use port forwarding if necessary.
 
