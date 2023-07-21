@@ -57,7 +57,7 @@ WORKDIR /server
 COPY --from=builder /server/cjdns /server/cjdns
 COPY --from=builder /server/pktd /server/pktd
 COPY --from=builder /server/anodevpn-server /server/anodevpn-server
-COPY --from=builder /server/node_exporter-1.6.1.linux-amd64/node_exporter /server/node_exporter
+COPY --from=builder /server/node_exporter-1.6.1.linux-amd64 /server
 
 # Install packages
 RUN apt-get update 
