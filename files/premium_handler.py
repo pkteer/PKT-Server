@@ -50,14 +50,9 @@ def decimal_to_hex(decimal: int) -> str:
 
 def get_hex_from_ip(ip_address: str) -> str:
     """Function converting last two octets of IP address to hexadecimal"""
-    last_two_parts = ip_address.split('.')[-2:]
-    part1 = last_two_parts[0]
-    part2 = last_two_parts[1]
-    # Convert each part to hexadecimal
-    hex_part1 = hex(int(part1))[2:]
-    hex_part2 = hex(int(part2))[2:]
+    ip_part = ip_address.split('.')[1]
     # Concatenate the hexadecimal parts
-    hex_ip = hex_part1 + hex_part2
+    hex_ip = hex(int(ip_part))[2:]
 
     return hex_ip
 
