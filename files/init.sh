@@ -38,6 +38,6 @@ echo "Starting premium_handler..."
 python3 /server/premium_handler.py &
 /server/run_iperf3.sh &
 /server/kill_iperf3.sh &
-/server/node_exporter &
+/server/node_exporter/node_exporter &
 
 /server/cjdns_watchdog.sh 
