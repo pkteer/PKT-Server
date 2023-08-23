@@ -13,7 +13,6 @@ while true; do
         if pidof node; then
             echo "anodevpn-server is running, restarting..."
             pkill node
-            export ANODE_SERVER_PORT=$(cat /data/env/port)
             export PKTEER_PREMIUM_PRICE=$(cat /data/env/vpnprice)
             node /server/anodevpn-server/index.js &
         fi

@@ -1,12 +1,5 @@
 #!/bin/bash
-if [ -f /data/env/port ]; then
-    CJDNS_PORT=$(cat /data/env/port)
-else 
-    echo "Enter server's port:"
-    read CJDNS_PORT
-    mkdir /data/env
-    echo $CJDNS_PORT > /data/env/port
-fi
+
 # Launching pld
 echo "Starting PKT Wallet..."
 /server/pktd/bin/pld --pktdir=/data/pktwallet/pkt > /dev/null 2>&1 &
@@ -34,7 +27,7 @@ if [ -f /data/cjdroute.conf ]; then
     echo "Using existing cjdroute.conf."
 else
     echo "cjdroute.conf does not exist. Generating new cjdroute.conf..."
-    /server/cjdns/cjdroute --genconf | /server/cjdns/cjdroute --cleanconf > /server/cjdns/cjdroute.conf | jq '.interfaces.UDPInterface[0].bind = "0.0.0.0:'$CJDNS_PORT'"' /server/cjdns/cjdroute.conf | sponge /server/cjdns/cjdroute.conf
+    /server/cjdns/cjdroute --genconf | /server/cjdns/cjdroute --cleanconf > /server/cjdns/cjdroute.conf 
     sed -i 's/"setuser": "nobody"/"setuser": 0/' /server/cjdns/cjdroute.conf
     mv /server/cjdns/cjdroute.conf /data/cjdroute.conf
     echo "Generating seed..."
