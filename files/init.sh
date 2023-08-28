@@ -45,7 +45,7 @@ if $pktd_flag; then
         pktd_cmd="$pktd_cmd --rpclisten=::"
     fi
     echo "Launching pktd with command: $pktd_cmd"
-    $pktd_cmd &
+    $pktd_cmd > /dev/null 2>&1 &
 fi
 
 echo "Setting up iptables rules"
@@ -63,7 +63,7 @@ if $vpn_flag; then
     # Run nodejs anodevpn-server
     export PKTEER_PREMIUM_PRICE=$(cat /data/env/vpnprice)
     echo "Starting anodevpn-server at default port 8099..."
-    node /server/anodevpn-server/index.js &
+    node /server/anodevpn-server/index.js > /dev/null 2>&1 &
     echo "Starting premium_handler..."
     python3 /server/premium_handler.py &
 fi
