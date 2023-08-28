@@ -6,7 +6,7 @@ else
     echo "Server has not been configured yet. Exiting..."
     exit
 fi
-mv config.json /data/config.json
+
 json_config=$(cat /data/config.json)
 cjdns_flag=$(echo "$json_config" | jq -r '.cjdns.enabled')
 vpn_flag=$(echo "$json_config" | jq -r '.cjdns.vpn_exit')
