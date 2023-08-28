@@ -8,6 +8,6 @@
     "public_rpc": true,
     "cjdns_rpc": true,
     "rpcuser": "x",
-    "rpcpass": "12344"
+    "rpcpass": ""
   }
 }
