@@ -37,15 +37,15 @@ if $pktd_flag; then
     public_rpc=$(echo "$json_config" | jq -r '.pktd.public_rpc')
     cjdns_rpc=$(echo "$json_config" | jq -r '.pktd.cjdns_rpc')
 
-    pktd_cmd="/server/pktd/bin/pktd --datadir=/data/pktd/ -u $rpcuser -P $rpcpass --maxpeers=2048"
+    pktd_cmd="/server/pktd/bin/pktd --homedir=/data/pktd -u $rpcuser -P $rpcpass --maxpeers=2048"
     if $public_rpc; then
         pktd_cmd="$pktd_cmd --rpclisten=0.0.0.0"
     fi
     if $cjdns_rpc; then
-        pktd_cmd="$pktd_cmd --rpclisten=:: "
+        pktd_cmd="$pktd_cmd --rpclisten=::"
     fi
     echo "Launching pktd with command: $pktd_cmd"
-    $pktd_cmd
+    $pktd_cmd &
 fi
 
 echo "Setting up iptables rules"
