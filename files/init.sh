@@ -37,7 +37,7 @@ if $pktd_flag; then
     public_rpc=$(echo "$json_config" | jq -r '.pktd.public_rpc')
     cjdns_rpc=$(echo "$json_config" | jq -r '.pktd.cjdns_rpc')
 
-    pktd_cmd="/server/pktd/bin/pktd --homedir=/data/pktd -u $rpcuser -P $rpcpass --maxpeers=2048"
+    pktd_cmd="/server/pktd/bin/pktd --homedir=/data/pktd --datadir=/data/pktd/data --logdir=/data/pktd/logs -u $rpcuser -P $rpcpass --maxpeers=2048"
     if $public_rpc; then
         pktd_cmd="$pktd_cmd --rpclisten=0.0.0.0"
     fi
