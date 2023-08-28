@@ -6,9 +6,16 @@ else
     echo "Server has not been configured yet. Exiting..."
     exit
 fi
+
+json_config=$(cat /data/config.json)
+cjdns_flag=$(echo "$json_config" | jq -r '.cjdns.enabled')
+vpn_flag=$(echo "$json_config" | jq -r '.cjdns.vpn_exit')
+pktd_flag=$(echo "$json_config" | jq -r '.pktd.enabled')
+
 echo "Starting PKT Wallet..."
 /server/pktd/bin/pld --pktdir=/data/pktwallet/pkt > /dev/null 2>&1 &
 sleep 1
+
 # Check if wallet already exists
 if [ -f /data/pktwallet/pkt/wallet.db ]; then
     echo "wallet.db exists. Skipping wallet creation..."
@@ -16,8 +23,30 @@ if [ -f /data/pktwallet/pkt/wallet.db ]; then
     curl -X POST -H "Content-Type: application/json" -d '{"wallet_passphrase":"password"}' http://localhost:8080/api/v1/wallet/unlock
 fi
 
-echo "Starting cjdns..."
-/server/cjdns/cjdroute < /data/cjdroute.conf
+if $cjdns_flag; then
+    echo "Starting cjdns..."
+    /server/cjdns/cjdroute < /data/cjdroute.conf
+else
+    echo "cjdns is disabled. Vpn server will not be started."
+    vpn_flag=false
+fi
+
+if $pktd_flag; then
+    rpcuser=$(echo "$json_config" | jq -r '.pktd.rpcuser')
+    rpcpass=$(echo "$json_config" | jq -r '.pktd.rpcpass')
+    public_rpc=$(echo "$json_config" | jq -r '.pktd.public_rpc')
+    cjdns_rpc=$(echo "$json_config" | jq -r '.pktd.cjdns_rpc')
+
+    pktd_cmd="/server/pktd/bin/pktd -u $rpcuser -P $rpcpass --maxpeers=2048"
+    if $public_rpc; then
+        pktd_cmd="$pktd_cmd --rpclisten=0.0.0.0"
+    fi
+    if $cjdns_rpc; then
+        pktd_cmd="$pktd_cmd --rpclisten=:: "
+    fi
+    echo "Launching pktd with command: $pktd_cmd"
+    $pktd_cmd
+fi
 
 echo "Setting up iptables rules"
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
@@ -29,14 +58,20 @@ route add -net 10.0.0.0/8 tun0
 echo "Initializing nftables..."
 /server/init_nft.sh
 
-# Run nodejs anodevpn-server
-export PKTEER_PREMIUM_PRICE=$(cat /data/env/vpnprice)
-echo "Starting anodevpn-server at default port 8099..."
-node /server/anodevpn-server/index.js &
-echo "Starting premium_handler..."
-python3 /server/premium_handler.py &
+if $vpn_flag; then
+    echo "Starting vpn server..."
+    # Run nodejs anodevpn-server
+    export PKTEER_PREMIUM_PRICE=$(cat /data/env/vpnprice)
+    echo "Starting anodevpn-server at default port 8099..."
+    node /server/anodevpn-server/index.js &
+    echo "Starting premium_handler..."
+    python3 /server/premium_handler.py &
+fi
+
 /server/run_iperf3.sh &
 /server/kill_iperf3.sh &
 /server/node_exporter/node_exporter &
 
-/server/cjdns_watchdog.sh 
+if $cjdns_flag; then
+    /server/cjdns_watchdog.sh 
+fi

@@ -17,5 +17,6 @@ docker run -it --rm \
         -p $CJDNS_PORT:$CJDNS_PORT/udp \
         -p 5281:5281 \
         -p 5281:5281/udp \
+        -p 64764:64764 \
         -v $(pwd):/data \
         pkteer/pkt-server

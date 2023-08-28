@@ -1,4 +1,52 @@
 #!/bin/bash
+no_vpn_flag=false
+cjdns_flag=true
+with_pktd_flag=false
+pktd_passwd=""
+pktd_user="x"
+
+# Read the existing config
+json_config=$(cat /data/config.json)
+pktd_passwd=$(echo "$json_config" | jq -r '.pktd.rpcpass')
+
+# Parse flags
+for arg in "$@"; do
+  case "$arg" in
+    --no-vpn)
+      no_vpn_flag=true
+      ;;
+    --with-pktd)
+      with_pktd_flag=true
+      ;;
+    --pktd-passwd=*)
+      with_pktd_flag=true
+      pktd_passwd="${arg#*=}"
+      ;;
+    *)
+      
+      ;;
+  esac
+done
+
+# Modify config file according to flags set
+if $no_vpn_flag; then
+    json_config=$(echo "$json_config" | jq '.cjdns.vpn_exit = false')
+else
+    json_config=$(echo "$json_config" | jq '.cjdns.vpn_exit = true')
+fi
+if $with_pktd_flag; then
+    json_config=$(echo "$json_config" | jq '.pktd.enabled = true')
+else
+    json_config=$(echo "$json_config" | jq '.pktd.enabled = false')
+fi
+if $with_pktd_flag && [ -z "$pktd_passwd" ]; then
+    pktd_passwd=$(head -c 20 /dev/urandom | md5sum | cut -d ' ' -f1 )
+fi
+json_config=$(echo "$json_config" | jq --arg pktd_passwd "$pktd_passwd" '.pktd.rpcpass = $pktd_passwd')
+json_config=$(echo "$json_config" | jq --arg pktd_user "$pktd_user" '.pktd.rpcuser = $pktd_user')
+
+# Save config file
+echo "$json_config" > /data/config.json
 
 # Launching pld
 echo "Starting PKT Wallet..."
@@ -34,5 +82,5 @@ else
     echo "/data/cjdroute.conf|$PKTEER_SECRET" | sha256sum | /server/cjdns/cjdroute --genconf-seed
 fi
 
-cp /server/start_vpn.sh /data/start_vpn.sh
+cp /server/start_vpn.sh /data/start.sh
 cp /server/publish_vpn.sh /data/publish_vpn.sh

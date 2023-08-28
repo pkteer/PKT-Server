@@ -1,0 +1,13 @@
+{
+  "cjdns": {
+    "enabled": true,
+    "vpn_exit": true
+  },
+  "pktd": {
+    "enabled": false,
+    "public_rpc": true,
+    "cjdns_rpc": true,
+    "rpcuser": "x",
+    "rpcpass": "12344"
+  }
+}
