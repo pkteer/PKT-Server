@@ -6,6 +6,7 @@ pktd_passwd=""
 pktd_user="x"
 
 # Read the existing config
+cp /server/config.json /data/config.json
 json_config=$(cat /data/config.json)
 pktd_passwd=$(echo "$json_config" | jq -r '.pktd.rpcpass')
 
@@ -82,6 +83,6 @@ else
     echo "/data/cjdroute.conf|$PKTEER_SECRET" | sha256sum | /server/cjdns/cjdroute --genconf-seed
 fi
 
-cp /server/config.json /data/config.json
+
 cp /server/start.sh /data/start.sh
 cp /server/publish_vpn.sh /data/publish_vpn.sh
