@@ -49,6 +49,15 @@ if $pktd_flag; then
 fi
 
 echo "Setting up iptables rules"
+# Allow cjdns admin access only from eth0
+cjdns_rpc_port=$(cat /data/cjdroute.conf | jq -r '.admin.bind' | cut -d ':' -f2)
+if [ -z "$cjdns_rpc_port" ]; then
+        cjdns_rpc_port=$(grep -A 5 "\"admin\":" /data/cjdroute.conf | grep -oP '"bind": "\K[^"]+' | cut -d ':' -f2)
+fi      
+if [[ "$cjdns_rpc_port" =~ ^[0-9]+$ ]]; then
+    iptables -A INPUT -i eth0 -p udp --dport $cjdns_rpc_port -j ACCEPT
+    iptables -A INPUT -p udp --dport $cjdns_rpc_port -j DROP
+fi
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 iptables -A FORWARD -i eth0 -o tun0 -m state --state RELATED,ESTABLISHED -j ACCEPT
 iptables -A FORWARD -i tun0 -o eth0 -j ACCEPT

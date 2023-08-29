@@ -40,7 +40,7 @@ if $with_pktd_flag; then
 else
     json_config=$(echo "$json_config" | jq '.pktd.enabled = false')
 fi
-if $with_pktd_flag && [ -z "$pktd_passwd" ]; then
+if [ -z "$pktd_passwd" ]; then
     pktd_passwd=$(head -c 20 /dev/urandom | md5sum | cut -d ' ' -f1 )
 fi
 json_config=$(echo "$json_config" | jq --arg pktd_passwd "$pktd_passwd" '.pktd.rpcpass = $pktd_passwd')

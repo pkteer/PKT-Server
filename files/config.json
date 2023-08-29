@@ -1,7 +1,8 @@
 {
   "cjdns": {
     "enabled": true,
-    "vpn_exit": true
+    "vpn_exit": true,
+    "expose_rpc": false
   },
   "pktd": {
     "enabled": false,
