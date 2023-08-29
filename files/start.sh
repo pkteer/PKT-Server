@@ -18,7 +18,9 @@ if [ "$cjdns_rpc" != "false" ]; then
         cjdns_rpc_port=$(cat cjdroute.conf | jq -r '.admin.bind' | cut -d ':' -f2)
         if [ -z "$cjdns_rpc_port" ]; then
                 cjdns_rpc_port=$(grep -A 5 "\"admin\":" cjdroute.conf | grep -oP '"bind": "\K[^"]+' | cut -d ':' -f2)
-        fi        
+        fi
+        cat cjdroute.conf | jq '.admin.bind = "0.0.0.0:11234"' cjdroute.conf > cjdroute.tmp
+        mv cjdroute.tmp cjdroute.conf
         echo "Exposing cjdns rpc port: $cjdns_rpc_port"
         docker run -it --rm \
         --log-driver 'local' \
@@ -31,7 +33,7 @@ if [ "$cjdns_rpc" != "false" ]; then
         -p 5201:5201 \
         -p 5201:5201/udp \
         -p 64764:64764 \
-        -p $cjdns_rpc_port:$cjdns_rpc_port/udp \
+        -p 127.0.0.1:$cjdns_rpc_port:$cjdns_rpc_port/udp \
         -v $(pwd):/data \
         pkteer/pkt-server
 else
