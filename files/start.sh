@@ -12,7 +12,7 @@ if [ -z "$CJDNS_PORT" ]; then
         CJDNS_PORT=$(grep -A 5 "\"UDPInterface\"" cjdroute.conf | grep -oP '"bind": "\K[^"]+' | cut -d ':' -f2)
 fi
 echo "Cjdns Port: $CJDNS_PORT"
-cjdns_rpc=$(echo "$json_config" | jq -r '.cjdns.expose_rpc')
+cjdns_rpc=$(cat config.json | jq -r '.cjdns.expose_rpc')
 # check if cjdns_rpc is not false
 if [ "$cjdns_rpc" != "false" ]; then
         cjdns_rpc_port=$(cat cjdroute.conf | jq -r '.admin.bind' | cut -d ':' -f2)
