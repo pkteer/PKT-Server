@@ -28,8 +28,8 @@ if [ "$cjdns_rpc" != "false" ]; then
         --sysctl net.ipv4.ip_forward=1 \
         -p 8099:8099 \
         -p $CJDNS_PORT:$CJDNS_PORT/udp \
-        -p 5281:5281 \
-        -p 5281:5281/udp \
+        -p 5201:5201 \
+        -p 5201:5201/udp \
         -p 64764:64764 \
         -p $cjdns_rpc_port:$cjdns_rpc_port/udp \
         -v $(pwd):/data \
@@ -43,8 +43,8 @@ docker run -it --rm \
         --sysctl net.ipv4.ip_forward=1 \
         -p 8099:8099 \
         -p $CJDNS_PORT:$CJDNS_PORT/udp \
-        -p 5281:5281 \
-        -p 5281:5281/udp \
+        -p 5201:5201 \
+        -p 5201:5201/udp \
         -p 64764:64764 \
         -v $(pwd):/data \
         pkteer/pkt-server
