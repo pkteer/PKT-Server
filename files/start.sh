@@ -34,7 +34,7 @@ if [ "$cjdns_rpc" != "false" ]; then
         -p $cjdns_rpc_port:$cjdns_rpc_port/udp \
         -v $(pwd):/data \
         pkteer/pkt-server
-elif
+else
 docker run -it --rm \
         --log-driver 'local' \
         --cap-add=NET_ADMIN \
