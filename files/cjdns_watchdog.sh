@@ -8,12 +8,17 @@ while true; do
             pkill -9 cjdroute
         fi
         # Launch cjdns
-        /server/cjdns/cjdroute < /server/cjdns/cjdroute.conf
+        /server/cjdns/cjdroute < /data/cjdroute.conf
         # If anodevpnserver is running restart it
         if pidof node; then
             echo "anodevpn-server is running, restarting..."
             pkill node
-            export PKTEER_PREMIUM_PRICE=$(cat /data/env/vpnprice)
+            if [ -e /data/env/vpnprice ]; then
+                export PKTEER_PREMIUM_PRICE=$(cat /data/env/vpnprice)
+            else
+                # Default price
+                export PKTEER_PREMIUM_PRICE=10
+            fi
             node /server/anodevpn-server/index.js &
         fi
     else

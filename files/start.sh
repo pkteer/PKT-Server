@@ -4,8 +4,11 @@ die() {
         echo "Error: $1"
         exit 100
 }
-command -v dirname || die "missing dirname"
+command -v jq > /dev/null || die "jq is required to run this program"
+command -v dirname > /dev/null || die "dirname is required to run this program"
+command -v docker > /dev/null || die "docker is required to run this program"
 cd $(dirname "$0")
+
 CJDNS_PORT=$(cat cjdroute.conf | jq -r '.interfaces.UDPInterface[0].bind' | sed 's/^.*://')
 if [ -z "$CJDNS_PORT" ]; then
         echo "cjdroute not clean, trying to extract cjdns port"

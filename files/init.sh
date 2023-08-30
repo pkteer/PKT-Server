@@ -69,9 +69,14 @@ echo "Initializing nftables..."
 if $vpn_flag; then
     echo "Starting vpn server..."
     # Run nodejs anodevpn-server
-    export PKTEER_PREMIUM_PRICE=$(cat /data/env/vpnprice)
+    if [ -e /data/env/vpnprice ]; then
+        export PKTEER_PREMIUM_PRICE=$(cat /data/env/vpnprice)
+    else
+        # Default price
+        export PKTEER_PREMIUM_PRICE=10
+    fi
     echo "Starting anodevpn-server at default port 8099..."
-    node /server/anodevpn-server/index.js > /dev/null 2>&1 &
+    node /server/anodevpn-server/index.js &
     echo "Starting premium_handler..."
     python3 /server/premium_handler.py &
 fi
