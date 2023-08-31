@@ -29,7 +29,11 @@ fi
 
 if $cjdns_flag; then
     echo "Starting cjdns..."
+    su - cjdns <<EOF
     /server/cjdns/cjdroute < /data/cjdroute.conf
+
+    EOF
+    
 else
     echo "cjdns is disabled. Vpn server will not be started."
     vpn_flag=false
