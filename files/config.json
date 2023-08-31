@@ -10,5 +10,6 @@
     "cjdns_rpc": true,
     "rpcuser": "x",
     "rpcpass": ""
-  }
+  },
+  "upper_limit_mbit": 1000 
 }

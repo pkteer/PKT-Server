@@ -74,6 +74,12 @@ done
 # Check for existing cjdroute.conf
 if [ -f /data/cjdroute.conf ]; then
     echo "Using existing cjdroute.conf."
+    if jq empty /data/cjdroute.conf >/dev/null 2>&1; then
+        echo "cjdroute.conf is valid JSON"
+    else
+        echo "cjdroute.conf is not valid JSON. Running --cleanconf..."
+        cat /data/cjdroute.conf | /server/cjdns/cjdroute --cleanconf > /data/cjdroute.conf     
+    fi
 else
     echo "cjdroute.conf does not exist. Generating new cjdroute.conf..."
     /server/cjdns/cjdroute --genconf | /server/cjdns/cjdroute --cleanconf > /server/cjdns/cjdroute.conf 
@@ -82,6 +88,8 @@ else
     echo "Generating seed..."
     echo "/data/cjdroute.conf|$PKTEER_SECRET" | sha256sum | /server/cjdns/cjdroute --genconf-seed
 fi
+# change user to cjdns
+jq '.security[0].setuser = "cjdns"' /data/cjdroute.conf > /data/cjdroute.conf.tmp && mv /data/cjdroute.conf.tmp /data/cjdroute.conf
 
 cp /server/start.sh /data/start.sh
 cp /server/publish_vpn.sh /data/publish_vpn.sh

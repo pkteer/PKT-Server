@@ -7,6 +7,10 @@ else
     exit
 fi
 
+# Create users
+adduser cjdns
+adduser speedtest
+
 json_config=$(cat /data/config.json)
 cjdns_flag=$(echo "$json_config" | jq -r '.cjdns.enabled')
 vpn_flag=$(echo "$json_config" | jq -r '.cjdns.vpn_exit')
@@ -81,8 +85,13 @@ if $vpn_flag; then
     python3 /server/premium_handler.py &
 fi
 
+# switch to speedtest user
+su speedtest
 /server/run_iperf3.sh &
 /server/kill_iperf3.sh &
+exit
+
+# switch back to root
 /server/node_exporter/node_exporter &
 
 if $cjdns_flag; then
