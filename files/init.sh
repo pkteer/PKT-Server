@@ -86,10 +86,11 @@ if $vpn_flag; then
 fi
 
 # switch to speedtest user
-su speedtest
+su - speedtest <<EOF
 /server/run_iperf3.sh &
 /server/kill_iperf3.sh &
-exit
+
+EOF
 
 # switch back to root
 /server/node_exporter/node_exporter &
