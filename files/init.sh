@@ -8,8 +8,8 @@ else
 fi
 
 # Create users
-adduser cjdns
-adduser speedtest
+useradd cjdns
+useradd speedtest
 
 json_config=$(cat /data/config.json)
 cjdns_flag=$(echo "$json_config" | jq -r '.cjdns.enabled')
