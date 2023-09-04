@@ -15,14 +15,14 @@ su - cjdns <<EOF
 
 EOF
         # kill anodevpn-server, so it restarts
-        pkill node
+        kill $(ps aux | pgrep -x node)
         
     else
         echo "$(date): cjdns is running."
     fi
     sleep 2
     # Check that anodevpn-server is running
-    node=$(pidof node)
+    node=$(ps aux | pgrep -x node)
     if [ -z "$node" ]; then
         echo "anodevpn-server is not running, restarting..."
         if [ -e /data/env/vpnprice ]; then
