@@ -131,8 +131,7 @@ else
 fi
 
 echo "Killing anodevpn-server, it should restart automatically..."
-nodepid=$(docker exec -it $container bash -c "ps aux | pgrep -x node")
-docker exec -it $container bash -c "kill $nodepid"
+docker exec -it $container bash -c "kill \$(ps aux | pgrep -x node)"
 echo 
 sleep 12
 # Check that cjdns is running
