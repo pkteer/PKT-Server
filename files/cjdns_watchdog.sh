@@ -22,7 +22,7 @@ EOF
     fi
     sleep 2
     # Check that anodevpn-server is running
-    if ! pidof node; then
+    if ! $(pidof node); then
         echo "anodevpn-server is not running, restarting..."
         if [ -e /data/env/vpnprice ]; then
             export PKTEER_PREMIUM_PRICE=$(cat /data/env/vpnprice)
