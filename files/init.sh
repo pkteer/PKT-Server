@@ -57,7 +57,7 @@ if $pktd_flag; then
     echo "Launching pktd with command: $pktd_cmd"
     $pktd_cmd > /dev/null 2>&1 &
 fi
-
+sleep 1
 echo "Setting up iptables rules"
 # Allow cjdns admin access only from eth0
 cjdns_rpc_port=$(cat /data/cjdroute.conf | jq -r '.admin.bind' | cut -d ':' -f2)
@@ -72,7 +72,7 @@ iptables -A FORWARD -i eth0 -o tun0 -m state --state RELATED,ESTABLISHED -j ACCE
 iptables -A FORWARD -i tun0 -o eth0 -j ACCEPT
 iptables -A FORWARD -i eth0 -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1264
 echo "route add..."
-route add -net 10.0.0.0/8 tun0
+ip route add 10.0.0.0/8 dev tun0
 echo "Initializing nftables..."
 /server/init_nft.sh
 
