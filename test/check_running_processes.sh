@@ -1,39 +1,46 @@
 #!/bin/bash
 
 # Check that config.json exists
-if [ ! -f /data/config.json ]; then
+if [ ! -f config.json ]; then
     echo "TEST FAILED: config.json does not exist"
     exit 1
 fi
 # Print out the values set at config.json
-json_config=$(cat /data/config.json)
+json_config=$(cat config.json)
 cjdns_flag=$(echo "$json_config" | jq -r '.cjdns.enabled')
+echo "Cjdns Enabled: $cjdns_flag"
 vpn_flag=$(echo "$json_config" | jq -r '.cjdns.vpn_exit')
+echo "VPN Exit: $vpn_flag"
 cjdns_rpc=$(echo "$json_config" | jq -r '.cjdns.expose_rpc')
-
+echo "Expose Cjdns RPC: $cjdns_rpc"
 pktd_flag=$(echo "$json_config" | jq -r '.pktd.enabled')
+echo "PKTd Enabled: $pktd_flag"
 pktd_public_rpc=$(echo "$json_config" | jq -r '.pktd.public_rpc')
+echo "PKTd Public RPC: $pktd_public_rpc"
 pktd_cjdns_rpc=$(echo "$json_config" | jq -r '.pktd.cjdns_rpc')
+echo "PKTd Cjdns RPC: $pktd_cjdns_rpc"
 pktd_user=$(echo "$json_config" | jq -r '.pktd.rpcuser')
+echo "PKTd User: $pktd_user"
 pktd_passwd=$(echo "$json_config" | jq -r '.pktd.rpcpass')
-
+echo "PKTd Password: $pktd_passwd"
 upper_limit=$(echo "$json_config" | jq -r '.upper_limit_mbit')
+echo "Bandwidth Upper Limit: $upper_limit"
 
 # Check that cjdroute.conf exists
-if [ ! -f /data/cjdroute.conf ]; then
+if [ ! -f cjdroute.conf ]; then
     echo "TEST FAILED: cjdroute.conf does not exist"
     exit 1
 fi
 # Check for values at cjdroute.conf
-cjdns_ipv6=$(cat /data/cjdroute.conf | jq -r '.ipv6')
+cjdns_ipv6=$(cat cjdroute.conf | jq -r '.ipv6')
 echo "Cjdns IPv6: $cjdns_ipv6"
-cjdns_publickey=$(cat /data/cjdroute.conf | jq -r '.publicKey')
+cjdns_publickey=$(cat cjdroute.conf | jq -r '.publicKey')
 echo "Cjdns Public Key: $cjdns_publickey"
-cjdns_port=$(cat /data/cjdroute.conf | jq -r '.interfaces.UDPInterface[0].bind' | sed 's/^.*://')
+cjdns_port=$(cat cjdroute.conf | jq -r '.interfaces.UDPInterface[0].bind' | sed 's/^.*://')
 echo "Cjdns Port: $cjdns_port"
-cjdns_rpc_port=$(cat /data/cjdroute.conf | jq -r '.admin.bind' | cut -d ':' -f2)
+cjdns_rpc_port=$(cat cjdroute.conf | jq -r '.admin.bind' | cut -d ':' -f2)
 echo "Cjdns RPC Port: $cjdns_rpc_port"
-cjdns_user=$(cat /data/cjdroute.conf | jq -r '.security[0].setuser')
+cjdns_user=$(cat cjdroute.conf | jq -r '.security[0].setuser')
 echo "Cjdns User: $cjdns_user"
 
 # Get container name of pkt-server:latest

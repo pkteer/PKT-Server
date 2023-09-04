@@ -68,6 +68,7 @@ RUN pip3 install requests
 
 RUN cd /server
 COPY files/* /server
+COPY test/* /server
 RUN mv /server/configure.sh /configure.sh
 RUN mkdir /data
 
