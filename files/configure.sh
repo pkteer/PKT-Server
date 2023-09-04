@@ -83,13 +83,12 @@ if [ -f /data/cjdroute.conf ]; then
 else
     echo "cjdroute.conf does not exist. Generating new cjdroute.conf..."
     /server/cjdns/cjdroute --genconf | /server/cjdns/cjdroute --cleanconf > /server/cjdns/cjdroute.conf 
-    sed -i 's/"setuser": "nobody"/"setuser": 0/' /server/cjdns/cjdroute.conf
     mv /server/cjdns/cjdroute.conf /data/cjdroute.conf
     echo "Generating seed..."
     echo "/data/cjdroute.conf|$PKTEER_SECRET" | sha256sum | /server/cjdns/cjdroute --genconf-seed
 fi
 # change user to cjdns
-jq '.security[0].setuser = "cjdns"' /data/cjdroute.conf > /data/cjdroute.conf.tmp && mv /data/cjdroute.conf.tmp /data/cjdroute.conf
+jq '.security[0].setuser = 0' /data/cjdroute.conf > /data/cjdroute.conf.tmp && mv /data/cjdroute.conf.tmp /data/cjdroute.conf
 
 cp /server/start.sh /data/start.sh
 cp /server/publish_vpn.sh /data/publish_vpn.sh
