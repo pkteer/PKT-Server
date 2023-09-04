@@ -14,15 +14,15 @@ echo "VPN Exit: $vpn_flag"
 cjdns_rpc=$(echo "$json_config" | jq -r '.cjdns.expose_rpc')
 echo "Expose Cjdns RPC: $cjdns_rpc"
 pktd_flag=$(echo "$json_config" | jq -r '.pktd.enabled')
-echo "PKTd Enabled: $pktd_flag"
+echo "PKTD Enabled: $pktd_flag"
 pktd_public_rpc=$(echo "$json_config" | jq -r '.pktd.public_rpc')
-echo "PKTd Public RPC: $pktd_public_rpc"
+echo "PKTD Public RPC: $pktd_public_rpc"
 pktd_cjdns_rpc=$(echo "$json_config" | jq -r '.pktd.cjdns_rpc')
-echo "PKTd Cjdns RPC: $pktd_cjdns_rpc"
+echo "PKTD Cjdns RPC: $pktd_cjdns_rpc"
 pktd_user=$(echo "$json_config" | jq -r '.pktd.rpcuser')
-echo "PKTd User: $pktd_user"
+echo "PKTD User: $pktd_user"
 pktd_passwd=$(echo "$json_config" | jq -r '.pktd.rpcpass')
-echo "PKTd Password: $pktd_passwd"
+echo "PKTD Password: $pktd_passwd"
 upper_limit=$(echo "$json_config" | jq -r '.upper_limit_mbit')
 echo "Bandwidth Upper Limit: $upper_limit"
 
@@ -87,10 +87,49 @@ if [ -z "$nodeexporter" ]; then
     exit 1
 fi
 
+# Check that cjdns_watchdog is running
+cjdns_watchdog=$(docker exec -it $container bash -c "ps aux | pgrep -x cjdns_watchdog.")
+if [ -z "$cjdns_watchdog" ]; then
+    echo "TEST FAILED: cjdns_watchdog is not running"
+    exit 1
+fi
+
 # Check IPTABLES
+echo "Display iptables rules..."
 docker exec -it $container bash -c "iptables -t nat -L"
+echo "Show routes..."
 docker exec -it $container bash -c "ip route show"
 
 # Print out rules for eth0 and tun0
+echo "Display tc rules for eth0"
 docker exec -it $container bash -c "tc class show dev eth0"
+echo "Display tc rules for tun0"
 docker exec -it $container bash -c "tc class show dev tun0"
+
+echo "TEST PASSED"
+
+sleep 1
+
+echo "Killing cjdns, it should restart automatically..."
+docker exec -it $container bash -c "pkill cjdroute"
+sleep 8
+# Check that cjdns is running
+cjdns=$(docker exec -it $container bash -c "ps -aux | pgrep cjdroute")
+if [ -z "$cjdns" ]; then
+    echo "TEST FAILED: cjdns is not running"
+    exit 1
+else
+    echo "Cjdns is running"
+fi
+
+echo "Killing anodevpn-server, it should restart automatically..."
+docker exec -it $container bash -c "pkill node"
+sleep 8
+# Check that cjdns is running
+cjdns=$(docker exec -it $container bash -c "ps -aux | pgrep -x node")
+if [ -z "$cjdns" ]; then
+    echo "TEST FAILED: anodevpn is not running"
+    exit 1
+else
+    echo "anodevpn is running"
+fi

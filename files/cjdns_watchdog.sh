@@ -14,21 +14,25 @@ su - cjdns <<EOF
 /server/cjdns/cjdroute < /data/cjdroute.conf
 
 EOF
-
-        # If anodevpnserver is running restart it
-        if pidof node; then
-            echo "anodevpn-server is running, restarting..."
-            pkill node
-            if [ -e /data/env/vpnprice ]; then
-                export PKTEER_PREMIUM_PRICE=$(cat /data/env/vpnprice)
-            else
-                # Default price
-                export PKTEER_PREMIUM_PRICE=10
-            fi
-            node /server/anodevpn-server/index.js &
-        fi
+        # kill anodevpn-server, so it restarts
+        pkill node
+        
     else
         echo "$(date): cjdns is running."
+    fi
+    sleep 2
+    # Check that anodevpn-server is running
+    if ! pidof node; then
+        echo "anodevpn-server is not running, restarting..."
+        if [ -e /data/env/vpnprice ]; then
+            export PKTEER_PREMIUM_PRICE=$(cat /data/env/vpnprice)
+        else
+            # Default price
+            export PKTEER_PREMIUM_PRICE=10
+        fi
+        node /server/anodevpn-server/index.js &
+    else
+        echo "$(date): anodevpn-server is running."
     fi
     sleep 5
 done
