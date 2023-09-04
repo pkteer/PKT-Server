@@ -1,4 +1,12 @@
 #!/bin/bash
+die() {
+        echo "Error: $1"
+        exit 100
+}
+command -v jq > /dev/null || die "jq is required to run this program"
+command -v dirname > /dev/null || die "dirname is required to run this program"
+command -v docker > /dev/null || die "docker is required to run this program"
+cd $(dirname "$0")
 
 # Check that config.json exists
 if [ ! -f config.json ]; then
