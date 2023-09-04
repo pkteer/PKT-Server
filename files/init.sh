@@ -29,6 +29,8 @@ fi
 
 if $cjdns_flag; then
     echo "Starting cjdns..."
+    # Set CAP_NET_ADMIN to cjdroute
+    setcap cap_net_admin=eip /server/cjdns/cjdroute
 su - cjdns <<EOF
 /server/cjdns/cjdroute < /data/cjdroute.conf
 

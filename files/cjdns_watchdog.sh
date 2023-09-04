@@ -7,8 +7,14 @@ while true; do
         if pidof cjdroute > /dev/null; then
             pkill -9 cjdroute
         fi
+        # Set CAP_NET_ADMIN to cjdroute
+        setcap cap_net_admin=eip /server/cjdns/cjdroute
         # Launch cjdns
-        /server/cjdns/cjdroute < /data/cjdroute.conf
+su - cjdns <<EOF
+/server/cjdns/cjdroute < /data/cjdroute.conf
+
+EOF
+
         # If anodevpnserver is running restart it
         if pidof node; then
             echo "anodevpn-server is running, restarting..."
