@@ -57,22 +57,34 @@ if $pktd_flag; then
     echo "Launching pktd with command: $pktd_cmd"
     $pktd_cmd > /dev/null 2>&1 &
 fi
-sleep 1
-echo "Setting up iptables rules"
-# Allow cjdns admin access only from eth0
-cjdns_rpc_port=$(cat /data/cjdroute.conf | jq -r '.admin.bind' | cut -d ':' -f2)
-if [ -z "$cjdns_rpc_port" ]; then
-        cjdns_rpc_port=$(grep -A 5 "\"admin\":" /data/cjdroute.conf | grep -oP '"bind": "\K[^"]+' | cut -d ':' -f2)
-fi      
-if [[ "$cjdns_rpc_port" =~ ^[0-9]+$ ]]; then
-    iptables -A INPUT -i ! eth0 -p udp --dport $cjdns_rpc_port -j REJECT --reject-with icmp-admin-prohibited
+
+if $cjdns_flag; then 
+    while true; do
+        if ifconfig tun0 &> /dev/null; then
+            echo "tun0 exists."
+            break
+        else
+            echo "tun0 does not exist. Waiting..."
+            sleep 1
+        fi
+    done
+    echo "Setting up iptables rules"
+    # Allow cjdns admin access only from eth0
+    cjdns_rpc_port=$(cat /data/cjdroute.conf | jq -r '.admin.bind' | cut -d ':' -f2)
+    if [ -z "$cjdns_rpc_port" ]; then
+            cjdns_rpc_port=$(grep -A 5 "\"admin\":" /data/cjdroute.conf | grep -oP '"bind": "\K[^"]+' | cut -d ':' -f2)
+    fi      
+    if [[ "$cjdns_rpc_port" =~ ^[0-9]+$ ]]; then
+        iptables -A INPUT -i ! eth0 -p udp --dport $cjdns_rpc_port -j REJECT --reject-with icmp-admin-prohibited
+    fi
+    iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+    iptables -A FORWARD -i eth0 -o tun0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+    iptables -A FORWARD -i tun0 -o eth0 -j ACCEPT
+    iptables -A FORWARD -i eth0 -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1264
+    echo "route add..."
+    ip route add 10.0.0.0/8 dev tun0
 fi
-iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
-iptables -A FORWARD -i eth0 -o tun0 -m state --state RELATED,ESTABLISHED -j ACCEPT
-iptables -A FORWARD -i tun0 -o eth0 -j ACCEPT
-iptables -A FORWARD -i eth0 -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1264
-echo "route add..."
-ip route add 10.0.0.0/8 dev tun0
+
 echo "Initializing nftables..."
 /server/init_nft.sh
 

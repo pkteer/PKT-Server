@@ -3,6 +3,10 @@
 nft -f ./pfi.nft
 
 UPPER_LIMIT_MBIT=$(cat /data/config.json | jq -r '.upper_limit_mbit')
+if [ -z "$UPPER_LIMIT_MBIT" ]
+then
+    UPPER_LIMIT_MBIT=1000 # 1Gbps default limit
+fi
 
 tc qdisc replace dev tun0 root handle 1:0 hfsc default ffff
     tc class replace dev tun0 parent 1:0 classid 1:fffe hfsc ls m2 950mbit 
