@@ -15,6 +15,7 @@ if [ -z "$CJDNS_PORT" ]; then
         CJDNS_PORT=$(grep -A 5 "\"UDPInterface\"" cjdroute.conf | grep -oP '"bind": "\K[^"]+' | cut -d ':' -f2)
 fi
 echo "Cjdns Port: $CJDNS_PORT"
+cjdns_rpc_port=""
 cjdns_rpc=$(cat config.json | jq -r '.cjdns.expose_rpc')
 # check if cjdns_rpc is not false
 if [ "$cjdns_rpc" != "false" ]; then
@@ -25,21 +26,8 @@ if [ "$cjdns_rpc" != "false" ]; then
         cat cjdroute.conf | jq '.admin.bind = "0.0.0.0:11234"' cjdroute.conf > cjdroute.tmp
         mv cjdroute.tmp cjdroute.conf
         echo "Exposing cjdns rpc port: $cjdns_rpc_port"
-        docker run -it --rm \
-        --log-driver 'local' \
-        --cap-add=NET_ADMIN \
-        --device /dev/net/tun:/dev/net/tun \
-        --sysctl net.ipv6.conf.all.disable_ipv6=0 \
-        --sysctl net.ipv4.ip_forward=1 \
-        -p 8099:8099 \
-        -p $CJDNS_PORT:$CJDNS_PORT/udp \
-        -p 5201:5201 \
-        -p 5201:5201/udp \
-        -p 64764:64764 \
-        -p 127.0.0.1:$cjdns_rpc_port:$cjdns_rpc_port/udp \
-        -v $(pwd):/data \
-        pkteer/pkt-server
-else
+fi
+
 docker run -it --rm \
         --log-driver 'local' \
         --cap-add=NET_ADMIN \
@@ -51,6 +39,6 @@ docker run -it --rm \
         -p 5201:5201 \
         -p 5201:5201/udp \
         -p 64764:64764 \
+        $([ -n "$cjdns_rpc_port" ] && echo "-p 127.0.0.1:$cjdns_rpc_port:$cjdns_rpc_port/udp") \
         -v $(pwd):/data \
         pkteer/pkt-server
-fi

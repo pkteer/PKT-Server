@@ -6,20 +6,20 @@ pktd_passwd=""
 pktd_user="x"
 
 # Read the existing config
-if [ -f ~/data/config.json ]; then
+if [ -f /data/config.json ]; then
     echo "Config file exists. Reading..."
     config_exists=true
 else
     echo "Config file does not exist. Creating..."
-    cp ~/server/config.json ~/data/config.json
+    cp /server/config.json /data/config.json
 fi
 
-json_config=$(cat ~/data/config.json)
+json_config=$(cat /data/config.json)
 
 # Compare existing config with new config
 # If a field is missing, add it
 if $config_exists; then
-    new_json_config=$(cat ~/server/config.json)
+    new_json_config=$(cat /server/config.json)
 
     # Get keys from the template and data JSON
     new_keys=$(echo "$new_json_config" | jq -r 'keys[]')
@@ -33,7 +33,7 @@ if $config_exists; then
             json_config=$(echo "$json_config" | jq --arg key "$key" --arg value "$value" '. + {($key): $value}')
         fi
     done
-    echo "$json_config" > ~/data/config.json
+    echo "$json_config" > /data/config.json
 fi
 
 pktd_passwd=$(echo "$json_config" | jq -r '.pktd.rpcpass')
