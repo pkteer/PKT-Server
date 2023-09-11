@@ -12,6 +12,28 @@ useradd cjdns
 useradd speedtest
 
 json_config=$(cat /data/config.json)
+
+update_config() {
+  local key="$1"
+  local value="$2"
+
+  local current_value=$(echo "$json_config" | jq -r ".$key")
+
+  if [ "$current_value" == "null" ]; then
+    json_config=$(echo "$json_config" | jq ".$key = $value")
+    echo "$json_config" > /data/config.json
+  fi
+}
+update_config "cjdns.enabled" "true"
+update_config "cjdns.vpn_exit" "false"
+update_config "cjdns.expose_rpc" "false"
+update_config "pktd.enabled" "false"
+update_config "pktd.public_rpc" "false"
+update_config "pktd.cjdns_rpc" "false"
+update_config "pktd.rpcuser" "\"x\""
+update_config "pktd.rpcpass" "\"\""
+update_config "upper_limit_mbit" "1000"
+
 cjdns_flag=$(echo "$json_config" | jq -r '.cjdns.enabled')
 vpn_flag=$(echo "$json_config" | jq -r '.cjdns.vpn_exit')
 pktd_flag=$(echo "$json_config" | jq -r '.pktd.enabled')
