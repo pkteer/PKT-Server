@@ -41,4 +41,5 @@ docker run -it --rm \
         -p 64764:64764 \
         $([ -n "$cjdns_rpc_port" ] && echo "-p 127.0.0.1:$cjdns_rpc_port:$cjdns_rpc_port/udp") \
         -v $(pwd):/data \
+        --name pkt-server \
         pkteer/pkt-server
