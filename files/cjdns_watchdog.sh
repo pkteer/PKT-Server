@@ -33,8 +33,8 @@ EOF
         fi
         node /server/anodevpn-server/index.js &
     else
-        response=$(curl --write-out %{http_code} --silent --output --max-time 5 /dev/null http://localhost:8099)
-        if [ $response -eq 404 ]; then
+        response=$(curl --write-out %{http_code} --silent --connect-timeout 5 --output /dev/null http://localhost:8099)
+        if [ "$response" -eq 404 ]; then
             echo "$(date): anodevpn-server is running."
         else
             echo "anodevpn-server is running but not responding, restarting..."
