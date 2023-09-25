@@ -37,14 +37,8 @@ EOF
         if [ $response -eq 404 ]; then
             echo "$(date): anodevpn-server is running."
         else
-            echo "anodevpn-server is not running, restarting..."
-            if [ -e /data/env/vpnprice ]; then
-                export PKTEER_PREMIUM_PRICE=$(cat /data/env/vpnprice)
-            else
-                # Default price
-                export PKTEER_PREMIUM_PRICE=10
-            fi
-            node /server/anodevpn-server/index.js &
+            echo "anodevpn-server is running but not responding, restarting..."
+            kill $(ps aux | pgrep -x node)
         fi
     fi
     sleep 5
