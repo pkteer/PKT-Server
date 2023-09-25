@@ -44,8 +44,8 @@ while true; do
         echo "anodevpn-server is not running, restarting..."
         restart
     else
-        response=$(curl --write-out %{http_code} --silent --connect-timeout 5 --output /dev/null http://localhost:8099)
-        if [ "$response" -eq 404 ]; then
+        response=$(curl --write-out %{http_code} --silent --connect-timeout 5 --output /dev/null http://localhost:8099/healthcheck)
+        if [ "$response" -eq 200 ]; then
             echo "$(date): anodevpn-server is running."
         else
             echo "anodevpn-server is running but not responding, restarting..."
