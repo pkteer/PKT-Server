@@ -52,7 +52,7 @@ cjdns_user=$(cat cjdroute.conf | jq -r '.security[0].setuser')
 echo "Cjdns User: $cjdns_user"
 
 # Get container name of pkt-server:latest
-container=$(docker ps --filter "ancestor=pkt-server" --format "{{.Names}}")
+container=$(docker ps --filter "ancestor=pkteer/pkt-server" --format "{{.Names}}")
 
 # Check that cjdns is running
 cjdns=$(docker exec -it $container bash -c "ps -aux | pgrep cjdroute")
