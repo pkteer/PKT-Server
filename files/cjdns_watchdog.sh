@@ -33,7 +33,19 @@ EOF
         fi
         node /server/anodevpn-server/index.js &
     else
-        echo "$(date): anodevpn-server is running."
+        response=$(curl --write-out %{http_code} --silent --output --max-time 5 /dev/null http://localhost:8099)
+        if [ $response -eq 404 ]; then
+            echo "$(date): anodevpn-server is running."
+        else
+            echo "anodevpn-server is not running, restarting..."
+            if [ -e /data/env/vpnprice ]; then
+                export PKTEER_PREMIUM_PRICE=$(cat /data/env/vpnprice)
+            else
+                # Default price
+                export PKTEER_PREMIUM_PRICE=10
+            fi
+            node /server/anodevpn-server/index.js &
+        fi
     fi
     sleep 5
 done
