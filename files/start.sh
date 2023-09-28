@@ -21,6 +21,7 @@ pktd_lnd=$(cat config.json | jq -r '.pktd.lnd')
 pktd=$(cat config.json | jq -r '.pktd.enabled')
 vpn_flag=$(cat config.json | jq -r '.cjdns.vpn_exit')
 speedtest=$(cat config.json | jq -r '.speedtest.enabled')
+lnd_port=$(grep -A 1 "On all ipv4 interfaces on port 9735 and ipv6 localhost port 9736:" /data/pktwallet/lnd/lnd.conf | grep "listen=" | cut -d ":" -f2)
 # check if cjdns_rpc is not false
 if [ "$cjdns_rpc" != "false" ]; then
         cjdns_rpc_port=$(cat cjdroute.conf | jq -r '.admin.bind' | cut -d ':' -f2)
@@ -43,7 +44,7 @@ docker run -it --rm \
         $([ "$speedtest" = true ] && echo "-p 5201:5201") \
         $([ "$speedtest" = true ] && echo "-p 5201:5201/udp") \
         $([ "$pktd" = true ] && echo "-p 64764:64764") \
-        $([ "$pktd_lnd" = true ] && echo "-p 9735:9735") \
+        $([ "$pktd_lnd" = true ] && echo "-p $lnd_port:$lnd_port") \
         $([ "$cjdns_rpc_port" = true ] && echo "-p 127.0.0.1:$cjdns_rpc_port:$cjdns_rpc_port/udp") \
         -v $(pwd):/data \
         --name pkt-server \
