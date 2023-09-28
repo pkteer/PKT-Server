@@ -19,7 +19,7 @@ RUN rm go1.20.4.linux-amd64.tar.gz
 # PKT Wallet
 WORKDIR /server
 RUN cd /server
-RUN git clone https://github.com/pkt-cash/pktd.git
+RUN git clone https://github.com/dkoukoul/pktd.git
 RUN cd /server/pktd
 WORKDIR /server/pktd
 RUN git checkout cjdns_msg
