@@ -56,7 +56,7 @@ fi
 
 if [ "$lnd" = true ]; then
     echo "Starting PKT Wallet with LND and CJDNS..."
-    /server/pktd/bin/pld --pktdir=/data/pktwallet/pkt --lnddir=/data/pktwallet/lnd --cjdnssocket=/server/cjdns/cjdroute.sock > /dev/null 2>&1 &
+    /server/pktd/bin/pld --pktdir=/data/pktwallet/pkt --lnddir=/data/pktwallet/lnd --cjdnssocket=/server/cjdns/cjdroute.sock &
 else 
     echo "Starting PKT Wallet..."
     /server/pktd/bin/pld --pktdir=/data/pktwallet/pkt > /dev/null 2>&1 &
