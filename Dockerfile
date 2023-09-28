@@ -17,6 +17,7 @@ ENV PATH="/usr/local/go/bin:${PATH}"
 RUN rm go1.20.4.linux-amd64.tar.gz
 
 # PKT Wallet
+RUN apt install -y protobuf-compiler
 WORKDIR /server
 RUN cd /server
 RUN git clone https://github.com/dkoukoul/pktd.git
