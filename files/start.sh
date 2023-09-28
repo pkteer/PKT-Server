@@ -47,5 +47,5 @@ docker run -it --rm \
         $([ "$pktd_lnd" = true ] && echo "-p $lnd_port:$lnd_port") \
         $([ "$cjdns_rpc_port" = true ] && echo "-p 127.0.0.1:$cjdns_rpc_port:$cjdns_rpc_port/udp") \
         -v $(pwd):/data \
-        --name pkt-server \
-        pkteer/pkt-server
+        --name pkt-server-lnd \
+        pkteer/pkt-server-lnd
