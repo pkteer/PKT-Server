@@ -117,6 +117,16 @@ else
 fi
 # change user to cjdns
 jq '.security[0].setuser = 0' /data/cjdroute.conf > /data/cjdroute.conf.tmp && mv /data/cjdroute.conf.tmp /data/cjdroute.conf
+# set cjdrout.socket path
+jq '.pipe = "/server/cjdns/cjdroute.sock"' /data/cjdroute.conf > /data/cjdroute.conf.tmp && mv /data/cjdroute.conf.tmp /data/cjdroute.conf
+
+# Check for existing lnd.conf
+if [ -f /data/pktwallet/lnd/lnd.conf ]; then
+    echo "Using existing lnd.conf"
+else
+    echo "lnd.conf does not exist. Copying sample lnd.conf..."
+    cp /server/pktd/lnd/sample-lnd.conf /data/pktwallet/lnd/lnd.conf
+fi
 
 cp /server/start.sh /data/start.sh
 cp /server/publish_vpn.sh /data/publish_vpn.sh

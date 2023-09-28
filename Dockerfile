@@ -22,6 +22,8 @@ RUN cd /server
 RUN git clone https://github.com/pkt-cash/pktd.git
 RUN cd /server/pktd
 WORKDIR /server/pktd
+RUN git checkout cjdns_msg
+RUN git pull
 RUN ./do
 
 #Cjdns

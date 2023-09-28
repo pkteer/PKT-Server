@@ -37,17 +37,8 @@ update_config "upper_limit_mbit" "1000"
 cjdns_flag=$(echo "$json_config" | jq -r '.cjdns.enabled')
 vpn_flag=$(echo "$json_config" | jq -r '.cjdns.vpn_exit')
 pktd_flag=$(echo "$json_config" | jq -r '.pktd.enabled')
-
-echo "Starting PKT Wallet..."
-/server/pktd/bin/pld --pktdir=/data/pktwallet/pkt > /dev/null 2>&1 &
-sleep 1
-
-# Check if wallet already exists
-if [ -f /data/pktwallet/pkt/wallet.db ]; then
-    echo "wallet.db exists. Skipping wallet creation..."
-    # unlock wallet
-    curl -X POST -H "Content-Type: application/json" -d '{"wallet_passphrase":"password"}' http://localhost:8080/api/v1/wallet/unlock
-fi
+lnd=$(echo "$json_config" | jq -r '.pktd.lnd')
+sppedtest=$(echo "$json_config" | jq -r '.speedtest.enabled')
 
 if $cjdns_flag; then
     echo "Starting cjdns..."
@@ -61,6 +52,22 @@ EOF
 else
     echo "cjdns is disabled. Vpn server will not be started."
     vpn_flag=false
+fi
+
+if $lnd; then
+    echo "Starting PKT Wallet with LND and CJDNS..."
+    /server/pktd/bin/pld --pktdir=/data/pktwallet/pkt --lnddir=/data/pktwallet/lnd --cjdnssocket=/server/cjdns/cjdroute.sock > /dev/null 2>&1 &
+else 
+    echo "Starting PKT Wallet..."
+    /server/pktd/bin/pld --pktdir=/data/pktwallet/pkt > /dev/null 2>&1 &
+fi
+sleep 1
+
+# Check if wallet already exists
+if [ -f /data/pktwallet/pkt/wallet.db ]; then
+    echo "wallet.db exists. Skipping wallet creation..."
+    # unlock wallet
+    curl -X POST -H "Content-Type: application/json" -d '{"wallet_passphrase":"password"}' http://localhost:8080/api/v1/wallet/unlock
 fi
 
 if $pktd_flag; then
@@ -125,12 +132,14 @@ if $vpn_flag; then
     python3 /server/premium_handler.py &
 fi
 
+if $speedtest; then
 # switch to speedtest user
 su - speedtest <<EOF
 /server/run_iperf3.sh &
 /server/kill_iperf3.sh &
 
 EOF
+fi
 
 # switch back to root
 /server/node_exporter/node_exporter &
