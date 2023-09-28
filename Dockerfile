@@ -62,6 +62,7 @@ WORKDIR /server
 # Copy cjdns and pktd 
 COPY --from=builder /server/cjdns /server/cjdns
 COPY --from=builder /server/pktd /server/pktd
+COPY --from=builder /server/pktd/lnd/sample-lnd.conf /server/pktd/sample-lnd.conf
 COPY --from=builder /server/anodevpn-server /server/anodevpn-server
 COPY --from=builder /server/node_exporter-1.6.1.linux-amd64 /server/node_exporter
 

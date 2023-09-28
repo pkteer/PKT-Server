@@ -128,7 +128,7 @@ if [ -f /data/pktwallet/lnd/lnd.conf ]; then
     echo "Using existing lnd.conf"
 else
     echo "lnd.conf does not exist. Copying sample lnd.conf..."
-    cp -r /server/pktd/lnd/sample-lnd.conf /data/pktwallet/lnd/lnd.conf
+    cp -r /server/pktd/sample-lnd.conf /data/pktwallet/lnd/lnd.conf
 fi
 
 cp /server/start.sh /data/start.sh
