@@ -24,7 +24,7 @@ speedtest=$(cat config.json | jq -r '.speedtest.enabled')
 # check if cjdns_rpc is not false
 if [ "$cjdns_rpc" != "false" ]; then
         cjdns_rpc_port=$(cat cjdroute.conf | jq -r '.admin.bind' | cut -d ':' -f2)
-        if [ -z "$cjdns_rpc_port" ]; then
+        if [ "$cjdns_rpc_port" = true ]; then
                 cjdns_rpc_port=$(grep -A 5 "\"admin\":" cjdroute.conf | grep -oP '"bind": "\K[^"]+' | cut -d ':' -f2)
         fi
         cat cjdroute.conf | jq '.admin.bind = "0.0.0.0:11234"' cjdroute.conf > cjdroute.tmp
@@ -38,13 +38,13 @@ docker run -it --rm \
         --device /dev/net/tun:/dev/net/tun \
         --sysctl net.ipv6.conf.all.disable_ipv6=0 \
         --sysctl net.ipv4.ip_forward=1 \
-        $([ -n "$vpn_flag" ] && echo "-p 8099:8099") \
+        $([ "$vpn_flag" = true ] && echo "-p 8099:8099") \
         -p $CJDNS_PORT:$CJDNS_PORT/udp \
-        $([ -n "$speedtest" ] && echo "-p 5201:5201") \
-        $([ -n "$speedtest" ] && echo "-p 5201:5201/udp") \
-        $([ -n "$pktd" ] && echo "-p 64764:64764") \
-        $([ -n "$pktd_lnd" ] && echo "-p 9735:9735") \
-        $([ -n "$cjdns_rpc_port" ] && echo "-p 127.0.0.1:$cjdns_rpc_port:$cjdns_rpc_port/udp") \
+        $([ "$speedtest" = true ] && echo "-p 5201:5201") \
+        $([ "$speedtest" = true ] && echo "-p 5201:5201/udp") \
+        $([ "$pktd" = true ] && echo "-p 64764:64764") \
+        $([ "$pktd_lnd" = true ] && echo "-p 9735:9735") \
+        $([ "$cjdns_rpc_port" = true ] && echo "-p 127.0.0.1:$cjdns_rpc_port:$cjdns_rpc_port/udp") \
         -v $(pwd):/data \
         --name pkt-server \
         pkteer/pkt-server

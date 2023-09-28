@@ -142,7 +142,7 @@ EOF
 fi
 
 # switch back to root
-/server/node_exporter/node_exporter &
+#/server/node_exporter/node_exporter &
 
 if [ "$cjdns_flag" = true ] && [ "$vpn_flag" = true ]; then
     /server/cjdns_watchdog.sh 
