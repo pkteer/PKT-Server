@@ -40,7 +40,7 @@ pktd_flag=$(echo "$json_config" | jq -r '.pktd.enabled')
 lnd=$(echo "$json_config" | jq -r '.pktd.lnd')
 sppedtest=$(echo "$json_config" | jq -r '.speedtest.enabled')
 
-if $cjdns_flag; then
+if [ "$cjdns_flag" = true ]; then
     echo "Starting cjdns..."
     # Set CAP_NET_ADMIN to cjdroute
     setcap cap_net_admin=eip /server/cjdns/cjdroute
@@ -54,7 +54,7 @@ else
     vpn_flag=false
 fi
 
-if $lnd; then
+if [ "$lnd" = true ]; then
     echo "Starting PKT Wallet with LND and CJDNS..."
     /server/pktd/bin/pld --pktdir=/data/pktwallet/pkt --lnddir=/data/pktwallet/lnd --cjdnssocket=/server/cjdns/cjdroute.sock > /dev/null 2>&1 &
 else 
@@ -70,7 +70,7 @@ if [ -f /data/pktwallet/pkt/wallet.db ]; then
     curl -X POST -H "Content-Type: application/json" -d '{"wallet_passphrase":"password"}' http://localhost:8080/api/v1/wallet/unlock
 fi
 
-if $pktd_flag; then
+if [ "$pktd_flag" = true ] ; then
     rpcuser=$(echo "$json_config" | jq -r '.pktd.rpcuser')
     rpcpass=$(echo "$json_config" | jq -r '.pktd.rpcpass')
     public_rpc=$(echo "$json_config" | jq -r '.pktd.public_rpc')
@@ -87,7 +87,7 @@ if $pktd_flag; then
     $pktd_cmd > /dev/null 2>&1 &
 fi
 
-if $cjdns_flag; then 
+if [ "$cjdns_flag" = true ]; then 
     while true; do
         if ifconfig tun0 &> /dev/null; then
             echo "tun0 exists."
@@ -117,7 +117,7 @@ fi
 echo "Initializing nftables..."
 /server/init_nft.sh
 
-if $vpn_flag; then
+if [ "$vpn_flag" = true ]; then
     echo "Starting vpn server..."
     # Run nodejs anodevpn-server
     if [ -e /data/env/vpnprice ]; then
@@ -132,7 +132,7 @@ if $vpn_flag; then
     python3 /server/premium_handler.py &
 fi
 
-if $speedtest; then
+if [ "$speedtest" = true ]; then
 # switch to speedtest user
 su - speedtest <<EOF
 /server/run_iperf3.sh &
@@ -144,6 +144,6 @@ fi
 # switch back to root
 /server/node_exporter/node_exporter &
 
-if $cjdns_flag; then
+if [ "$cjdns_flag" = true ] && [ "$vpn_flag" = true ]; then
     /server/cjdns_watchdog.sh 
 fi
