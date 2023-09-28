@@ -37,7 +37,7 @@ This will start the server and may expose the following ports:
 * cjdns port set from cjdroute.conf
 * cjdns admin rpc port set from cjdroute.conf (default 11234)
 * 8099 for anodevpn server
-* 5281 for iperf3
+* 5201 for iperf3
 * 64764 for pktd
 
 4. Publish your VPN Server
