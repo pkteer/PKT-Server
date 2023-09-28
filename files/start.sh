@@ -21,7 +21,7 @@ pktd_lnd=$(cat config.json | jq -r '.pktd.lnd')
 pktd=$(cat config.json | jq -r '.pktd.enabled')
 vpn_flag=$(cat config.json | jq -r '.cjdns.vpn_exit')
 speedtest=$(cat config.json | jq -r '.speedtest.enabled')
-lnd_port=$(grep -A 1 "On all ipv4 interfaces on port 9735 and ipv6 localhost port 9736:" /data/pktwallet/lnd/lnd.conf | grep "listen=" | cut -d ":" -f2)
+lnd_port=$(grep -A 1 "On all ipv4 interfaces on port 9735 and ipv6 localhost port 9736:" ./pktwallet/lnd/lnd.conf | grep "listen=" | cut -d ":" -f2)
 # check if cjdns_rpc is not false
 if [ "$cjdns_rpc" != "false" ]; then
         cjdns_rpc_port=$(cat cjdroute.conf | jq -r '.admin.bind' | cut -d ':' -f2)
