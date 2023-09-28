@@ -89,13 +89,16 @@ if [ -f /data/pktwallet/pkt/wallet.db ]; then
 else
     echo "Creating wallet..."
     /server/create_wallet.sh
+    sleep 5
 fi
+
 # VPN Server
 while [ -z "$PKTEER_SECRET" ]; do
     json=$(curl -X POST -H "Content-Type: application/json" -d '{}' http://localhost:8080/api/v1/wallet/getsecret)
     PKTEER_SECRET=$(echo "$json" | jq -r '.secret')
     if [ -z "$PKTEER_SECRET" ]; then
-        echo "PKTEER_SECRET is null. Retrying..."
+        echo "PKTEER_SECRET is null. The wallet might not be ready yet. Retrying..."
+        sleep 5
     fi
 done
 
