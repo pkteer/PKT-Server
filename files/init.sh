@@ -146,4 +146,6 @@ fi
 
 if [ "$cjdns_flag" = true ] && [ "$vpn_flag" = true ]; then
     /server/cjdns_watchdog.sh 
+else 
+    bash
 fi
