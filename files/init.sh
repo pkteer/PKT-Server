@@ -44,10 +44,10 @@ if [ "$cjdns_flag" = true ]; then
     echo "Starting cjdns..."
     # Set CAP_NET_ADMIN to cjdroute
     setcap cap_net_admin=eip /server/cjdns/cjdroute
-su - cjdns <<EOF
+#su - cjdns <<EOF
 /server/cjdns/cjdroute < /data/cjdroute.conf
 
-EOF
+#EOF
 
 else
     echo "cjdns is disabled. Vpn server will not be started."
