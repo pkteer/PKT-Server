@@ -8,7 +8,7 @@ import base64
 import codecs
 import requests
 
-db = "anodevpn-server/clients.json"
+db = "/server/anodevpn-server/clients.json"
 
 
 def read_db():
@@ -62,7 +62,7 @@ def add_premium(ip: str):
     lsLimitPaid = "950mbit"
     hex_str = get_hex_from_ip(ip)
     logging.info("Enable premium for %s from class 1:%s", ip, hex_str)
-    cmd = "tc class replace dev tun0 parent 1:fffe classid 1:%s hfsc ls m2 %s ul m2 %s", hex_str, lsLimitPaid, lsLimitPaid
+    cmd = "tc class replace dev tun0 parent 1:fffe classid 1:{} hfsc ls m2 {} ul m2 {}".format(hex_str, lsLimitPaid, lsLimitPaid)
     try:
         subprocess.check_output(cmd, shell=True).decode('utf-8').rstrip()
         cmd = "nft add element pfi m_client_leases { "+ip+" : \"1:"+hex_str+"\" }"  # type: ignore
@@ -76,7 +76,7 @@ def remove_premium(ip: str):
     lsLimitPaid = "950mbit"
     hex_str = get_hex_from_ip(ip)
     logging.info("Disable premium for %s from class 1:%s", ip, hex_str)
-    cmd = "tc class delete dev tun0 parent 1:fffe classid 1:%s hfsc ls m2 %s ul m2 %s", hex_str, lsLimitPaid, lsLimitPaid
+    cmd = "tc class delete dev tun0 parent 1:fffe classid 1:{} hfsc ls m2 {} ul m2 {}".format(hex_str, lsLimitPaid, lsLimitPaid)
     try:
         subprocess.check_output(cmd, shell=True).decode('utf-8').rstrip()
         cmd = "nft delete element pfi m_client_leases { "+ip+" : \"1:"+hex_str+"\" }"
@@ -171,7 +171,7 @@ def bcast_transaction(tx: str) -> str:
 
 def main():
     """Main function"""
-    logging.basicConfig(filename='premium_handler.log', level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
+    logging.basicConfig(filename='/server/premium_handler.log', level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
     waiting_time = 5 * 60 # 5 minutes
     while True:
         # Read the clients.json file
