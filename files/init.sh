@@ -80,7 +80,7 @@ if $pktd_flag; then
     $pktd_cmd > /dev/null 2>&1 &
 fi
 
-if $cjdns_flag; then 
+if [ "$cjdns_flag" = true ]; then
     while true; do
         if ifconfig tun0 &> /dev/null; then
             echo "tun0 exists."
@@ -97,7 +97,8 @@ if $cjdns_flag; then
             cjdns_rpc_port=$(grep -A 5 "\"admin\":" /data/cjdroute.conf | grep -oP '"bind": "\K[^"]+' | cut -d ':' -f2)
     fi      
     if [[ "$cjdns_rpc_port" =~ ^[0-9]+$ ]]; then
-        iptables -A INPUT -i ! eth0 -p udp --dport $cjdns_rpc_port -j REJECT --reject-with icmp-admin-prohibited
+        iptables -A INPUT -i eth0 -p udp --dport $cjdns_rpc_port -j ACCEPT
+        iptables -A INPUT -p udp --dport $cjdns_rpc_port -j REJECT --reject-with icmp-admin-prohibited
     fi
     iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
     iptables -A FORWARD -i eth0 -o tun0 -m state --state RELATED,ESTABLISHED -j ACCEPT
@@ -110,7 +111,7 @@ fi
 echo "Initializing nftables..."
 /server/init_nft.sh
 
-if $vpn_flag; then
+if [ "$vpn_flag" = true ]; then
     echo "Starting vpn server..."
     # Run nodejs anodevpn-server
     if [ -e /data/env/vpnprice ]; then
@@ -135,6 +136,6 @@ EOF
 # switch back to root
 /server/node_exporter/node_exporter &
 
-if $cjdns_flag; then
+if [ "$cjdns_flag" = true ] && [ "$vpn_flag" = true ]; then
     /server/cjdns_watchdog.sh 
 fi
