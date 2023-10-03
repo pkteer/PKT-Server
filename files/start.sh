@@ -20,7 +20,7 @@ cjdns_rpc=$(cat config.json | jq -r '.cjdns.expose_rpc')
 # check if cjdns_rpc is not false
 if [ "$cjdns_rpc" != "false" ]; then
         cjdns_rpc_port=$(cat cjdroute.conf | jq -r '.admin.bind' | cut -d ':' -f2)
-        if [ "$cjdns_rpc_port" = true ]; then
+        if [ -n "$cjdns_rpc_port" ]; then
                 cjdns_rpc_port=$(grep -A 5 "\"admin\":" cjdroute.conf | grep -oP '"bind": "\K[^"]+' | cut -d ':' -f2)
         fi
         cat cjdroute.conf | jq '.admin.bind = "0.0.0.0:11234"' cjdroute.conf > cjdroute.tmp

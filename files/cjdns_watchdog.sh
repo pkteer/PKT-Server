@@ -13,7 +13,7 @@ restart() {
     setcap cap_net_admin=eip /server/cjdns/cjdroute
 
     # Launch cjdns
-    su - cjdns <<EOF
+su - cjdns <<EOF
 /server/cjdns/cjdroute < /data/cjdroute.conf
 EOF
 
@@ -27,6 +27,8 @@ EOF
     node /server/anodevpn-server/index.js &
 
     sleep 2
+    # Add route
+    ip route add 10.0.0.0/8 dev tun0
 }
 
 while true; do

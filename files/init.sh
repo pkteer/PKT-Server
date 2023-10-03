@@ -49,7 +49,7 @@ if [ -f /data/pktwallet/pkt/wallet.db ]; then
     curl -X POST -H "Content-Type: application/json" -d '{"wallet_passphrase":"password"}' http://localhost:8080/api/v1/wallet/unlock
 fi
 
-if $cjdns_flag; then
+if [ "$cjdns_flag" = true ]; then
     echo "Starting cjdns..."
     # Set CAP_NET_ADMIN to cjdroute
     setcap cap_net_admin=eip /server/cjdns/cjdroute
@@ -63,7 +63,7 @@ else
     vpn_flag=false
 fi
 
-if $pktd_flag; then
+if [ "$pktd_flag" = true ]; then
     rpcuser=$(echo "$json_config" | jq -r '.pktd.rpcuser')
     rpcpass=$(echo "$json_config" | jq -r '.pktd.rpcpass')
     public_rpc=$(echo "$json_config" | jq -r '.pktd.public_rpc')
@@ -104,7 +104,6 @@ if [ "$cjdns_flag" = true ]; then
     iptables -A FORWARD -i eth0 -o tun0 -m state --state RELATED,ESTABLISHED -j ACCEPT
     iptables -A FORWARD -i tun0 -o eth0 -j ACCEPT
     iptables -A FORWARD -i eth0 -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1264
-    echo "route add..."
     ip route add 10.0.0.0/8 dev tun0
 fi
 
