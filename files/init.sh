@@ -50,11 +50,11 @@ if [ -f /data/pktwallet/pkt/wallet.db ]; then
 fi
 
 if [ "$cjdns_flag" = true ]; then
+    mkdir /home/cjdns
     echo "Starting cjdns..."
     # Set CAP_NET_ADMIN to cjdroute
     setcap cap_net_admin=eip /server/cjdns/cjdroute
 su - cjdns <<EOF
-mkdir /home/cjdns
 /server/cjdns/cjdroute < /data/cjdroute.conf
 
 EOF
@@ -126,9 +126,9 @@ if [ "$vpn_flag" = true ]; then
     python3 /server/premium_handler.py &
 fi
 
+mkdir /home/speedtest
 # switch to speedtest user
 su - speedtest <<EOF
-mkdir /home/speedtest
 /server/run_iperf3.sh &
 /server/kill_iperf3.sh &
 
