@@ -33,7 +33,8 @@ EOF
 
 while true; do
     # use timeout in case cjdroute is not running
-    if ! timeout 2s /server/cjdns/tools/cexec 'ping()' | grep -q pong; then
+    cjdroute=$(ps aux | pgrep -x cjdroute)
+    if [ -z "$cjdroute" ]; then
         echo "cjdns is not running, restarting..."
         restart
     else
