@@ -15,6 +15,7 @@ restart() {
     # Launch cjdns
 su - cjdns <<EOF
 /server/cjdns/cjdroute < /data/cjdroute.conf
+
 EOF
 
     # Launch node
