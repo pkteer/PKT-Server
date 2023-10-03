@@ -54,6 +54,7 @@ if [ "$cjdns_flag" = true ]; then
     # Set CAP_NET_ADMIN to cjdroute
     setcap cap_net_admin=eip /server/cjdns/cjdroute
 su - cjdns <<EOF
+mkdir /home/cjdns
 /server/cjdns/cjdroute < /data/cjdroute.conf
 
 EOF
@@ -127,6 +128,7 @@ fi
 
 # switch to speedtest user
 su - speedtest <<EOF
+mkdir /home/speedtest
 /server/run_iperf3.sh &
 /server/kill_iperf3.sh &
 
