@@ -65,15 +65,30 @@ def add_premium(ip: str):
     cmd = "tc class show dev tun0 classid 1:{}".format(hex_str)
     try:
         # check if class exists
-        output = subprocess.check_output(cmd, shell=True)
-        if (output.decode('utf-8').rstrip() != ""):
+        output = subprocess.check_output(cmd, shell=True).decode('utf-8').rstrip()
+        # logging.info("%s: %s", cmd, output)
+        if (output != ""):
             cmd = "tc class replace dev tun0 parent 1:fffe classid 1:{} hfsc ls m2 {} ul m2 {}".format(hex_str, lsLimitPaid, lsLimitPaid)
         else:
             cmd = "tc class add dev tun0 parent 1:fffe classid 1:{} hfsc ls m2 {} ul m2 {}".format(hex_str, lsLimitPaid, lsLimitPaid)
         # Add or replace rule on classid
-        subprocess.check_output(cmd, shell=True).decode('utf-8').rstrip()
-        cmd = "nft add element pfi m_client_leases { "+ip+" : \"1:"+hex_str+"\" }"  # type: ignore
-        subprocess.check_output(cmd, shell=True).decode('utf-8').rstrip()
+        output = subprocess.check_output(cmd, shell=True).decode('utf-8').rstrip()
+        # logging.info("%s: %s", cmd, output)
+        # Check if m_client_leases exists for this IP
+        cmd = "nft -j list map ip pfi m_client_leases | jq"
+        output = subprocess.check_output(cmd, shell=True).decode('utf-8').rstrip()
+        # logging.info("%s: %s", cmd, output)
+        json_data = json.loads(output)
+        if "map" in json_data and "elem" in json_data["map"]:
+            for elem in json_data["map"]["elem"]:
+                if elem[0] == ip:
+                    # logging.info("m_client_leases already exists for %s, will delete", ip)
+                    cmd = "nft delete element pfi m_client_leases { "+ip+" }"
+                    output = subprocess.check_output(cmd, shell=True).decode('utf-8').rstrip() 
+                    # logging.info("%s: %s", cmd, output)
+        cmd = "nft add element pfi m_client_leases { "+ip+" : \"1:"+hex_str+"\" }"
+        output = subprocess.check_output(cmd, shell=True).decode('utf-8').rstrip()
+        # logging.info("%s: %s", cmd, output)
     except subprocess.CalledProcessError as error:
         logging.error("Error adding premium: %s", error.output)
     
@@ -85,9 +100,11 @@ def remove_premium(ip: str):
     logging.info("Disable premium for %s from class 1:%s", ip, hex_str)
     cmd = "tc class delete dev tun0 parent 1:fffe classid 1:{} hfsc ls m2 {} ul m2 {}".format(hex_str, lsLimitPaid, lsLimitPaid)
     try:
-        subprocess.check_output(cmd, shell=True).decode('utf-8').rstrip()
-        cmd = "nft delete element pfi m_client_leases { "+ip+" : \"1:"+hex_str+"\" }"
-        subprocess.check_output(cmd, shell=True).decode('utf-8').rstrip()
+        output = subprocess.check_output(cmd, shell=True).decode('utf-8').rstrip()
+        # logging.info("%s: %s", cmd, output)
+        cmd = "nft delete element pfi m_client_leases { "+ip+" }"
+        output = subprocess.check_output(cmd, shell=True).decode('utf-8').rstrip()
+        # logging.info("%s: %s", cmd, output)
     except subprocess.CalledProcessError as error:
         logging.error("Error removing premium: %s", error.output)
 
@@ -136,7 +153,9 @@ def get_balance(address: str) -> int:
 def is_valid_payment(address: str) -> bool:
     """Function checking if the payment is valid"""
     try:
-        premium_price: int = int(str(os.environ.get('PKTEER_PREMIUM_PRICE')))
+        with open('/data/env/vpnprice', 'r') as f:
+            premium_price = int(f.readline().strip())
+
         # Check balance for the address
         balance = get_balance(address)
         if (balance != 0):
