@@ -240,7 +240,7 @@ def main():
         clients["clients"] = remaining_clients        
         # Remove clients that have duration ended
         write_db(clients)
-        time.sleep(10)
+        time.sleep(30)
 
 
 if __name__ == "__main__":
