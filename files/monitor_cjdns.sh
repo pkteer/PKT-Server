@@ -9,17 +9,13 @@ get_hex_from_ip() {
         printf "%02x" "$1"
     }
     # Extract the last two octets of the source IP address
-    last_two_parts=$(echo "$1" | awk -F. '{ print $(NF-1), $NF }')
-
-    part1=$(echo "$last_two_parts" | awk '{print $1}')
-    part2=$(echo "$last_two_parts" | awk '{print $2}')
+    ipPart=$(echo "$1" | awk -F. '{ print $2 }')
 
     # Convert each part to hexadecimal
-    hex_part1=$(decimal_to_hex "$part1")
-    hex_part2=$(decimal_to_hex "$part2")
+    hex_part=$(decimal_to_hex "$ipPart")
 
     # Concatenate the hexadecimal parts
-    printf "${hex_part1}${hex_part2}"
+    printf "${hex_part}"
 }
 
 # Listen for clients
@@ -48,7 +44,7 @@ for conn_id in $conn_ids; do
     # compare the IP address to the PKTEER_IP
     if [ "$PKTEER_IP" = "$ipv4_addr" ] && [ "$PKTEER_PAID" = "true" ]; then
         echo "PAID $ipv4_addr"
-        tc class replace dev $DEVICE parent 1:fffe classid 1:$HEX hfsc ls m2 $lsLimitPaid ul m2 $lsLimitPaid
+        tc class add dev $DEVICE parent 1:fffe classid 1:$HEX hfsc ls m2 $lsLimitPaid ul m2 $lsLimitPaid
         nft add element pfi m_client_leases { $ipv4_addr : "1:$HEX" }
     elif [ "$PKTEER_IP" = "$ipv4_addr" ] && [ "$PKTEER_PAID" = "false" ]; then
         echo "FREE $ipv4_addr"

@@ -81,11 +81,13 @@ def add_premium(ip: str):
         json_data = json.loads(output)
         if "map" in json_data and "elem" in json_data["map"]:
             for elem in json_data["map"]["elem"]:
+                logging.info("found elem ip: %s", elem[0])
                 if elem[0] == ip:
                     # logging.info("m_client_leases already exists for %s, will delete", ip)
                     cmd = "nft delete element pfi m_client_leases { "+ip+" }"
                     output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT).decode('utf-8').rstrip() 
                     # logging.info("%s: %s", cmd, output)
+                    time.sleep(0.5)
         cmd = "nft add element pfi m_client_leases { "+ip+" : \"1:"+hex_str+"\" }"
         output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT).decode('utf-8').rstrip()
         # logging.info("%s: %s", cmd, output)
