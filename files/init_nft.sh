@@ -8,10 +8,10 @@ then
     UPPER_LIMIT_MBIT=1000 # 1Gbps default limit
 fi
 
-tc qdisc replace dev tun0 root handle 1:0 hfsc default ffff
-    tc class replace dev tun0 parent 1:0 classid 1:fffe hfsc ls m2 950mbit 
-    tc class replace dev tun0 parent 1:0 classid 1:ffff hfsc ls m2 1mbit
-        tc qdisc replace dev tun0 parent 1:ffff handle ffff: cake
+tc qdisc add dev tun0 root handle 1:0 hfsc default ffff
+    tc class add dev tun0 parent 1:0 classid 1:fffe hfsc ls m2 950mbit 
+    tc class add dev tun0 parent 1:0 classid 1:ffff hfsc ls m2 1mbit
+        tc qdisc add dev tun0 parent 1:ffff handle ffff: cake
 
 tc qdisc add dev eth0 root handle 1:0 hfsc default fffe
   tc class add dev eth0 parent 1:0 classid 1:ffff hfsc ls m2 100mbit ul m2 ${UPPER_LIMIT_MBIT}mbit
