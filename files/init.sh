@@ -55,8 +55,10 @@ else
 fi
 
 if [ "$lnd" = true ]; then
+    lnd_port=$(grep -A 1 "On all ipv4 interfaces on port 9735 and ipv6 localhost port 9736:" /data/pktwallet/lnd/lnd.conf | grep "listen=" | cut -d ":" -f2)
+    external_ip=$(curl ifconfig.me)
     echo "Starting PKT Wallet with LND and CJDNS..."
-    /server/pktd/bin/pld --pktdir=/data/pktwallet/pkt --lnddir=/data/pktwallet/lnd --cjdnssocket=/server/cjdns/cjdroute.sock &
+    /server/pktd/bin/pld --pktdir=/data/pktwallet/pkt --lnddir=/data/pktwallet/lnd --cjdnssocket=/server/cjdns/cjdroute.sock --externalip=$external_ip:$lnd_port &
 else 
     echo "Starting PKT Wallet..."
     /server/pktd/bin/pld --pktdir=/data/pktwallet/pkt > /dev/null 2>&1 &
