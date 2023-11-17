@@ -81,10 +81,15 @@ fi
 
 # Check that pktd is running, if pktd is enabled
 if $pktd_flag; then
+    echo "Testing pktd..."
     pktd=$(docker exec -it $container bash -c "ps aux | pgrep pktd")
     if [ -z "$pktd" ]; then
         echo "TEST FAILED: pktd is not running"
         exit 1
+    else
+        echo "PKTD is running"
+        dockerIp=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' pkt-server)
+        reponse=$(curl -X POST -H 'Content-Type: application/json' --user "${pktd_user}:${pktd_passwd}" -d '{"jsonrpc":"1.0","method":"getbestblock","params":[],"id":1}' http://${dockerIp}:64765)
     fi
 fi
 
@@ -115,6 +120,11 @@ echo "Display tc rules for tun0"
 docker exec -it $container bash -c "tc class show dev tun0"
 
 echo "TEST PASSED"
+
+if $pktd_flag; then
+    
+
+fi
 
 sleep 1
 

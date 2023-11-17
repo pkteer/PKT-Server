@@ -24,8 +24,8 @@ RUN git clone https://github.com/dkoukoul/pktd.git
 RUN cd /server/pktd
 WORKDIR /server/pktd
 RUN git checkout cjdns_msg
-RUN go get github.com/zeebo/bencode
 RUN git pull
+RUN go get github.com/zeebo/bencode
 RUN ./do
 
 #Cjdns
