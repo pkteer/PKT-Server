@@ -135,3 +135,4 @@ fi
 cp /server/start.sh /data/start.sh
 cp /server/publish_vpn.sh /data/publish_vpn.sh
 cp /server/check_running_processes.sh /data/check_running_processes.sh
+cp /server/lnd_init.sh /data/lnd_init.sh
