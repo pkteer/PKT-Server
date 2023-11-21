@@ -106,7 +106,7 @@ if [ "$cjdns_flag" = true ]; then
             cjdns_rpc_port=$(grep -A 5 "\"admin\":" /data/cjdroute.conf | grep -oP '"bind": "\K[^"]+' | cut -d ':' -f2)
     fi      
     if [[ "$cjdns_rpc_port" =~ ^[0-9]+$ ]]; then
-        iptables -A INPUT -i eth0 -p udp --dport $cjdns_rpc_port -j ACCEPT
+        iptables -A INPUT -i lo -j ACCEPT
         iptables -A INPUT -p udp --dport $cjdns_rpc_port -j REJECT --reject-with icmp-admin-prohibited
     fi
     iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE

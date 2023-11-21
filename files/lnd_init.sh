@@ -27,7 +27,7 @@ fi
 if [[ -z "$response" || $(echo "$response" | jq -r '.peers') == "[]" ]]; then
     # Run curl command
     echo "No lightning peers found. Connecting to PKT lnd peer..."
-    peer_connect_response=$(/server/pktd/bin/pldctl lightning/peer/connect -addr.pubkey=$lnd_node_pubkey --addr.host=$lnd_node_address)
+    peer_connect_response=$(/server/pktd/bin/pldctl lightning/peer/connect --addr.pubkey=$lnd_node_pubkey --addr.host=$lnd_node_address)
 
     # Check the output of curl command
     if [[ $(echo "$peer_connect_response" | jq -r '.') == "{}" ]]; then
