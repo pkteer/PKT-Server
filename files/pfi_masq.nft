@@ -5,7 +5,6 @@ define p_management = "1:fffe"
 define p_speedtest = "1:fffd"
 define p_cjdns = "1:fffc"
 
-
 table ip pfi
 flush table ip pfi
 table ip pfi {
@@ -45,6 +44,9 @@ table ip pfi {
     oifname == tun0 counter goto vpn
     iifname == tun0 tcp dport 64764 counter accept
     iifname == tun0 counter goto vpn
+    iifname eth0 oifname tun0 ct state related,established counter accept
+    iifname tun0 oifname eth0 counter accept
+    iifname eth0 tcp flags syn,rst syn tcp option maxseg size set 1264 counter accept
   }
 
   chain route_output {
@@ -52,5 +54,10 @@ table ip pfi {
     skuid cjdns meta priority set $p_cjdns counter accept
     skuid speedtest meta priority set $p_speedtest counter accept
     meta priority set $p_management counter accept
+  }
+
+  chain postrouting {
+    type nat hook postrouting priority srcnat; 
+    oifname eth0 masquerade
   }
 }

@@ -101,6 +101,7 @@ if [ "$cjdns_flag" = true ]; then
         iptables -A INPUT -i lo -j ACCEPT
         iptables -A INPUT -p udp --dport $cjdns_rpc_port -j REJECT --reject-with icmp-admin-prohibited
     fi
+    # TODO:Move to nftables, use pfi_maq.nft
     iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
     iptables -A FORWARD -i eth0 -o tun0 -m state --state RELATED,ESTABLISHED -j ACCEPT
     iptables -A FORWARD -i tun0 -o eth0 -j ACCEPT
