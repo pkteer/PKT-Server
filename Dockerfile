@@ -37,7 +37,7 @@ RUN rm -rf /server/cjdns/target
 #AnodeVPN-Server
 WORKDIR /server
 RUN cd /server
-RUN git clone https://github.com/anode-co/anodevpn-server
+RUN git clone https://github.com/anode-co/anodevpn-server.git
 RUN cd /server/anodevpn-server
 WORKDIR /server/anodevpn-server
 RUN git checkout reversevpn
