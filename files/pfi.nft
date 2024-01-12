@@ -36,7 +36,7 @@ table ip pfi {
   chain reverse_vpn {
     type nat hook prerouting priority dstnat;
     tcp option maxseg size set rt mtu
-    ip daddr $PUBLIC_IP tcp dport @s_reverse_ports counter dnat to ip daddr map @s_reverse_ports
+    ip daddr $PUBLIC_IP tcp dport @s_reverse_ports counter dnat to tcp dport map @m_reverse_ports
   }
 
   chain forward {
