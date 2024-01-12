@@ -35,7 +35,6 @@ table ip pfi {
 
   chain reverse_vpn {
     type nat hook prerouting priority dstnat;
-    tcp option maxseg size set rt mtu
     ip daddr $PUBLIC_IP tcp dport @s_reverse_ports counter dnat to tcp dport map @m_reverse_ports
   }
 
@@ -49,6 +48,7 @@ table ip pfi {
 
   chain route_output {
     type route hook output priority mangle; # -150
+    tcp option maxseg size set rt mtu
     skuid cjdns meta priority set $p_cjdns counter accept
     skuid speedtest meta priority set $p_speedtest counter accept
     meta priority set $p_management counter accept
