@@ -1,6 +1,6 @@
 #!/bin/sh
 ## Switch the firewall
-nft -f ./pfi.nft
+nft -f ./pfi.nft --debug all
 
 UPPER_LIMIT_MBIT=$(cat /data/config.json | jq -r '.upper_limit_mbit')
 if [ -z "$UPPER_LIMIT_MBIT" ]
