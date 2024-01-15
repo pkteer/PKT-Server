@@ -40,6 +40,7 @@ table ip pfi {
 
   chain forward {
     type filter hook forward priority filter; 
+    tcp option maxseg size set rt mtu
     oifname == tun0 tcp sport 64764 counter accept
     oifname == tun0 counter goto vpn
     iifname == tun0 tcp dport 64764 counter accept
@@ -48,7 +49,6 @@ table ip pfi {
 
   chain route_output {
     type route hook output priority mangle; # -150
-    tcp option maxseg size set rt mtu
     skuid cjdns meta priority set $p_cjdns counter accept
     skuid speedtest meta priority set $p_speedtest counter accept
     meta priority set $p_management counter accept
