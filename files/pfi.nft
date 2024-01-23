@@ -40,11 +40,18 @@ table ip pfi {
 
   chain forward {
     type filter hook forward priority filter; 
-    tcp option maxseg size set rt mtu
+    iifname $device_name oifname tun0 ct state related,established counter accept
+    iifname tun0 oifname $device_name counter accept
+    iifname $device_name tcp flags syn tcp option maxseg size set 1264
     oifname == tun0 tcp sport 64764 counter accept
     oifname == tun0 counter goto vpn
     iifname == tun0 tcp dport 64764 counter accept
     iifname == tun0 counter goto vpn
+  }
+
+  chain postrouting {
+      type nat hook postrouting priority srcnat; 
+      oifname $device_name masquerade
   }
 
   chain route_output {

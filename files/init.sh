@@ -101,17 +101,13 @@ if [ "$cjdns_flag" = true ]; then
         iptables -A INPUT -i lo -j ACCEPT
         iptables -A INPUT -p udp --dport $cjdns_rpc_port -j REJECT --reject-with icmp-admin-prohibited
     fi
-    # TODO:Move to nftables, use pfi_maq.nft
-    device_name=$(ip route | awk '/default/ { print $5 }')
-    iptables -t nat -A POSTROUTING -o $device_name -j MASQUERADE
-    iptables -A FORWARD -i $device_name -o tun0 -m state --state RELATED,ESTABLISHED -j ACCEPT
-    iptables -A FORWARD -i tun0 -o $device_name -j ACCEPT
-    iptables -A FORWARD -i $device_name -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1264
     ip route add 10.0.0.0/8 dev tun0
 fi
 # Add public ip
 publicIp=$(curl -s ifconfig.me)
+device_name=$(ip route | awk '/default/ { print $5 }')
 echo "define PUBLIC_IP = $publicIp" > /server/tmppfi.nft
+echo "define device_name = $device_name" > /server/tmppfi.nft
 cat /server/pfi.nft >> /server/tmppfi.nft
 mv /server/tmppfi.nft /server/pfi.nft
 
