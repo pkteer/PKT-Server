@@ -1,7 +1,4 @@
 #!/bin/sh
-
-# Allow traffic for tun0 through docker0
-nft add rule ip filter FORWARD oifname "tun0" counter packets 0 bytes 0 accept
 # Set up rules for VPN and Reverse VPN
 nft -f ./pfi.nft 
 
