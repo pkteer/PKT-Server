@@ -104,7 +104,7 @@ if [ "$cjdns_flag" = true ]; then
     ip route add 10.0.0.0/8 dev tun0
 fi
 # Add public ip
-publicIp=$(curl -s ifconfig.me)
+publicIp=$(curl -s ipinfo/ip)
 device_name=$(ip route | awk '/default/ { print $5 }')
 echo "define PUBLIC_IP = $publicIp" > /server/tmppfi.nft
 echo "define device_name = $device_name" > /server/tmppfi.nft

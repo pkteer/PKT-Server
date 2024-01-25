@@ -11,7 +11,7 @@ DEFAULT_INTERFACE=$(ip route | awk '/default/ { print $5 }')
 
 tc qdisc add dev tun0 root handle 1:0 hfsc default ffff
     tc class add dev tun0 parent 1:0 classid 1:fffe hfsc ls m2 950mbit 
-    tc class add dev tun0 parent 1:0 classid 1:ffff hfsc ls m2 1mbit
+    tc class add dev tun0 parent 1:0 classid 1:ffff hfsc ls m2 100mbit
         tc qdisc add dev tun0 parent 1:ffff handle ffff: cake
 
 tc qdisc add dev $DEFAULT_INTERFACE root handle 1:0 hfsc default fffe
