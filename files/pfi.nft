@@ -17,8 +17,8 @@ table ip nat {
 table ip filter {
   chain FORWARD {
     type filter hook forward priority filter; 
-    ct state related,established counter accept
     iifname "tun0" oifname $device_name counter accept
+    iifname $device_name oifname "tun0" counter accept
   }
 }
 
