@@ -114,7 +114,7 @@ if [ -z "$device_name" ]; then
     echo "device_name is empty. Aborting."
     exit 1
 fi
-echo "define PUBLIC_IP = $publicIp define device_name = $device_name" > /server/tmppfi.nft
+echo -e "define PUBLIC_IP = $publicIp \ndefine device_name = $device_name" > /server/tmppfi.nft
 cat /server/pfi.nft >> /server/tmppfi.nft
 mv /server/tmppfi.nft /server/pfi.nft
 
