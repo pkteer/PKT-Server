@@ -11,6 +11,5 @@ docker run -it --rm \
         --device /dev/net/tun:/dev/net/tun \
 	    --network host \
         -v $(pwd):/data \
-	    --entrypoint /bin/bash \
         --name pkt-server-reversevpn \
         pkt-server-reversevpn
