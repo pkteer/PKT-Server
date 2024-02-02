@@ -9,7 +9,7 @@ docker run -it --rm \
         --log-driver 'local' \
         --cap-add=ALL \
         --device /dev/net/tun:/dev/net/tun \
-	    --network host \
+	--network host \
         -v $(pwd):/data \
         --name pkt-server-reversevpn \
-        pkt-server-reversevpn
+        pkteer/pkt-server-reversevpn
