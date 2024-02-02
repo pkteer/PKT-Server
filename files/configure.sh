@@ -119,5 +119,6 @@ fi
 jq '.security[0].setuser = 0' /data/cjdroute.conf > /data/cjdroute.conf.tmp && mv /data/cjdroute.conf.tmp /data/cjdroute.conf
 
 cp /server/start.sh /data/start.sh
+cp /server/start_reversevpn.sh /data/start_reversevpn.sh
 cp /server/publish_vpn.sh /data/publish_vpn.sh
 cp /server/check_running_processes.sh /data/check_running_processes.sh
