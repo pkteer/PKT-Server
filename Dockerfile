@@ -46,6 +46,7 @@ RUN npm install
 RUN npm install proper-lockfile
 RUN npm install nthen
 RUN npm install http-proxy
+RUN sed -i '/cfg6/,/},/d' config.example.js
 RUN cat config.example.js | sed "s/dryrun: true/dryrun: false/" > config.js
 
 # Prometheus Node Exporter
