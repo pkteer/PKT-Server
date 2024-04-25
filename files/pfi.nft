@@ -5,6 +5,25 @@ define p_management = "1:fffe"
 define p_speedtest = "1:fffd"
 define p_cjdns = "1:fffc"
 
+define blocked_ip_range = {
+        0.0.0.0/8 comment "local 'this' network",
+        10.0.0.0/8 comment "private network",
+        100.64.0.0/10 comment "shared address space",
+        127.0.0.0/8 comment "loopback",
+        169.254.0.0/16 comment "link-local addresses",
+        172.16.0.0/12 comment "local communications in private network",
+        192.0.0.0/24 comment "ietf protocol assignments",
+        192.0.2.0/24 comment "TEST-NET-1 documentation and examples",
+        192.88.99.0/24 comment "Formerly used for IPv6 to IPv4 relay",
+        192.168.0.0/16 comment "private network",
+        198.18.0.0/15 comment "benchmark testing network",
+        198.51.100.0/24 comment "TEST-NET-2, documentation",
+        203.0.113.0/24 comment "TEST-NET-3, documentation",
+        224.0.0.0/4 comment "multicast",
+        233.252.0.0/24 comment "MCAST-TEST-NET, documentation",
+        240.0.0.0/4 comment "Class E experimental",
+        255.255.255.255/32 comment "broadcast",
+}
 
 table ip pfi
 flush table ip pfi
@@ -40,7 +59,8 @@ table ip pfi {
   }
 
   chain forward {
-    type filter hook forward priority filter; 
+    type filter hook forward priority filter;
+    iifname == tun0 ip daddr $blocked_ip_range counter drop
     oifname == tun0 tcp sport 64764 counter accept
     oifname == tun0 counter goto vpn
     iifname == tun0 tcp dport 64764 counter accept
