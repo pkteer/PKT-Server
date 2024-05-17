@@ -65,7 +65,7 @@ COPY --from=builder /server/node_exporter-1.6.1.linux-amd64 /server/node_exporte
 
 # Install packages
 RUN apt-get update 
-RUN apt-get install -y --no-install-recommends curl nodejs jq iptables nftables iperf3 iproute2 net-tools psmisc python3.9 python3-pip moreutils
+RUN apt-get install -y --no-install-recommends curl nodejs jq iptables nftables iperf3 iproute2 net-tools psmisc python3.9 python3-pip moreutils wget radvd
 RUN pip3 install requests
 
 RUN cd /server

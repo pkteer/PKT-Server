@@ -11,5 +11,10 @@
     "rpcuser": "x",
     "rpcpass": ""
   },
-  "upper_limit_mbit": 1000 
+  "upper_limit_mbit": 1000,
+  "vpnclient": {
+    "username": "pktvpn",
+    "password": "SecureVpnConnect123",
+    "sharedKey": "aVTJHw02nFBKsgeDQtyfjP"
+  }
 }
