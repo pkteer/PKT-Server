@@ -121,3 +121,4 @@ jq '.security[0].setuser = 0' /data/cjdroute.conf > /data/cjdroute.conf.tmp && m
 cp /server/start.sh /data/start.sh
 cp /server/publish_vpn.sh /data/publish_vpn.sh
 cp /server/check_running_processes.sh /data/check_running_processes.sh
+cp /server/vpn_configure.sh /data/vpn_configure.sh
