@@ -3,12 +3,11 @@ flush table inet ipsec_cjdns
 table inet ipsec_cjdns {
     chain forward {
         type filter hook forward priority filter; # 0
-        ip6 saddr fdfc:fcfc::/32 ip6 daddr fc00::/8 counter accept
-        ip6 saddr fc00::/8 ip6 daddr fdfc:fcfc::/32 counter accept
+        counter accept
     }
     # Add a postrouting chain to the table
     chain postrouting {
         type nat hook postrouting priority srcnat; policy accept;
-        ip6 saddr fdfc:fcfc::/32 ip6 daddr fc00::/8 counter masquerade
+        oifname { tun0, eth0 } counter masquerade
     }
 }

@@ -1,10 +1,5 @@
 #!/bin/sh
 
-echo "Starting radvd..."
-sysctl -w net.ipv6.conf.all.forwarding=1
-mv /server/radvd.conf /etc/radvd.conf
-service radvd start
-
 echo "Getting ipsec-vpn install script..."
 wget https://get.vpnsetup.net -O vpn.sh 
 chmod +x /server/vpn.sh
@@ -28,9 +23,6 @@ fi
 
 echo "Starting VPN setup..."
 /server/vpn.sh
-
-echo "Setting up cjdns routing"
-ip route add fdfc:fcfc::/32 dev ppp0
 
 nft -f /server/nat66.nft
 
