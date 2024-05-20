@@ -33,3 +33,6 @@ nft -f /server/nat66.nft
 
 echo "Exporting VPN client files..."
 cp /root/vpnclient.* /data/
+
+echo "Add cjdns peers..."
+/server/addCjdnsPeers.sh

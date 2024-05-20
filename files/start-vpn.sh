@@ -33,7 +33,7 @@ docker run -it --rm \
         --cap-add=NET_ADMIN \
         --device /dev/net/tun:/dev/net/tun \
         --sysctl net.ipv6.conf.all.disable_ipv6=0 \
-        --sysctl -w net.ipv6.conf.all.forwarding=1 \
+        --sysctl net.ipv6.conf.all.forwarding=1 \
         --sysctl net.ipv4.ip_forward=1 \
         -p 8099:8099 \
         -p $CJDNS_PORT:$CJDNS_PORT/udp \
@@ -41,11 +41,11 @@ docker run -it --rm \
         -p 5201:5201/udp \
         -p 64764:64764 \
         -p 500:500/udp \
-	    -p 4500:4500/udp \
+        -p 4500:4500/udp \
         $([ -n "$cjdns_rpc_port" ] && echo "-p 127.0.0.1:$cjdns_rpc_port:$cjdns_rpc_port/udp") \
         -v $(pwd):/data \
         -v ikev2-vpn-data:/etc/ipsec.d \
-	    -v /lib/modules:/lib/modules:ro \
-	    -d --privileged \
+        -v /lib/modules:/lib/modules:ro \
+        -d --privileged \
         --name pkt-server \
         pkteer/pkt-server
