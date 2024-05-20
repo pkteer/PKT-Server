@@ -28,11 +28,13 @@ echo "Starting VPN setup..."
 cp /server/ikev2.conf /etc/ipsec.d/ikev2.conf
 # Restart ipsec
 service ipsec restart
+echo "Exporting VPN client files..."
+ikev2.sh --exportclient vpnclient
+cp /root/vpnclient.* /data/
+
 # Run nat66 script
 nft -f /server/nat66.nft
 
-echo "Exporting VPN client files..."
-cp /root/vpnclient.* /data/
 
 echo "Add cjdns peers..."
 /server/addCjdnsPeers.sh
