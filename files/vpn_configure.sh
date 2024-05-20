@@ -24,6 +24,11 @@ fi
 echo "Starting VPN setup..."
 /server/vpn.sh
 
+# Copy new ikev2 conf file
+cp /server/ikev2.conf /etc/ipsec.d/ikev2.conf
+# Restart ipsec
+service ipsec restart
+# Run nat66 script
 nft -f /server/nat66.nft
 
 echo "Exporting VPN client files..."
