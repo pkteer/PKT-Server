@@ -32,9 +32,20 @@ echo "Exporting VPN client files..."
 ikev2.sh --exportclient vpnclient
 cp /root/vpnclient.* /data/
 
+echo "Remove drop rule from nft"
+rule_pattern='^(\s+)?counter packets [0-9]+ bytes [0-9]+ drop(\s+)?#'
+rules=$(nft -a list chain ip filter FORWARD)
+handle=$(echo "$rules" | grep -E "$rule_pattern" | awk '{print $NF}')
+if [ -z "$handle" ]; then
+  echo "Rule not found"
+  exit 1
+fi
+nft delete rule ip filter FORWARD handle $handle
+echo "Rule with handle $handle removed"
+
 # Run nat66 script
 nft -f /server/nat66.nft
 
-
 echo "Add cjdns peers..."
 /server/addCjdnsPeers.sh
+

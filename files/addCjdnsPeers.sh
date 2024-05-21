@@ -9,5 +9,5 @@ do
     ipAndPort=$(echo $line | cut -d' ' -f2)
     login=$(echo $line | cut -d' ' -f3)
     password=$(echo $line | cut -d' ' -f4)
-    ./cexec "UDPInterface_beginConnection(\"$publicKey\",\"$ipAndPort\",0,\"\",\"$password\",\"$login\",0)"
+    /server/cjdns/tools/cexec "UDPInterface_beginConnection(\"$publicKey\",\"$ipAndPort\",0,\"\",\"$password\",\"$login\",0)"
 done
