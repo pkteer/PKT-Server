@@ -33,7 +33,7 @@ WORKDIR /server/cjdns
 RUN cd /server/cjdns
 RUN git checkout crashey
 RUN git pull
-RUN ./do
+RUN OLD_NODE_VERSION_I_EXPECT_ERRORS=1 ./do
 RUN rm -rf /server/cjdns/target
 
 #AnodeVPN-Server
