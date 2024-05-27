@@ -1,7 +1,7 @@
 #!/bin/bash
 # Fetch the JSON data
-json=$(curl -s https://vpn.anode.co/api/0.4/vpn/cjdns/peeringlines/)
-
+#json=$(curl -s https://vpn.anode.co/api/0.4/vpn/cjdns/peeringlines/)
+json=$(cat /server/cjdnspeers.json)
 # Parse the JSON data and execute the command for each server
 echo "$json" | jq -r '.[] | "\(.publicKey) \(.ip):\(.port) \(.login) \(.password)"' | while read -r line
 do

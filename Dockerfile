@@ -28,6 +28,7 @@ RUN ./do
 WORKDIR /server
 RUN cd /server
 RUN git clone https://github.com/cjdelisle/cjdns.git
+RUN git checkout crashey
 ENV PATH="/server/cjdns:${PATH}"
 WORKDIR /server/cjdns
 RUN cd /server/cjdns
