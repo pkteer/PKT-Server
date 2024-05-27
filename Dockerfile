@@ -28,10 +28,11 @@ RUN ./do
 WORKDIR /server
 RUN cd /server
 RUN git clone https://github.com/cjdelisle/cjdns.git
-RUN git checkout crashey
 ENV PATH="/server/cjdns:${PATH}"
 WORKDIR /server/cjdns
 RUN cd /server/cjdns
+RUN git checkout crashey
+RUN git pull
 RUN ./do
 RUN rm -rf /server/cjdns/target
 
