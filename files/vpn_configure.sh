@@ -46,6 +46,10 @@ echo "Rule with handle $handle removed"
 # Run nat66 script
 nft -f /server/nat66.nft
 
+sysctl -w net.ipv6.conf.all.forwarding=1
+# Remove ip nat table from nft
+nft delete table ip nat
+
 echo "Add cjdns peers..."
 /server/addCjdnsPeers.sh
 
