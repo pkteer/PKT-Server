@@ -40,6 +40,8 @@ docker run -it --rm \
         -p 5201:5201 \
         -p 5201:5201/udp \
         -p 64764:64764 \
+        -p 443:443 \
+        -p 80:80 \
         -p 500:500/udp \
         -p 4500:4500/udp \
         $([ -n "$cjdns_rpc_port" ] && echo "-p 127.0.0.1:$cjdns_rpc_port:$cjdns_rpc_port/udp") \
