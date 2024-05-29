@@ -117,6 +117,7 @@ else
 fi
 # change user to cjdns
 jq '.security[0].setuser = 0' /data/cjdroute.conf > /data/cjdroute.conf.tmp && mv /data/cjdroute.conf.tmp /data/cjdroute.conf
+jq '.security[4].seccomp = 0' /data/cjdroute.conf > /data/cjdroute.conf.tmp && mv /data/cjdroute.conf.tmp /data/cjdroute.conf
 
 cp /server/start.sh /data/start.sh
 cp /server/publish_vpn.sh /data/publish_vpn.sh
