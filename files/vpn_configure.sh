@@ -24,6 +24,11 @@ fi
 echo "Starting VPN setup..."
 /server/vpn.sh
 
+# edit ikev2 conf file
+publicIpv4=$(curl -s https://api.ipify.org)
+cjdnsIpv6=$(cat /data/cjdroute.conf | jq -r '.ipv6' | cut -d: -f1-4)"::/64"
+sed -i "s/={{PUBLIC_IPv4}}/=$publicIpv4/g" vpn.sh
+sed -i "s/={{CJDNS_IPV6}}/=$publicIpv4/g" vpn.sh
 # Copy new ikev2 conf file
 cp /server/ikev2.conf /etc/ipsec.d/ikev2.conf
 # Restart ipsec
