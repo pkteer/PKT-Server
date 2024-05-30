@@ -1,10 +1,10 @@
 # support_server docker image for VPN exit server
-FROM clickhouse/clickhouse-server as builder
+FROM ubuntu:22.04 as builder
 WORKDIR /server
 
 # Install Rust, nodejs, git, utils, networking etc
 RUN apt-get update 
-RUN apt-get install -y --no-install-recommends curl build-essential git nodejs npm python3.9 python3-pip python2 jq 
+RUN apt-get install -y --no-install-recommends wget curl build-essential git nodejs npm python3.9 python3-pip python2 jq 
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
@@ -33,7 +33,7 @@ WORKDIR /server/cjdns
 RUN cd /server/cjdns
 RUN git checkout crashey
 RUN git pull
-RUN OLD_NODE_VERSION_I_EXPECT_ERRORS=1 ./do
+RUN OLD_NODE_VERSION_I_EXPECT_ERRORS=1 NO_TEST=1 ./do
 RUN rm -rf /server/cjdns/target
 
 #AnodeVPN-Server
@@ -67,7 +67,7 @@ COPY --from=builder /server/node_exporter-1.6.1.linux-amd64 /server/node_exporte
 
 # Install packages
 RUN apt-get update 
-RUN apt-get install -y --no-install-recommends curl nodejs jq iptables nftables iperf3 iproute2 net-tools psmisc python3.9 python3-pip moreutils wget
+RUN apt-get install -y --no-install-recommends curl nodejs jq iptables nano nftables iperf3 iproute2 net-tools psmisc python3.9 python3-pip moreutils wget
 RUN pip3 install requests
 
 RUN cd /server
