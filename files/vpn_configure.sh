@@ -32,7 +32,7 @@ sed -i "s/{{CJDNS_IPV6}}/$cjdnsIpv6/g" /server/ikev2.conf
 # Copy new ikev2 conf file
 cp /server/ikev2.conf /etc/ipsec.d/ikev2.conf
 # Restart ipsec
-service ipsec restart
+ipsec restart
 echo "Exporting VPN client files..."
 ikev2.sh --exportclient vpnclient
 cp /root/vpnclient.* /data/
