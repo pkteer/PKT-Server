@@ -12,6 +12,7 @@
     "rpcpass": ""
   },
   "upper_limit_mbit": 1000,
+  "hostname": "kraut2.pkteer.com",
   "vpnclient": {
     "username": "pktvpn",
     "password": "SecureVpnConnect123",
