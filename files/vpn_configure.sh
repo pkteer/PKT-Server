@@ -24,6 +24,8 @@ fi
 echo "Starting VPN setup..."
 /server/vpn.sh
 
+# create directory for vpnclient files
+mkdir -p /server/vpnclients
 # edit ikev2 conf file
 publicIpv4=$(curl -s https://api.ipify.org)
 cjdnsIpv6=$(cat /data/cjdroute.conf | jq -r '.ipv6' | cut -d: -f1-4)
