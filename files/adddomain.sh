@@ -23,16 +23,16 @@ if grep -qw "$domain" $sniconffile; then
     # echo
     # if [[ $REPLY =~ ^[Yy]$ ]]; then
     # fi
-    sed -i "/$domain/c\\\t$domain [$ipv6]:80" $sniconffile
+    sed -i "/$domain/c\\\t$domain [$ipv6]:81" $sniconffile
     sed -i "/$domain/c\\\t$domain [$ipv6]:443" $sniconffile
 else
     # If the domain doesn't exist, add the domain and IPv6 address to the configuration file
-    sed -i "/table http_hosts {/a \\\t$domain [$ipv6]:80" $sniconffile
+    sed -i "/table http_hosts {/a \\\t$domain [$ipv6]:81" $sniconffile
     sed -i "/table https_hosts {/a \\\t$domain [$ipv6]:443" $sniconffile
 
     sed -i "/resolver {/a \\\    search $domain" $sniconffile
 fi
 
 killall sniproxy
-rm /var/run/proxy.sock
+#rm /var/run/proxy.sock
 sniproxy
