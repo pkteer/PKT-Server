@@ -2,6 +2,8 @@
 
 passphrase="pktvpn"
 
+apt-get install expect
+
 echo "Copying openvpn configuration..."
 if [ -z "$PKT_HOSTNAME" ]
 then
