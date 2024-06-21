@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Check if OpenVPN is running
+if pgrep -x "openvpn" > /dev/null
+then
+    echo "OpenVPN is running."
+else
+    echo "OpenVPN is not running."
+fi
+
 if [ -z "$1" ]
 then
     echo "No username supplied. Exiting."
@@ -26,7 +34,7 @@ then
 fi
 
 # Create client certificate
-cd /openvpn/easy-rsa
+cd /etc/openvpn/easy-rsa
 #./easyrsa gen-req $username nopass
 /usr/bin/expect <<EOF
 spawn ./easyrsa gen-req $username nopass
@@ -40,13 +48,13 @@ EOF
 spawn ./easyrsa sign-req client $username
 expect "Confirm request details:"
 send "yes\r"
-expect "Enter pass phrase for /openvpn/easy-rsa/pki/private/ca.key:"
+expect "Enter pass phrase for /etc/openvpn/easy-rsa/pki/private/ca.key:"
 send "$password\r"
 expect eof
 EOF
 
-client_crt="/openvpn/easy-rsa/pki/issued/$username.crt"
-client_key="/openvpn/easy-rsa/pki/private/$username.key"
+client_crt="/etc/openvpn/easy-rsa/pki/issued/$username.crt"
+client_key="/etc/openvpn/easy-rsa/pki/private/$username.key"
 
 if [[ ! -f $client_crt ]]; then
     echo "Error: $client_crt does not exist."

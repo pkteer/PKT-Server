@@ -1,7 +1,7 @@
 #!/bin/sh
 
 passphrase="pktvpn"
-
+apt-get install openvpn easy-rsa
 apt-get install expect
 
 echo "Copying openvpn configuration..."
@@ -33,7 +33,7 @@ cp pki/dh.pem pki/ca.crt pki/issued/$PKT_HOSTNAME.crt pki/private/$PKT_HOSTNAME.
 #TODO confirm with 'yes' and add passphrase
 
 echo "Editing openvpn configuration..."
-sed -i 's/{{HOSTNAME}}/$PKT_HOSTNAME/g' /path/to/openvpn.conf
+sed -i 's/{{HOSTNAME}}/$PKT_HOSTNAME/g' /openvpn/$PKT_HOSTNAME.conf
 
 echo "Copying openvpn client files..."
 cp /etc/openvpn/easy-rsa/pki/issued/pktvpnclient.crt /data/
