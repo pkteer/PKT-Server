@@ -47,6 +47,7 @@ docker run -it --rm \
         -p 4500:4500/udp \
         -p 943:943 \
         -v $(pwd)/openvpn:/etc/openvpn \
+        -v $(pwd)/vpnclients:/server/vpnclients \
         -e PKT_HOSTNAME=$pkt_hostname \
         $([ -n "$cjdns_rpc_port" ] && echo "-p 127.0.0.1:$cjdns_rpc_port:$cjdns_rpc_port/udp") \
         -v $(pwd):/data \
