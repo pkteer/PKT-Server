@@ -46,6 +46,7 @@ docker run -it --rm \
         -p 500:500/udp \
         -p 4500:4500/udp \
         -p 943:943 \
+        -p 1194:1194/udp \
         -v $(pwd)/openvpn:/etc/openvpn \
         -v $(pwd)/vpnclients:/server/vpnclients \
         -e PKT_HOSTNAME=$pkt_hostname \
