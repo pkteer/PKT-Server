@@ -10,7 +10,7 @@ then
     echo "PKT_HOSTNAME not set, exiting..."
     exit 1
 else
-    mv /server/openvpn.conf /openvpn/$PKT_HOSTNAME.conf
+    mv /server/openvpn.conf /etc/openvpn/$PKT_HOSTNAME.conf
 fi
 
 echo "Generating certificates..."
@@ -33,10 +33,10 @@ cp pki/dh.pem pki/ca.crt pki/issued/$PKT_HOSTNAME.crt pki/private/$PKT_HOSTNAME.
 #TODO confirm with 'yes' and add passphrase
 
 echo "Editing openvpn configuration..."
-sed -i 's/{{HOSTNAME}}/$PKT_HOSTNAME/g' /openvpn/$PKT_HOSTNAME.conf
+sed -i 's/{{HOSTNAME}}/$PKT_HOSTNAME/g' /etc/openvpn/$PKT_HOSTNAME.conf
 
 echo "Copying openvpn client files..."
 cp /etc/openvpn/easy-rsa/pki/issued/pktvpnclient.crt /data/
-cp /etc/openvpn/easy-rsa/pki/private/pktvpnclient.crt /data/
+cp /etc/openvpn/easy-rsa/pki/private/pktvpnclient.key /data/
 cp /etc/openvpn/ca.crt /data/
-#cp /etc/openvpn/ta.key /data/
+
