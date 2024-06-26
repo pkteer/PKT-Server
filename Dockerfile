@@ -42,7 +42,7 @@ RUN cd /server
 RUN git clone https://github.com/anode-co/anodevpn-server
 RUN cd /server/anodevpn-server
 WORKDIR /server/anodevpn-server
-RUN git checkout reversevpn
+#RUN git checkout reversevpn
 RUN git pull
 RUN npm install
 RUN npm install proper-lockfile
