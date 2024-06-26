@@ -56,5 +56,3 @@ docker run -it --rm \
         -d --privileged \
         --name pkt-server \
         pkteer/pkt-server
-
-docker exec -it pkt-server /bin/bash -c "/server/vpn_configure.sh"
