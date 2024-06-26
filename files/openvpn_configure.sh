@@ -38,7 +38,7 @@ cp pki/dh.pem pki/ca.crt pki/issued/$hostname.crt pki/private/$hostname.key /etc
 #TODO confirm with 'yes' and add passphrase
 
 echo "Editing openvpn configuration..."
-sed -i 's/{{HOSTNAME}}/$hostname/g' /etc/openvpn/$hostname.conf
+sed -i "s/{{HOSTNAME}}/${hostname}/g" /etc/openvpn/$hostname.conf
 
 echo "Copying openvpn client files..."
 cp /etc/openvpn/easy-rsa/pki/issued/pktvpnclient.crt /data/
