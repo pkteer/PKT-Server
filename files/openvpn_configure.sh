@@ -1,17 +1,22 @@
 #!/bin/sh
 
-passphrase="pktvpn"
+password=$(cat /data/config.json | jq -r '.openvpn_password')
+if [ -z "$password" ]; then
+    echo "Password is empty. Please set the openvpn_password in config.json."
+    exit 1
+fi
+hostname=$(cat /data/config.json | jq -r '.hostname')
+if [ -z "$hostname" ]
+then
+    echo "hostname not set, Please set the hostname in config.json."
+    exit 1
+fi
+
 apt-get install openvpn easy-rsa
 apt-get install expect
 
 echo "Copying openvpn configuration..."
-if [ -z "$PKT_HOSTNAME" ]
-then
-    echo "PKT_HOSTNAME not set, exiting..."
-    exit 1
-else
-    mv /server/openvpn.conf /etc/openvpn/$PKT_HOSTNAME.conf
-fi
+mv /server/openvpn.conf /etc/openvpn/$hostname.conf
 
 echo "Generating certificates..."
 make-cadir /etc/openvpn/easy-rsa
@@ -21,11 +26,11 @@ cd /etc/openvpn/easy-rsa/
 ./easyrsa build-ca
 #TODO: key passphrase, twice and common name "hostname"
 
-./easyrsa gen-req $PKT_HOSTNAME nopass
+./easyrsa gen-req $hostname nopass
 ./easyrsa gen-dh
-./easyrsa sign-req server $PKT_HOSTNAME
+./easyrsa sign-req server $hostname
 #TODO: confirm with 'yes' and add pasphrase
-cp pki/dh.pem pki/ca.crt pki/issued/$PKT_HOSTNAME.crt pki/private/$PKT_HOSTNAME.key /etc/openvpn/
+cp pki/dh.pem pki/ca.crt pki/issued/$hostname.crt pki/private/$hostname.key /etc/openvpn/
 
 ./easyrsa gen-req pktvpnclient nopass
 #TODO confirm with 'yes' and commonname "pktvpnclient"
@@ -33,7 +38,7 @@ cp pki/dh.pem pki/ca.crt pki/issued/$PKT_HOSTNAME.crt pki/private/$PKT_HOSTNAME.
 #TODO confirm with 'yes' and add passphrase
 
 echo "Editing openvpn configuration..."
-sed -i 's/{{HOSTNAME}}/$PKT_HOSTNAME/g' /etc/openvpn/$PKT_HOSTNAME.conf
+sed -i 's/{{HOSTNAME}}/$hostname/g' /etc/openvpn/$hostname.conf
 
 echo "Copying openvpn client files..."
 cp /etc/openvpn/easy-rsa/pki/issued/pktvpnclient.crt /data/
