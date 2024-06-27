@@ -141,8 +141,12 @@ su - speedtest <<EOF
 EOF
 
 # switch back to root
+# Start sniproxy
+/server/start-sni.sh
+# Start node_exporter for prometheus
 /server/node_exporter/node_exporter &
-
+# Start cjdns and anodevpn server watchdog
 if [ "$cjdns_flag" = true ] && [ "$vpn_flag" = true ]; then
     /server/cjdns_watchdog.sh 
 fi
+

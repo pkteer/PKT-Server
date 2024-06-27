@@ -9,16 +9,19 @@ CONFIG_FILE="/data/config.json"
 if [ ! -f "$CONFIG_FILE" ]; then
     echo "Config file not found, proceeding with default values."
 else
-    VPN_USERNAME=$(jq -r '.vpnclient.username' $CONFIG_FILE)
-    VPN_PASSWORD=$(jq -r '.vpnclient.password' $CONFIG_FILE)
-    VPN_SHARED_KEY=$(jq -r '.vpnclient.sharedKey' $CONFIG_FILE)
-    if [ -z "$VPN_USERNAME" ] || [ -z "$VPN_PASSWORD" ] || [ -z "$VPN_SHARED_KEY" ]; then
-        echo "One or more required values not found in config file, proceeding with default values."
-    else
-        sed -i "s/YOUR_IPSEC_PSK=''/YOUR_IPSEC_PSK='$VPN_SHARED_KEY'/g" vpn.sh
-        sed -i "s/YOUR_USERNAME=''/YOUR_USERNAME='$VPN_USERNAME'/g" vpn.sh
-        sed -i "s/YOUR_PASSWORD=''/YOUR_PASSWORD='$VPN_PASSWORD'/g" vpn.sh
-    fi
+    ikevpnclient=$(jq -r '.ikevpnclient.enabled' $CONFIG_FILE)
+    if [ "$ikevpnclient" = "true" ]; then
+        VPN_USERNAME=$(jq -r '.ikevpnclient.username' $CONFIG_FILE)
+        VPN_PASSWORD=$(jq -r '.ikevpnclient.password' $CONFIG_FILE)
+        VPN_SHARED_KEY=$(jq -r '.ikevpnclient.sharedKey' $CONFIG_FILE)
+        if [ -z "$VPN_USERNAME" ] || [ -z "$VPN_PASSWORD" ] || [ -z "$VPN_SHARED_KEY" ]; then
+            echo "One or more required values not found in config file, proceeding with default values."
+        else
+            sed -i "s/YOUR_IPSEC_PSK=''/YOUR_IPSEC_PSK='$VPN_SHARED_KEY'/g" vpn.sh
+            sed -i "s/YOUR_USERNAME=''/YOUR_USERNAME='$VPN_USERNAME'/g" vpn.sh
+            sed -i "s/YOUR_PASSWORD=''/YOUR_PASSWORD='$VPN_PASSWORD'/g" vpn.sh
+        fi
+    done
 fi
 
 echo "Starting VPN setup..."

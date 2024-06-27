@@ -57,4 +57,7 @@ while true; do
         fi
     fi
     sleep 5
+    # Run vpn_watchdog
+    /server/vpn_watchdog.sh
+    sleep 1
 done

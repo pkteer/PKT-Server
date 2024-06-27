@@ -7,12 +7,13 @@ ipsec_process="/usr/local/libexec/ipsec/pluto"
 vpn_script="/server/vpn.sh"
 openvpn_script="openvpn --config "
 
+echo "Checking if ipsec is running..."
 if ! pgrep -f $ipsec_process > /dev/null
 then
     echo "$ipsec_process is not running, starting it now..."
     bash $vpn_script
 fi
-
+echo "Checking if openvpn is running..."
 if ! pgrep -f openvpn > /dev/null
 then
     openvpnConfigFile=$(ls /data/openvpn/*.conf)
@@ -46,7 +47,9 @@ EOF
     bash $openvpn_script $openvpnConfigFile
 }
 
+
 size=$(jq '.clients | length' $vpnClientsFile)
+echo "Checking for expired vpn clients..."
 for (( i=$((size-1)); i>=0; i-- ))
 do
     timeCreated=$(jq -r ".clients[$i].timeCreated" $vpnClientsFile)
@@ -63,7 +66,7 @@ do
         echo "Removing $username from $vpnClientsFile"
         jq "del(.clients[$i])" $vpnClientsFile > temp.json && mv temp.json $vpnClientsFile
         #Revoking clients from ikev2
-        /usr/bin/expect <<EOF
+/usr/bin/expect <<EOF
 spawn /usr/bin/ikev2.sh --revokeclient $username
 expect "Are you sure you want to revoke"
 send "y\r"
@@ -76,7 +79,5 @@ EOF
         else
             echo "File $ovpnFile does not exist"
         fi
-    else
-        echo "$username: Time Created - $timeCreated has not passed the duration $duration"
     fi
 done
