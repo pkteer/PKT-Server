@@ -139,10 +139,13 @@ su - speedtest <<EOF
 /server/kill_iperf3.sh &
 
 EOF
-
 # switch back to root
+
+echo "Add cjdns peers..."
+/server/addCjdnsPeers.sh
+
 # Start sniproxy
-/server/start-sni.sh
+/server/start-sni.sh &
 # Start node_exporter for prometheus
 /server/node_exporter/node_exporter &
 # Start cjdns and anodevpn server watchdog

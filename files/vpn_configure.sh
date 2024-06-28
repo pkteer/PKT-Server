@@ -21,7 +21,7 @@ else
             sed -i "s/YOUR_USERNAME=''/YOUR_USERNAME='$VPN_USERNAME'/g" vpn.sh
             sed -i "s/YOUR_PASSWORD=''/YOUR_PASSWORD='$VPN_PASSWORD'/g" vpn.sh
         fi
-    done
+    fi
 fi
 
 echo "Starting VPN setup..."
@@ -59,7 +59,4 @@ nft -f /server/nat66.nft
 sysctl -w net.ipv6.conf.all.forwarding=1
 # Remove ip nat table from nft
 nft delete table ip nat
-
-echo "Add cjdns peers..."
-/server/addCjdnsPeers.sh
 

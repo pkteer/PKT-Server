@@ -58,6 +58,6 @@ while true; do
     fi
     sleep 5
     # Run vpn_watchdog
-    /server/vpn_watchdog.sh
+    /server/vpn_watchdog.sh &
     sleep 1
 done

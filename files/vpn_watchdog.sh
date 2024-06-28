@@ -11,7 +11,7 @@ echo "Checking if ipsec is running..."
 if ! pgrep -f $ipsec_process > /dev/null
 then
     echo "$ipsec_process is not running, starting it now..."
-    bash $vpn_script
+    $vpn_script
 fi
 echo "Checking if openvpn is running..."
 if ! pgrep -f openvpn > /dev/null
@@ -44,7 +44,7 @@ EOF
     cp /etc/openvpn/easy-rsa/pki/crl.pem /etc/openvpn/crl.pem
     # Restart openvpn
     killall openvpn
-    bash $openvpn_script $openvpnConfigFile
+    $openvpn_script $openvpnConfigFile
 }
 
 

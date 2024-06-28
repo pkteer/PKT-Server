@@ -42,6 +42,9 @@ else
 
     echo "Editing openvpn configuration..."
     sed -i "s/{{HOSTNAME}}/${hostname}/g" /etc/openvpn/$hostname.conf
+
+    ./easyrsa gen-crl
+    cp /etc/openvpn/easy-rsa/pki/crl.pem /etc/openvpn/crl.pem
 fi
 echo "Copying openvpn client files..."
 cp /etc/openvpn/easy-rsa/pki/issued/pktvpnclient.crt /data/
