@@ -42,7 +42,7 @@ RUN cd /server
 RUN git clone https://github.com/anode-co/anodevpn-server
 RUN cd /server/anodevpn-server
 WORKDIR /server/anodevpn-server
-RUN git checkout reversevpn
+#RUN git checkout reversevpn
 RUN git pull
 RUN npm install
 RUN npm install proper-lockfile
@@ -56,6 +56,11 @@ WORKDIR /server
 RUN cd /server
 RUN wget https://github.com/prometheus/node_exporter/releases/download/v1.6.1/node_exporter-1.6.1.linux-amd64.tar.gz
 RUN tar -xvf node_exporter-1.6.1.linux-amd64.tar.gz
+
+# OpenVPN
+WORKDIR /server
+RUN cd /server
+RUN apt-get install -y openvpn easy-rsa
 
 FROM ubuntu:22.04
 WORKDIR /server

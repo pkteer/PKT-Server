@@ -17,6 +17,7 @@ fi
 echo "Cjdns Port: $CJDNS_PORT"
 cjdns_rpc_port=""
 cjdns_rpc=$(cat config.json | jq -r '.cjdns.expose_rpc')
+
 # check if cjdns_rpc is not false
 if [ "$cjdns_rpc" != "false" ]; then
         cjdns_rpc_port=$(cat cjdroute.conf | jq -r '.admin.bind' | cut -d ':' -f2)
@@ -44,6 +45,10 @@ docker run -it --rm \
         -p 80:80 \
         -p 500:500/udp \
         -p 4500:4500/udp \
+        -p 943:943 \
+        -p 1194:1194/udp \
+        -v $(pwd)/openvpn:/etc/openvpn \
+        -v $(pwd)/vpnclients:/server/vpnclients \
         $([ -n "$cjdns_rpc_port" ] && echo "-p 127.0.0.1:$cjdns_rpc_port:$cjdns_rpc_port/udp") \
         -v $(pwd):/data \
         -v ikev2-vpn-data:/etc/ipsec.d \
@@ -51,5 +56,3 @@ docker run -it --rm \
         -d --privileged \
         --name pkt-server \
         pkteer/pkt-server
-
-docker exec -it pkt-server /bin/bash -c "/server/vpn_configure.sh"

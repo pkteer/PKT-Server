@@ -17,6 +17,8 @@ su - cjdns <<EOF
 /server/cjdns/cjdroute < /data/cjdroute.conf
 
 EOF
+    # Add cjdnsPeers
+    /server/addCjdnsPeers.sh
 
     # Launch node
     if [ -e /data/env/vpnprice ]; then
@@ -57,4 +59,7 @@ while true; do
         fi
     fi
     sleep 5
+    # Run vpn_watchdog
+    /server/vpn_watchdog.sh &
+    sleep 1
 done

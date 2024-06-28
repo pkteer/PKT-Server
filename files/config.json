@@ -12,7 +12,10 @@
     "rpcpass": ""
   },
   "upper_limit_mbit": 1000,
-  "vpnclient": {
+  "hostname": "server.name.com",
+  "openvpn_password": "pktvpn",
+  "ikevpnclient": {
+    "enabled": false,
     "username": "pktvpn",
     "password": "SecureVpnConnect123",
     "sharedKey": "aVTJHw02nFBKsgeDQtyfjP"

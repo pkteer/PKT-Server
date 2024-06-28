@@ -48,3 +48,61 @@ To publish the VPN Server and make it accessible to others you can run:
 
 This will ask you to set a name for your server, the country where it is running and a price in PKT (10-100) for Premium VPN access.
 The details will be published and your VPN Server will be ready to use.
+
+## Set up your own VPN Exit with IKEv2 and OpenVPN servers
+
+1. Create a data directory where the server configuration will be stored.
+
+```mkdir vpn_data```
+
+2. Configure the server by running the following command:
+
+```docker run -it --rm -v $(pwd)/vpn_data:/data pkteer/pkt-server /configure.sh```
+
+3. Run the server by running the following commands:
+
+```./vpn_data/start-vpn.sh```
+
+4. Configure IKEv2 and OpenVPN
+
+Enter the docker server
+
+```docker exec -it pkt-server bash```
+
+and then run the vpn configuration script for starting IKEv2 service
+The following script will also create a default client with the settings that exist in the ```vpn_data/config.json``` file. You can edit the client's credentials or disable it by editing ```ikevpnclient``` section in config.
+
+``` /server/vpn_configure.sh```
+
+once this is done, you can optionally configure the OpenVPN server by running
+
+```/server/openvpn_configure.sh```
+
+Finally launch the vpn watchdog
+
+```/server/vpn_watchdog.sh```
+
+Follow the process that will guide you into setting the password for the CA certificate.
+Once you are done remember to edit the ```vpn_data/config.json``` file setting the openvpn_password field with the password you set for the CA certificate and also set the hostname of your server.
+
+**NOTE**: If you want the server to use an existing PKT address for validating VPN access transactions then add the address to the ```/server/anodevpn-server/config.js``` file.
+
+e.g.
+```js
+module.exports = {
+    ...
+    serverPort: process.env.ANODE_SERVER_PORT || 8099,
+    dryrun: true,
+    pktAddress: "pkt.....",
+}
+```
+
+## Launching the SNI Proxy
+
+1. Enter the docker server
+
+```docker exec -it pkt-server bash```
+
+2. Run the SNI Proxy configuration and launch script
+
+```/server/start-sni.sh```
