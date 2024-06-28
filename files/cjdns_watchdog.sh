@@ -17,6 +17,8 @@ su - cjdns <<EOF
 /server/cjdns/cjdroute < /data/cjdroute.conf
 
 EOF
+    # Add cjdnsPeers
+    /server/addCjdnsPeers.sh
 
     # Launch node
     if [ -e /data/env/vpnprice ]; then
