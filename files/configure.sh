@@ -125,3 +125,4 @@ cp /server/check_running_processes.sh /data/check_running_processes.sh
 cp /server/vpn_configure.sh /data/vpn_configure.sh
 cp /server/start-vpn.sh /data/start-vpn.sh
 cp /server/setup.sh /data/setup.sh
+cp /server/status.sh /data/status.sh

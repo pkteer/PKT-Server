@@ -147,11 +147,14 @@ echo "Add cjdns peers..."
 /server/addCjdnsPeers.sh
 
 # Setup and launch ikev2
-if [ "$ike_enabled" = true ]
+echo "IKEv2 enabled: $ike_enabled"
+if [ "$ike_enabled" = true ]; then
   /server/vpn_configure.sh
 fi
+
 # Setup and launch openvpn
-if [ "$openvpn_enabled" = true ]
+echo "OpenVPN enabled: $openvpn_enabled"
+if [ "$openvpn_enabled" = true ]; then
   /server/openvpn_configure.sh
 fi
 # Start node_exporter for prometheus
