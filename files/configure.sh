@@ -29,8 +29,8 @@ if $config_exists; then
     for key in $new_keys; do
         if [[ ! "$current_keys" =~ "$key" ]]; then
             echo "Adding missing field: $key"
-            value=$(echo "$new_json_config" | jq -r ".$key")
-            json_config=$(echo "$json_config" | jq --arg key "$key" --arg value "$value" '. + {($key): $value}')
+            value=$(echo "$new_json_config" | jq ".$key")
+            json_config=$(echo "$json_config" | jq --arg key "$key" --argjson value "$value" '. + {($key): $value}')
         fi
     done
     echo "$json_config" > /data/config.json
