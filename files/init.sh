@@ -63,14 +63,13 @@ if [ "$cjdns_flag" = true ]; then
     setcap cap_net_admin=eip /server/cjdns/cjdroute
 su - cjdns <<EOF
 /server/cjdns/cjdroute < /data/cjdroute.conf
-
 EOF
 
 else
     echo "cjdns is disabled. Vpn server will not be started."
     vpn_flag=false
 fi
-
+echo "pktd enabled: $pktd_flag"
 if [ "$pktd_flag" = true ]; then
     rpcuser=$(echo "$json_config" | jq -r '.pktd.rpcuser')
     rpcpass=$(echo "$json_config" | jq -r '.pktd.rpcpass')
@@ -139,7 +138,6 @@ mkdir /home/speedtest
 su - speedtest <<EOF
 /server/run_iperf3.sh &
 /server/kill_iperf3.sh &
-
 EOF
 # switch back to root
 
