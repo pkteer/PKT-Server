@@ -63,24 +63,10 @@ The details will be published and your VPN Server will be ready to use.
 
 ```./vpn_data/start-vpn.sh```
 
-4. Configure IKEv2 and OpenVPN
+You can view the progress of the server by running:
 
-Enter the docker server
+```docker logs -f pkt-server```
 
-```docker exec -it pkt-server bash```
-
-and then run the vpn configuration script for starting IKEv2 service
-The following script will also create a default client with the settings that exist in the ```vpn_data/config.json``` file. You can edit the client's credentials or disable it by editing ```ikevpnclient``` section in config.
-
-``` /server/vpn_configure.sh```
-
-once this is done, you can optionally configure the OpenVPN server by running
-
-```/server/openvpn_configure.sh```
-
-Finally launch the vpn watchdog
-
-```/server/vpn_watchdog.sh```
 
 Follow the process that will guide you into setting the password for the CA certificate.
 Once you are done remember to edit the ```vpn_data/config.json``` file setting the openvpn_password field with the password you set for the CA certificate and also set the hostname of your server.

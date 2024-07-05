@@ -162,3 +162,5 @@ if [ "$cjdns_flag" = true ] && [ "$vpn_flag" = true ]; then
     /server/cjdns_watchdog.sh 
 fi
 
+# Keep the container alive
+tail -f /dev/null
