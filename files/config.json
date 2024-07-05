@@ -16,7 +16,8 @@
   },
   "upper_limit_mbit": 1000,
   "hostname": "server.name.com",
-  
+  "region": "Europe",
+  "city": "Athens",
   "ikev2": {
     "enabled": true,
     "client": {

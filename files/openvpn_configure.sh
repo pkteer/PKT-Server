@@ -1,7 +1,12 @@
 #!/bin/sh
 
-echo "Copying openvpn configuration..."
-if [ -z "$PKT_HOSTNAME" ]
+password=$(cat /data/config.json | jq -r '.openvpn.passphrase')
+if [ -z "$password" ]; then
+    echo "Password is empty. Please set the openvpn passphrase in config.json."
+    exit 1
+fi
+hostname=$(cat /data/config.json | jq -r '.hostname')
+if [ -z "$hostname" ]
 then
     echo "hostname not set, Please set the hostname in config.json."
     exit 1
@@ -16,9 +21,9 @@ else
     echo "Copying openvpn configuration..."
     mv /server/openvpn.conf /etc/openvpn/$hostname.conf
 
-echo "Generating certificates..."
-make-cadir /etc/openvpn/easy-rsa
-cd /etc/openvpn/easy-rsa/
+    echo "Generating certificates..."
+    make-cadir /etc/openvpn/easy-rsa
+    cd /etc/openvpn/easy-rsa/
 
     ./easyrsa init-pki
 /usr/bin/expect <<EOF

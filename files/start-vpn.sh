@@ -17,7 +17,12 @@ fi
 echo "Cjdns Port: $CJDNS_PORT"
 cjdns_rpc_port=""
 cjdns_rpc=$(cat config.json | jq -r '.cjdns.expose_rpc')
-pkt_hostname=$(cat config.json | jq -r '.hostname')
+region=$(cat config.json | jq -r '.region')
+city=$(cat config.json | jq -r '.city')
+if [ -z "$region" ] || [ -z "$city" ]; then
+  echo "Region or city is empty. Set them at config.json."
+  exit 1
+fi
 # check if cjdns_rpc is not false
 if [ "$cjdns_rpc" != "false" ]; then
         cjdns_rpc_port=$(cat cjdroute.conf | jq -r '.admin.bind' | cut -d ':' -f2)
@@ -30,7 +35,7 @@ if [ "$cjdns_rpc" != "false" ]; then
 fi
 
 docker run -it --rm \
-        -e TZ=Europe/Athens \
+        -e TZ=$region/$city \
         --log-driver 'local' \
         --cap-add=NET_ADMIN \
         --device /dev/net/tun:/dev/net/tun \
@@ -47,8 +52,9 @@ docker run -it --rm \
         -p 500:500/udp \
         -p 4500:4500/udp \
         -p 943:943 \
+        -p 1194:1194/udp \
         -v $(pwd)/openvpn:/etc/openvpn \
-        -e PKT_HOSTNAME=$pkt_hostname \
+        -v $(pwd)/vpnclients:/server/vpnclients \
         $([ -n "$cjdns_rpc_port" ] && echo "-p 127.0.0.1:$cjdns_rpc_port:$cjdns_rpc_port/udp") \
         -v $(pwd):/data \
         -v ikev2-vpn-data:/etc/ipsec.d \
@@ -56,5 +62,3 @@ docker run -it --rm \
         -d --privileged \
         --name pkt-server \
         pkteer/pkt-server
-
-docker exec -it pkt-server /bin/bash -c "/server/vpn_configure.sh"
