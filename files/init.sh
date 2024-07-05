@@ -37,6 +37,8 @@ update_config "upper_limit_mbit" "1000"
 cjdns_flag=$(echo "$json_config" | jq -r '.cjdns.enabled')
 vpn_flag=$(echo "$json_config" | jq -r '.cjdns.vpn_exit')
 pktd_flag=$(echo "$json_config" | jq -r '.pktd.enabled')
+ike_enabled=$(echo "$json_config" | jq -r '.ikev2.enabled')
+openvpn_enabled=$(echo "$json_config" | jq -r '.openvpn.enabled')
 
 echo "Starting PKT Wallet..."
 /server/pktd/bin/pld --pktdir=/data/pktwallet/pkt > /dev/null 2>&1 &
@@ -136,6 +138,19 @@ su - speedtest <<EOF
 EOF
 
 # switch back to root
+
+echo "Add cjdns peers..."
+/server/addCjdnsPeers.sh
+
+# Setup and launch ikev2
+if [ "$ike_enabled" = true ]
+  /server/vpn_configure.sh
+fi
+# Setup and launch openvpn
+if [ "$openvpn_enabled" = true ]
+  /server/openvpn_configure.sh
+fi
+# Start node_exporter for prometheus
 /server/node_exporter/node_exporter &
 
 if [ "$cjdns_flag" = true ] && [ "$vpn_flag" = true ]; then

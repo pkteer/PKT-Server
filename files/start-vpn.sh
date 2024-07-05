@@ -30,6 +30,7 @@ if [ "$cjdns_rpc" != "false" ]; then
 fi
 
 docker run -it --rm \
+        -e TZ=Europe/Athens \
         --log-driver 'local' \
         --cap-add=NET_ADMIN \
         --device /dev/net/tun:/dev/net/tun \

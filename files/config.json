@@ -4,6 +4,9 @@
     "vpn_exit": false,
     "expose_rpc": false
   },
+  "pkt": {
+    "pay_to_address":""
+  },
   "pktd": {
     "enabled": false,
     "public_rpc": true,
@@ -12,10 +15,22 @@
     "rpcpass": ""
   },
   "upper_limit_mbit": 1000,
-  "hostname": "kraut2.pkteer.com",
-  "vpnclient": {
-    "username": "pktvpn",
-    "password": "SecureVpnConnect123",
-    "sharedKey": "aVTJHw02nFBKsgeDQtyfjP"
+  "hostname": "server.name.com",
+  
+  "ikev2": {
+    "enabled": true,
+    "client": {
+        "enabled": false,
+        "username": "pktvpn",
+        "password": "SecureVpnConnect123",
+        "sharedKey": "aVTJHw02nFBKsgeDQtyfjP"
+      }
+  },
+  "openvpn": {
+    "enabled": true,
+    "passphrase": "pktvpn"
+  },
+  "sniproxy": {
+    "enabled": false
   }
 }
