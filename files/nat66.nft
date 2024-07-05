@@ -1,0 +1,13 @@
+table inet ipsec_cjdns
+flush table inet ipsec_cjdns
+table inet ipsec_cjdns {
+    chain forward {
+        type filter hook forward priority filter; # 0
+        counter accept
+    }
+    # Add a postrouting chain to the table
+    chain postrouting {
+        type nat hook postrouting priority srcnat; policy accept;
+        oifname { tun0, eth0 } counter masquerade
+    }
+}

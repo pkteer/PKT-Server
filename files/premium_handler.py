@@ -8,7 +8,7 @@ import base64
 import codecs
 import requests
 
-db = "anodevpn-server/clients.json"
+db = "/server/anodevpn-server/clients.json"
 
 
 def read_db():
@@ -50,14 +50,9 @@ def decimal_to_hex(decimal: int) -> str:
 
 def get_hex_from_ip(ip_address: str) -> str:
     """Function converting last two octets of IP address to hexadecimal"""
-    last_two_parts = ip_address.split('.')[-2:]
-    part1 = last_two_parts[0]
-    part2 = last_two_parts[1]
-    # Convert each part to hexadecimal
-    hex_part1 = hex(int(part1))[2:]
-    hex_part2 = hex(int(part2))[2:]
+    ip_part = ip_address.split('.')[1]
     # Concatenate the hexadecimal parts
-    hex_ip = hex_part1 + hex_part2
+    hex_ip = hex(int(ip_part))[2:]
 
     return hex_ip
 
@@ -67,11 +62,35 @@ def add_premium(ip: str):
     lsLimitPaid = "950mbit"
     hex_str = get_hex_from_ip(ip)
     logging.info("Enable premium for %s from class 1:%s", ip, hex_str)
-    cmd = "tc class replace dev tun0 parent 1:fffe classid 1:%s hfsc ls m2 %s ul m2 %s", hex_str, lsLimitPaid, lsLimitPaid
+    cmd = "tc class show dev tun0 classid 1:{}".format(hex_str)
     try:
-        subprocess.check_output(cmd, shell=True).decode('utf-8').rstrip()
-        cmd = "nft add element pfi m_client_leases { "+ip+" : \"1:"+hex_str+"\" }"  # type: ignore
-        subprocess.check_output(cmd, shell=True).decode('utf-8').rstrip()
+        # check if class exists
+        output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT).decode('utf-8').rstrip()
+        # logging.info("%s: %s", cmd, output)
+        if (output != ""):
+            cmd = "tc class replace dev tun0 parent 1:fffe classid 1:{} hfsc ls m2 {} ul m2 {}".format(hex_str, lsLimitPaid, lsLimitPaid)
+        else:
+            cmd = "tc class add dev tun0 parent 1:fffe classid 1:{} hfsc ls m2 {} ul m2 {}".format(hex_str, lsLimitPaid, lsLimitPaid)
+        # Add or replace rule on classid
+        output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT).decode('utf-8').rstrip()
+        # logging.info("%s: %s", cmd, output)
+        # Check if m_client_leases exists for this IP
+        cmd = "nft -j list map ip pfi m_client_leases | jq"
+        output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT).decode('utf-8').rstrip()
+        # logging.info("%s: %s", cmd, output)
+        json_data = json.loads(output)
+        if "map" in json_data and "elem" in json_data["map"]:
+            for elem in json_data["map"]["elem"]:
+                logging.info("found elem ip: %s", elem[0])
+                if elem[0] == ip:
+                    # logging.info("m_client_leases already exists for %s, will delete", ip)
+                    cmd = "nft delete element pfi m_client_leases { "+ip+" }"
+                    output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT).decode('utf-8').rstrip() 
+                    # logging.info("%s: %s", cmd, output)
+                    time.sleep(0.5)
+        cmd = "nft add element pfi m_client_leases { "+ip+" : \"1:"+hex_str+"\" }"
+        output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT).decode('utf-8').rstrip()
+        # logging.info("%s: %s", cmd, output)
     except subprocess.CalledProcessError as error:
         logging.error("Error adding premium: %s", error.output)
     
@@ -81,11 +100,13 @@ def remove_premium(ip: str):
     lsLimitPaid = "950mbit"
     hex_str = get_hex_from_ip(ip)
     logging.info("Disable premium for %s from class 1:%s", ip, hex_str)
-    cmd = "tc class delete dev tun0 parent 1:fffe classid 1:%s hfsc ls m2 %s ul m2 %s", hex_str, lsLimitPaid, lsLimitPaid
+    cmd = "tc class delete dev tun0 parent 1:fffe classid 1:{} hfsc ls m2 {} ul m2 {}".format(hex_str, lsLimitPaid, lsLimitPaid)
     try:
-        subprocess.check_output(cmd, shell=True).decode('utf-8').rstrip()
-        cmd = "nft delete element pfi m_client_leases { "+ip+" : \"1:"+hex_str+"\" }"
-        subprocess.check_output(cmd, shell=True).decode('utf-8').rstrip()
+        output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT).decode('utf-8').rstrip()
+        # logging.info("%s: %s", cmd, output)
+        cmd = "nft delete element pfi m_client_leases { "+ip+" }"
+        output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT).decode('utf-8').rstrip()
+        # logging.info("%s: %s", cmd, output)
     except subprocess.CalledProcessError as error:
         logging.error("Error removing premium: %s", error.output)
 
@@ -134,7 +155,9 @@ def get_balance(address: str) -> int:
 def is_valid_payment(address: str) -> bool:
     """Function checking if the payment is valid"""
     try:
-        premium_price: int = int(str(os.environ.get('PKTEER_PREMIUM_PRICE')))
+        with open('/data/env/vpnprice', 'r') as f:
+            premium_price = int(f.readline().strip())
+
         # Check balance for the address
         balance = get_balance(address)
         if (balance != 0):
@@ -176,7 +199,7 @@ def bcast_transaction(tx: str) -> str:
 
 def main():
     """Main function"""
-    logging.basicConfig(filename='premium_handler.log', level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
+    logging.basicConfig(filename='/server/premium_handler.log', level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
     waiting_time = 5 * 60 # 5 minutes
     while True:
         # Read the clients.json file
@@ -217,7 +240,7 @@ def main():
         clients["clients"] = remaining_clients        
         # Remove clients that have duration ended
         write_db(clients)
-        time.sleep(10)
+        time.sleep(30)
 
 
 if __name__ == "__main__":

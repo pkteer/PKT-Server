@@ -1,20 +1,12 @@
 # support_server docker image for VPN exit server
-FROM clickhouse/clickhouse-server
+FROM ubuntu:22.04 as builder
 WORKDIR /server
-
-ARG SERVER_PORT
-ENV ANODE_SERVER_PORT $SERVER_PORT
 
 # Install Rust, nodejs, git, utils, networking etc
 RUN apt-get update 
-RUN apt-get upgrade -y 
-RUN apt-get install -y curl build-essential 
+RUN apt-get install -y --no-install-recommends wget curl build-essential git nodejs npm python3.9 python3-pip python2 jq 
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
-
-RUN apt-get install -y nodejs git npm jq moreutils net-tools iputils-ping iptables iproute2 psmisc nftables python2
-RUN apt-get install -y python3.9 python3-pip
-RUN pip3 install requests
 
 # Go
 WORKDIR /server
@@ -35,32 +27,58 @@ RUN ./do
 #Cjdns
 WORKDIR /server
 RUN cd /server
-RUN apt-get install -y --no-install-recommends python3.9
 RUN git clone https://github.com/cjdelisle/cjdns.git
 ENV PATH="/server/cjdns:${PATH}"
 WORKDIR /server/cjdns
 RUN cd /server/cjdns
-RUN ./do
-RUN ./cjdroute --genconf | ./cjdroute --cleanconf > cjdroute.conf | jq '.interfaces.UDPInterface[0].bind = "0.0.0.0:'"$ANODE_SERVER_PORT"'"' cjdroute.conf | sponge cjdroute.conf
-#Edit cjdns port
-RUN cd /server
-WORKDIR /server
+RUN git checkout crashey
+RUN git pull
+RUN OLD_NODE_VERSION_I_EXPECT_ERRORS=1 NO_TEST=1 ./do
+RUN rm -rf /server/cjdns/target
 
 #AnodeVPN-Server
+WORKDIR /server
+RUN cd /server
 RUN git clone https://github.com/anode-co/anodevpn-server
 RUN cd /server/anodevpn-server
 WORKDIR /server/anodevpn-server
+RUN git checkout reversevpn
+RUN git pull
 RUN npm install
 RUN npm install proper-lockfile
+RUN npm install nthen
+RUN npm install http-proxy
+RUN sed -i '/cfg6/,/},/d' config.example.js
 RUN cat config.example.js | sed "s/dryrun: true/dryrun: false/" > config.js
 
+# Prometheus Node Exporter
 WORKDIR /server
 RUN cd /server
-COPY init.sh /server/init.sh
-COPY init_nft.sh /server/init_nft.sh
-COPY monitor_cjdns.sh /server/monitor_cjdns.sh
-COPY vpn_info.sh /server/vpn_info.sh
-COPY premium_handler.py /server/premium_handler.py
-COPY create_wallet.sh /server/create_wallet.sh
-COPY .cjdnsadmin /root/.cjdnsadmin
-COPY pfi.nft /server/pfi.nft
+RUN wget https://github.com/prometheus/node_exporter/releases/download/v1.6.1/node_exporter-1.6.1.linux-amd64.tar.gz
+RUN tar -xvf node_exporter-1.6.1.linux-amd64.tar.gz
+
+# OpenVPN
+WORKDIR /server
+RUN cd /server
+RUN apt install openvpn easy-rsa
+
+FROM ubuntu:22.04
+WORKDIR /server
+# Copy cjdns and pktd 
+COPY --from=builder /server/cjdns /server/cjdns
+COPY --from=builder /server/pktd /server/pktd
+COPY --from=builder /server/anodevpn-server /server/anodevpn-server
+COPY --from=builder /server/node_exporter-1.6.1.linux-amd64 /server/node_exporter
+
+# Install packages
+RUN apt-get update 
+RUN apt-get install -y --no-install-recommends curl nodejs jq iptables nano nftables iperf3 iproute2 net-tools psmisc python3.9 python3-pip moreutils wget
+RUN pip3 install requests
+
+RUN cd /server
+COPY files/* /server
+COPY test/* /server
+RUN mv /server/configure.sh /configure.sh
+RUN mkdir /data
+
+CMD ["/bin/bash", "/server/init.sh"]

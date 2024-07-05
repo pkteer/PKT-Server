@@ -1,10 +1,41 @@
 #!/bin/bash
 # Print out VPN Exit info
+command -v dirname || die "missing dirname"
+cd $(dirname "$0")
 publicip=$(curl http://v4.vpn.anode.co/api/0.3/vpn/clients/ipaddress/ 2>/dev/null | jq -r .ipAddress)
-publickey=$(cat /server/cjdns/cjdroute.conf | jq -r .publicKey)
-cjdnsip=$(cat /server/cjdns/cjdroute.conf | jq -r .ipv6)
-login=$(cat /server/cjdns/cjdroute.conf | jq -r .authorizedPasswords[0].user)
-password=$(cat /server/cjdns/cjdroute.conf | jq -r .authorizedPasswords[0].password)
+publickey=$(cat cjdroute.conf | jq -r .publicKey)
+cjdnsip=$(cat cjdroute.conf | jq -r .ipv6)
+login=$(cat cjdroute.conf | jq -r .authorizedPasswords[0].user)
+password=$(cat cjdroute.conf | jq -r .authorizedPasswords[0].password)
+CJDNS_PORT=$(cat cjdroute.conf | jq -r '.interfaces.UDPInterface[0].bind' | sed 's/^.*://')
+if [ -f ./env/vpnname ]; then
+    PKTEER_NAME=$(cat ./env/vpnname)
+else
+    echo "Enter VPN Server name:"
+    read PKTEER_NAME
+    echo $PKTEER_NAME > ./env/vpnname
+fi
+if [ -f ./env/vpncountry ]; then
+    PKTEER_COUNTRY=$(cat ./env/vpncountry)
+else
+    echo "Enter VPN Server country:"
+    read PKTEER_COUNTRY
+    echo $PKTEER_COUNTRY > ./env/vpncountry
+fi
+if [ -f ./env/vpnusername ]; then
+    PKTEER_CHAT_USERNAME=$(cat ./env/vpnusername)
+else
+    echo "Enter PKT.chat username:"
+    read PKTEER_CHAT_USERNAME
+    echo $PKTEER_CHAT_USERNAME > ./env/vpnusername
+fi
+if [ -f ./env/vpnprice ]; then
+    PKTEER_PREMIUM_PRICE=$(cat ./env/vpnprice)
+else
+    echo "Enter VPN Server price:"
+    read PKTEER_PREMIUM_PRICE
+    echo $PKTEER_PREMIUM_PRICE > ./env/vpnprice
+fi
 
 get_country_code() {
     local country_name="$1"
@@ -23,13 +54,13 @@ echo "Country: $PKTEER_COUNTRY"
 echo "Public key: $publickey"
 echo "Cjdns public ip: $cjdnsip"
 echo "Public ip: $publicip"
-echo "Cjdns public port: $ANODE_SERVER_PORT"
-echo "Authorization server url: http://$publicip:$ANODE_SERVER_PORT"
+echo "Cjdns public port: $CJDNS_PORT"
+echo "Authorization server url: http://$publicip:8099"
 echo "login: $login"
 echo "password: $password"
 echo "PKT.chat username: $PKTEER_CHAT_USERNAME"
 echo "-----------------------------------------------------"
-curl -X POST -H 'content-type: application/json' -d '{"text":"Adding VPN Server: **'"$PKTEER_NAME"'**\n    Country: '"$PKTEER_COUNTRY"'\n    Public key: '"$publickey"'\n    Cjdns public ip: '"$cjdnsip"'\n    Cjdns public port: '$ANODE_SERVER_PORT'\n    Public ip: '"$publicip"'\n    Authorization server: http://'$publicip':'$ANODE_SERVER_PORT'\n    login: '"$login"'\n    password: '"$password"'\n    username: @'$PKTEER_CHAT_USERNAME'\n    cost: '$PKTEER_PREMIUM_PRICE'"}' https://pkt.chat/hooks/5tx5ebhuzpgh3dk5ys9rpt5yxr
+curl -X POST -H 'content-type: application/json' -d '{"text":"Adding VPN Server: **'"$PKTEER_NAME"'**\n    Country: '"$PKTEER_COUNTRY"'\n    Public key: '"$publickey"'\n    Cjdns public ip: '"$cjdnsip"'\n    Cjdns public port: '$CJDNS_PORT'\n    Public ip: '"$publicip"'\n    Authorization server: http://'$publicip':8099\n    login: '"$login"'\n    password: '"$password"'\n    username: @'$PKTEER_CHAT_USERNAME'\n    cost: '$PKTEER_PREMIUM_PRICE'"}' https://pkt.chat/hooks/5tx5ebhuzpgh3dk5ys9rpt5yxr
 
 echo "Getting country code..."
 country_code=$(get_country_code "$PKTEER_COUNTRY")
@@ -40,8 +71,8 @@ output=$(curl -X POST -H "Content-Type: application/json" -d '{
         "public_key":"'$publickey'",
         "cjdns_public_ip":"'$cjdnsip'",
         "public_ip":"'$publicip'",
-        "cjdns_public_port": '$ANODE_SERVER_PORT',
-        "authorization_server_url":"http://'$publicip':'$ANODE_SERVER_PORT'",
+        "cjdns_public_port": '$CJDNS_PORT',
+        "authorization_server_url":"http://'$publicip':8099",
         "cost": '$PKTEER_PREMIUM_PRICE'
         }, 
         "peeringline": {
