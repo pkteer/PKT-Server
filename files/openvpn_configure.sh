@@ -12,9 +12,6 @@ then
     exit 1
 fi
 
-apt-get update
-apt-get install -y openvpn easy-rsa expect
-
 if [ -f "/etc/openvpn/$hostname.conf" ]; then
     echo "The file /etc/openvpn/$hostname.conf already exists."
 else
