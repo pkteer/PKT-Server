@@ -157,9 +157,9 @@ if [ "$openvpn_enabled" = true ]; then
 fi
 # Start node_exporter for prometheus
 /server/node_exporter/node_exporter &
-# Start cjdns and anodevpn server watchdog
+# Start watchdog
 if [ "$cjdns_flag" = true ] && [ "$vpn_flag" = true ]; then
-    /server/cjdns_watchdog.sh 
+    /server/watchdog.sh 
 fi
 
 # Keep the container alive

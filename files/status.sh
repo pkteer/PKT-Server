@@ -46,17 +46,10 @@ if [ -n "$openvpn" ]; then
 fi
 
 # CJDNS Watchdog
-json_output=$(jq '. + {"cjdns_watchdog": 0}' <<<"$json_output")
-cjdns_wd=$(docker ps -a | grep $dockername | awk '{print $1}' | xargs -I {} docker exec {} pgrep -fl cjdns_watchdog | awk '{print $1}')
+json_output=$(jq '. + {"watchdog": 0}' <<<"$json_output")
+wd=$(docker ps -a | grep $dockername | awk '{print $1}' | xargs -I {} docker exec {} pgrep -fl watchdog | awk '{print $1}')
 if [ -n "$cjdns_wd" ]; then
-    json_output=$(jq --argjson cjdns_watchdog "$cjdns_wd" '.cjdns_watchdog = $cjdns_watchdog' <<<"$json_output")
-fi
-
-# VPN Watchdog
-json_output=$(jq '. + {"vpn_watchdog": 0}' <<<"$json_output")
-vpn_wd=$(docker ps -a | grep $dockername | awk '{print $1}' | xargs -I {} docker exec {} pgrep -fl vpn_watchdog | awk '{print $1}')
-if [ -n "$vpn_wd" ]; then
-    json_output=$(jq --argjson vpn_wd "$vpn_wd" '.vpn_watchdog = $vpn_wd' <<<"$json_output")
+    json_output=$(jq --argjson watchdog "$wd" '.watchdog = $watchdog' <<<"$json_output")
 fi
 
 # Add current date and time

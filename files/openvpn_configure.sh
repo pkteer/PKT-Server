@@ -21,31 +21,56 @@ else
     echo "Generating certificates..."
     make-cadir /etc/openvpn/easy-rsa
     cd /etc/openvpn/easy-rsa/
-
-    ./easyrsa init-pki
-/usr/bin/expect <<EOF
+    if [ -d "/etc/openvpn/easy-rsa/pki" ]; then
+        echo "pki already exists."
+    else
+        echo "Initializing pki..."
+        ./easyrsa init-pki
+    fi
+    if [ -f "/etc/openvpn/pki/ca.crt" ]; then
+        echo "CA certificate already exists."
+    else
+        echo "Generating new CA certificate..."
+        /usr/bin/expect <<EOF
 spawn ./easyrsa build-ca
-    #TODO: key passphrase, twice and common name "hostname"
+expect "Enter New CA Key Passphrase: "
+send "$password\r"
+expect "Re-Enter New CA Key Passphrase:"
+send "$password\r"
+expect "Common Name (eg: your user, host, or server name) "
+send "$hostname\r"
+expect eof
+EOF
+    fi
+    
 
-    ./easyrsa gen-req $hostname nopass
+/usr/bin/expect <<EOF
+spawn ./easyrsa gen-req $hostname nopass
+expect "Common Name (eg: your user, host, or server name) "
+send "yes\r"
+expect eof
+EOF
+
     ./easyrsa gen-dh
-    ./easyrsa sign-req server $hostname
-    #TODO: confirm with 'yes' and add pasphrase
-    cp pki/dh.pem pki/ca.crt pki/issued/$hostname.crt pki/private/$hostname.key /etc/openvpn/
+/usr/bin/expect <<EOF
+spawn ./easyrsa sign-req server $hostname
+expect "Confirm request details:"
+send "\r"
+expect "Enter pass phrase for /etc/openvpn/easy-rsa/pki/private/ca.key:"
+send "$password\r"
+expect eof
+EOF
 
-    ./easyrsa gen-req pktvpnclient nopass
-    #TODO confirm with 'yes' and commonname "pktvpnclient"
-    ./easyrsa sign-req client pktvpnclient
-    #TODO confirm with 'yes' and add passphrase
+    cp pki/dh.pem pki/ca.crt pki/issued/$hostname.crt pki/private/$hostname.key /etc/openvpn/
 
     echo "Editing openvpn configuration..."
     sed -i "s/{{HOSTNAME}}/${hostname}/g" /etc/openvpn/$hostname.conf
+/usr/bin/expect <<EOF
+spawn ./easyrsa gen-crl
+expect "Enter pass phrase for /etc/openvpn/easy-rsa/pki/private/ca.key:"
+send "$password\r"
+expect eof
+EOF
 
-    ./easyrsa gen-crl
     cp /etc/openvpn/easy-rsa/pki/crl.pem /etc/openvpn/crl.pem
 fi
-echo "Copying openvpn client files..."
-cp /etc/openvpn/easy-rsa/pki/issued/pktvpnclient.crt /data/
-cp /etc/openvpn/easy-rsa/pki/private/pktvpnclient.key /data/
-cp /etc/openvpn/ca.crt /data/
-

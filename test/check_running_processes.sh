@@ -95,10 +95,10 @@ if [ -z "$nodeexporter" ]; then
     exit 1
 fi
 
-# Check that cjdns_watchdog is running
-cjdns_watchdog=$(docker exec -it $container bash -c "ps aux | pgrep -x cjdns_watchdog.")
-if [ -z "$cjdns_watchdog" ]; then
-    echo "TEST FAILED: cjdns_watchdog is not running"
+# Check that watchdog is running
+watchdog=$(docker exec -it $container bash -c "ps aux | pgrep -x watchdog.")
+if [ -z "$watchdog" ]; then
+    echo "TEST FAILED: watchdog is not running"
     exit 1
 fi
 
