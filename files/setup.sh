@@ -23,7 +23,7 @@ update_json() {
         jq_expression=".\"$key\" = $jq_value"
     fi
 
-    jq "$jq_expression" config.json > temp.json && mv temp.json config.json
+    jq "$jq_expression" vpn_data/config.json > vpn_data/temp.json && mv vpn_data/temp.json vpn_data/config.json
 }
 echo "Welcome to PKT Server setup script!"
 echo "This script will guide you through the setup process."

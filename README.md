@@ -52,7 +52,7 @@ To publish the VPN Server and make it accessible to others you can run:
 This will ask you to set a name for your server, the country where it is running and a price in PKT (10-100) for Premium VPN access.
 The details will be published and your VPN Server will be ready to use.
 
-## Set up your own VPN Exit with IKEv2 and OpenVPN servers
+## Set up your own VPN Server with IKEv2 and OpenVPN servers
 
 1. Create a data directory where the server configuration will be stored.
 
