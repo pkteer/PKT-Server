@@ -166,7 +166,7 @@ if [ "$sniproxy_enabled" = true ]; then
 fi
 
 # Start watchdog
-if [ "$cjdns_flag" = true ] then
+if [ "$cjdns_flag" = true ]; then
     /server/watchdog.sh 
 fi
 
