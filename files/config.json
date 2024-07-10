@@ -23,8 +23,8 @@
     "client": {
         "enabled": false,
         "username": "pktvpn",
-        "password": "SecureVpnConnect123",
-        "sharedKey": "aVTJHw02nFBKsgeDQtyfjP"
+        "password": "",
+        "sharedKey": ""
       }
   },
   "openvpn": {
