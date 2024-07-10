@@ -3,7 +3,7 @@
 dockername="pkt-server"
 
 # hostname
-hostname=$(cat config.json | jq -r '.hostname')
+hostname=$(cat vpn_data/config.json | jq -r '.hostname')
 
 # Initialize an empty JSON object
 json_output=$(jq -n '{}')
