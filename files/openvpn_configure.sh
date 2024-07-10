@@ -55,7 +55,7 @@ EOF
 /usr/bin/expect <<EOF
 spawn ./easyrsa sign-req server $hostname
 expect "Confirm request details:"
-send "\r"
+send "yes\r"
 expect "Enter pass phrase for /etc/openvpn/easy-rsa/pki/private/ca.key:"
 send "$password\r"
 expect eof
