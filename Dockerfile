@@ -69,7 +69,10 @@ COPY --from=builder /server/node_exporter-1.6.1.linux-amd64 /server/node_exporte
 RUN apt-get update 
 RUN apt-get install -y --no-install-recommends curl nodejs jq iptables nano nftables iperf3 iproute2 net-tools psmisc python3.9 python3-pip moreutils wget
 RUN pip3 install requests
+#openvpn
 RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install openvpn easy-rsa expect
+#sniproxy
+RUN apt-get install -y --no-install-recommends autotools-dev cdbs debhelper dh-autoreconf dpkg-dev gettext libev-dev libpcre2-dev libudns-dev pkg-config fakeroot devscripts
 
 RUN cd /server
 COPY files/* /server

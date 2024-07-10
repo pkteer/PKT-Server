@@ -1,9 +1,12 @@
 # PKT-Server
 
-This should help you to easily set up an Anode VPN Exit using cjdns.
+The PKT-Server is a docker image that can be used to set up a server that can be used to host a PKT wallet, a CJDNS VPN Exit, an AnodeVPN server, an IKEv2 VPN server and an OpenVPN server.
+In the first case a user can connect to the VPN exit using cjdns and then access the internet through cjdns and your server. 
+On the second case the user can also use IKEv2 and OpenVPN to connect to the server and access the internet through it without the need to run cjdns on their computer but they will get access to the cjdns network.
 
+You can follow the first set of instractions for setting up a CJDNS only VPN Exit or the second set of instructions for setting up the server with an IKEv2 and OpenVPN server.
 
-## Set up your own VPN Exit
+## Set up your own CJDNS VPN Exit
 
 1. Create a data directory where the server configuration will be stored.
 
@@ -59,36 +62,24 @@ The details will be published and your VPN Server will be ready to use.
 
 ```docker run -it --rm -v $(pwd)/vpn_data:/data pkteer/pkt-server /configure.sh```
 
-3. Run the server by running the following commands:
+3. Configure various service by running the following command:
+
+```./vpn_data/setup.sh```
+
+The script will prompt you to set up various flags and values needed for setting up the services the first time.
+
+4. Run the server by running the following commands:
 
 ```./vpn_data/start-vpn.sh```
+
+**NOTE**: It can take a few minutes on the first run for the server to set up all the services.
+
+## Monitoring the server
 
 You can view the progress of the server by running:
 
 ```docker logs -f pkt-server```
 
+You can also check the status of all services by running:
 
-Follow the process that will guide you into setting the password for the CA certificate.
-Once you are done remember to edit the ```vpn_data/config.json``` file setting the openvpn_password field with the password you set for the CA certificate and also set the hostname of your server.
-
-**NOTE**: If you want the server to use an existing PKT address for validating VPN access transactions then add the address to the ```/server/anodevpn-server/config.js``` file.
-
-e.g.
-```js
-module.exports = {
-    ...
-    serverPort: process.env.ANODE_SERVER_PORT || 8099,
-    dryrun: true,
-    pktAddress: "pkt.....",
-}
-```
-
-## Launching the SNI Proxy
-
-1. Enter the docker server
-
-```docker exec -it pkt-server bash```
-
-2. Run the SNI Proxy configuration and launch script
-
-```/server/start-sni.sh```
+```./vpn_data/status.sh```

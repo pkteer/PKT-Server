@@ -39,6 +39,7 @@ vpn_flag=$(echo "$json_config" | jq -r '.cjdns.vpn_exit')
 pktd_flag=$(echo "$json_config" | jq -r '.pktd.enabled')
 ike_enabled=$(echo "$json_config" | jq -r '.ikev2.enabled')
 openvpn_enabled=$(echo "$json_config" | jq -r '.openvpn.enabled')
+sniproxy_enabled=$(echo "$json_config" | jq -r '.sniproxy.enabled')
 
 echo "Starting PKT Wallet..."
 /server/pktd/bin/pld --pktdir=/data/pktwallet/pkt > /dev/null 2>&1 &
@@ -158,6 +159,12 @@ if [ "$openvpn_enabled" = true ]; then
 fi
 # Start node_exporter for prometheus
 /server/node_exporter/node_exporter &
+
+echo "sniproxy enabled: $sniproxy_enabled"
+if [ "$sniproxy_enabled" = true ]; then
+  /server/start_sni.sh
+fi
+
 # Start watchdog
 if [ "$cjdns_flag" = true ] && [ "$vpn_flag" = true ]; then
     /server/watchdog.sh 
