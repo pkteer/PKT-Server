@@ -162,11 +162,11 @@ fi
 
 echo "sniproxy enabled: $sniproxy_enabled"
 if [ "$sniproxy_enabled" = true ]; then
-  /server/start_sni.sh
+  /server/start-sni.sh
 fi
 
 # Start watchdog
-if [ "$cjdns_flag" = true ] && [ "$vpn_flag" = true ]; then
+if [ "$cjdns_flag" = true ] then
     /server/watchdog.sh 
 fi
 
