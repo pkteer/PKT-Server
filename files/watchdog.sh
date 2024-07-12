@@ -84,8 +84,7 @@ restart() {
 
     # Launch cjdns
 su - cjdns <<EOF
-/server/cjdns/cjdroute < /data/cjdroute.conf
-
+/server/cjdns/cjdroute < /data/cjdroute.conf &
 EOF
     # Add cjdnsPeers
     /server/addCjdnsPeers.sh

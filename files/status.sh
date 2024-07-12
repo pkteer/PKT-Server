@@ -19,7 +19,7 @@ fi
 
 # CJDNS
 json_output=$(jq '. + {"cjdns": 0}' <<<"$json_output")
-cjdroute=$(docker ps -a | grep $dockername | awk '{print $1}' | xargs -I {} docker exec {} pgrep -fl cjdroute | awk '{print $1}')
+cjdroute=$(docker ps -a | grep $dockername | awk '{print $1}' | xargs -I {} docker exec {} pgrep -fl cjdroute | awk '{print $1}' | head -n 1)
 if [ -n "$cjdroute" ]; then
     json_output=$(jq --argjson cjdroute "$cjdroute" '.cjdns = $cjdroute' <<<"$json_output")
 fi
@@ -48,7 +48,7 @@ fi
 # CJDNS Watchdog
 json_output=$(jq '. + {"watchdog": 0}' <<<"$json_output")
 wd=$(docker ps -a | grep $dockername | awk '{print $1}' | xargs -I {} docker exec {} pgrep -fl watchdog | awk '{print $1}')
-if [ -n "$cjdns_wd" ]; then
+if [ -n "$wd" ]; then
     json_output=$(jq --argjson watchdog "$wd" '.watchdog = $watchdog' <<<"$json_output")
 fi
 
