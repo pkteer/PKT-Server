@@ -1,9 +1,19 @@
 #!/bin/bash
 
+# check if script is being run inside or outside the container
+inside=false
+if [ -f /.dockerenv ]; then
+    inside=true
+fi
 dockername="pkt-server"
 
+config_path="vpn_data/config.json"
+if [ "$inside" = true ]; then
+  config_path="/data/config.json"
+fi
+
 # hostname
-hostname=$(cat vpn_data/config.json | jq -r '.hostname')
+hostname=$(cat $config_path | jq -r '.hostname')
 
 # Initialize an empty JSON object
 json_output=$(jq -n '{}')
@@ -12,42 +22,66 @@ json_output=$(jq --arg hostname "$hostname" '. + {hostname: $hostname}' <<<"$jso
 
 # PKT wallet
 json_output=$(jq '. + {"pktwallet": 0}' <<<"$json_output")
-pld=$(docker ps -a | grep $dockername | awk '{print $1}' | xargs -I {} docker exec {} pgrep -fl pld | awk '{print $1}')
+if [ "$inside" = true ]; then
+    pld=$(pgrep -fl pld | awk '{print $1}')
+else 
+    pld=$(docker ps -a | grep $dockername | awk '{print $1}' | xargs -I {} docker exec {} pgrep -fl pld | awk '{print $1}')
+fi
 if [ -n "$pld" ]; then
     json_output=$(jq --argjson pld "$pld" '.pktwallet = $pld' <<<"$json_output")
 fi
 
 # CJDNS
 json_output=$(jq '. + {"cjdns": 0}' <<<"$json_output")
-cjdroute=$(docker ps -a | grep $dockername | awk '{print $1}' | xargs -I {} docker exec {} pgrep -fl cjdroute | awk '{print $1}' | head -n 1)
+if [ "$inside" = true ]; then
+    cjdroute=$(pgrep -fl cjdroute | awk '{print $1}' | head -n 1)
+else
+    cjdroute=$(docker ps -a | grep $dockername | awk '{print $1}' | xargs -I {} docker exec {} pgrep -fl cjdroute | awk '{print $1}' | head -n 1)
+fi
 if [ -n "$cjdroute" ]; then
     json_output=$(jq --argjson cjdroute "$cjdroute" '.cjdns = $cjdroute' <<<"$json_output")
 fi
 
 # AnodeVPN Server
 json_output=$(jq '. + {"anodeserver": 0}' <<<"$json_output")
-anodeserver=$(docker ps -a | grep $dockername | awk '{print $1}' | xargs -I {} docker exec {} sh -c "pgrep -a node | grep -v node_exporter" | awk '{print $1}')
+if [ "$inside" = true ]; then
+    anodeserver=$(pgrep -a node | grep -v node_exporter | awk '{print $1}')
+else
+    anodeserver=$(docker ps -a | grep $dockername | awk '{print $1}' | xargs -I {} docker exec {} sh -c "pgrep -a node | grep -v node_exporter" | awk '{print $1}')
+fi
 if [ -n "$anodeserver" ]; then
     json_output=$(jq --argjson anodeserver "$anodeserver" '.anodeserver = $anodeserver' <<<"$json_output")
 fi
 
 # IKEv2 
 json_output=$(jq '. + {"ikev2": 0}' <<<"$json_output")
-ikev2=$(docker ps -a | grep pkt-server | awk '{print $1}' | xargs -I {} docker exec {} sh -c "pgrep -a pluto | grep -v _plutorun" | awk '{print $1}')
+if [ "$inside" = true ]; then
+    ikev2=$(pgrep -a pluto | grep -v _plutorun | awk '{print $1}')
+else
+    ikev2=$(docker ps -a | grep pkt-server | awk '{print $1}' | xargs -I {} docker exec {} sh -c "pgrep -a pluto | grep -v _plutorun" | awk '{print $1}')
+fi
 if [ -n "$ikev2" ]; then
     json_output=$(jq --argjson ikev2 "$ikev2" '.ikev2 = $ikev2' <<<"$json_output")
 fi
 
 # OpenVPN
 json_output=$(jq '. + {"openvpn": 0}' <<<"$json_output")
-openvpn=$(docker ps -a | grep $dockername | awk '{print $1}' | xargs -I {} docker exec {} pgrep -fl openvpn | awk '{print $1}')
+if [ "$inside" = true ]; then
+    openvpn=$(pgrep -fl openvpn | awk '{print $1}')
+else
+    openvpn=$(docker ps -a | grep $dockername | awk '{print $1}' | xargs -I {} docker exec {} pgrep -fl openvpn | awk '{print $1}')
+fi
 if [ -n "$openvpn" ]; then
     json_output=$(jq --argjson openvpn "$openvpn" '.openvpn = $openvpn' <<<"$json_output")
 fi
 
 # CJDNS Watchdog
 json_output=$(jq '. + {"watchdog": 0}' <<<"$json_output")
-wd=$(docker ps -a | grep $dockername | awk '{print $1}' | xargs -I {} docker exec {} pgrep -fl watchdog | awk '{print $1}')
+if [ "$inside" = true ]; then
+    wd=$(pgrep -fl watchdog | awk '{print $1}')
+else
+    wd=$(docker ps -a | grep $dockername | awk '{print $1}' | xargs -I {} docker exec {} pgrep -fl watchdog | awk '{print $1}')
+fi
 if [ -n "$wd" ]; then
     json_output=$(jq --argjson watchdog "$wd" '.watchdog = $watchdog' <<<"$json_output")
 fi
