@@ -25,7 +25,7 @@ if [[ ! -f $ca_crt ]]; then
 fi
 
 # Read openvpn password
-password=$(cat /data/config.json | jq -r '.openvpn_password')
+password=$(cat /data/config.json | jq -r '.openvpn.passphrase')
 
 if [ -z "$password" ]
 then
