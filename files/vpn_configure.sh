@@ -9,11 +9,11 @@ CONFIG_FILE="/data/config.json"
 if [ ! -f "$CONFIG_FILE" ]; then
     echo "Config file not found, proceeding with default values."
 else
-    ikevpnclient=$(jq -r '.ikevpnclient.enabled' $CONFIG_FILE)
-    if [ "$ikevpnclient" = "true" ]; then
-        VPN_USERNAME=$(jq -r '.ikevpnclient.username' $CONFIG_FILE)
-        VPN_PASSWORD=$(jq -r '.ikevpnclient.password' $CONFIG_FILE)
-        VPN_SHARED_KEY=$(jq -r '.ikevpnclient.sharedKey' $CONFIG_FILE)
+    ikevpnclient=$(jq -r '.ikev2.client.enabled' $CONFIG_FILE)
+    if [ "$ikevpnclient" = true ]; then
+        VPN_USERNAME=$(jq -r '.ikev2.client.username' $CONFIG_FILE)
+        VPN_PASSWORD=$(jq -r '.ikev2.client.password' $CONFIG_FILE)
+        VPN_SHARED_KEY=$(jq -r '.ikev2.client.sharedKey' $CONFIG_FILE)
         if [ -z "$VPN_USERNAME" ] || [ -z "$VPN_PASSWORD" ] || [ -z "$VPN_SHARED_KEY" ]; then
             echo "One or more required values not found in config file, proceeding with default values."
         else
