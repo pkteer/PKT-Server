@@ -3,8 +3,15 @@
 if [ -f /data/cjdroute.conf ]; then
     echo "Server is configured."
 else
-    echo "Server has not been configured yet. Exiting..."
-    exit
+    echo "Server has not been configured yet. Configuring now..."
+    /server/configure.sh
+    sleep 1
+    killall pld
+    killall cjdroute
+    sleep 1
+    # Akash - Edit cjdns port to 28665
+    jq '.interfaces.UDPInterface[0].bind = "0.0.0.0:28665"' /data/cjdroute.conf > /data/cjdroute.tmp && mv /data/cjdroute.tmp /data/cjdroute.conf
+    echo "Server has been configured."
 fi
 
 # Create users
