@@ -4,7 +4,7 @@ if [ -f /data/cjdroute.conf ]; then
     echo "Server is configured."
 else
     echo "Server has not been configured yet. Configuring now..."
-    /server/configure.sh
+    /configure.sh
     sleep 1
     killall pld
     killall cjdroute
