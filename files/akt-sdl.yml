@@ -1,0 +1,82 @@
+---
+version: "2.0"
+services:
+  pkt-server:
+    image: pkteer/pkt-server:akash
+    expose:
+      - port: 8099
+        as: 8099
+        proto: tcp
+        to:
+          - global: true
+      - port: 5201
+        as: 5201
+        proto: tcp
+        to:
+          - global: true
+      - port: 64764
+        as: 64764
+        proto: tcp
+        to:
+          - global: true
+      - port: 80
+        as: 80
+        to:
+          - global: true
+      - port: 443
+        as: 443
+        proto: tcp
+        to:
+          - global: true
+      - port: 500
+        as: 500
+        to:
+          - global: true
+      - port: 4500
+        as: 4500
+        to:
+          - global: true
+      - port: 943
+        as: 943
+        to:
+          - global: true
+      - port: 1194
+        as: 1194
+        to:
+          - global: true
+      - port: 28665
+        as: 28665
+        proto: udp
+        to:
+          - global: true
+    params:
+      storage:
+        data:
+          mount: /pkt-server/vpn_data
+          readOnly: false
+profiles:
+  compute:
+    pkt-server:
+      resources:
+        cpu:
+          units: 1
+        memory:
+          size: 1024Mi
+        storage:
+          - size: 2GB
+          - name: data
+            size: 1GB
+            attributes:
+              persistent: true
+              class: beta3
+  placement:
+    dcloud:
+      pricing:
+        pkt-server:
+          denom: uakt
+          amount: 1000
+deployment:
+  pkt-server:
+    dcloud:
+      profile: pkt-server
+      count: 1
