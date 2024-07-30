@@ -83,7 +83,9 @@ if [ "$cjdns_flag" = true ]; then
     mkdir /home/cjdns
     echo "Starting cjdns..."
     # Set CAP_NET_ADMIN to cjdroute
-    setcap cap_net_admin=eip /server/cjdns/cjdroute
+    if [ "$AKASH" != true ]; then
+        setcap cap_net_admin=eip /server/cjdns/cjdroute
+    fi
 su - cjdns <<EOF
 /server/cjdns/cjdroute < /data/cjdroute.conf &
 EOF
