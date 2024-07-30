@@ -54,11 +54,11 @@ openvpn_enabled=$(echo "$json_config" | jq -r '.openvpn.enabled')
 sniproxy_enabled=$(echo "$json_config" | jq -r '.sniproxy.enabled')
 
 if [ "$AKASH" = true ]; then
-    $vpn_flag=false
-    $pktd_flag=false
-    $ike_enabled=false
-    $openvpn_enabled=false
-    $sniproxy_enabled=false
+    vpn_flag=false
+    pktd_flag=false
+    ike_enabled=false
+    openvpn_enabled=false
+    sniproxy_enabled=false
 fi
 
 if [ "$AKASH" != true ]; then
@@ -139,8 +139,10 @@ if [ "$cjdns_flag" = true ] && [ "$AKASH" != true ]; then
     ip route add 10.0.0.0/8 dev tun0
 fi
 
-echo "Initializing nftables..."
-/server/init_nft.sh
+if [ "$AKASH" != true ]; then
+    echo "Initializing nftables..."
+    /server/init_nft.sh
+fi
 
 if [ "$vpn_flag" = true ] && [ "$AKASH" != true ]; then
     echo "Starting vpn server..."
@@ -157,6 +159,7 @@ if [ "$vpn_flag" = true ] && [ "$AKASH" != true ]; then
     python3 /server/premium_handler.py &
 fi
 
+if [ "$AKASH" != true ]; then
 mkdir /home/speedtest
 # switch to speedtest user
 su - speedtest <<EOF
@@ -164,6 +167,7 @@ su - speedtest <<EOF
 /server/kill_iperf3.sh &
 EOF
 # switch back to root
+fi
 
 echo "Add cjdns peers..."
 /server/addCjdnsPeers.sh
