@@ -1,9 +1,6 @@
 #!/bin/bash
-# Check if server has been configured
-if [ -f /data/cjdroute.conf ]; then
-    echo "Server is configured."
-else
-    echo "Server has not been configured yet. Configuring now..."
+if [ "$AKASH" = true ]; then
+    echo "Configuring server for Akash deployment..."
     /configure.sh
     sleep 1
     killall pld
@@ -12,6 +9,14 @@ else
     # Akash - Edit cjdns port to 28665
     jq '.interfaces.UDPInterface[0].bind = "0.0.0.0:28665"' /data/cjdroute.conf > /data/cjdroute.tmp && mv /data/cjdroute.tmp /data/cjdroute.conf
     echo "Server has been configured."
+fi
+
+# Check if server has been configured
+if [ -f /data/cjdroute.conf ]; then
+    echo "Server is configured."
+else
+    echo "Server has not been configured. Exiting..."
+    exit 1
 fi
 
 # Create users
@@ -48,19 +53,21 @@ ike_enabled=$(echo "$json_config" | jq -r '.ikev2.enabled')
 openvpn_enabled=$(echo "$json_config" | jq -r '.openvpn.enabled')
 sniproxy_enabled=$(echo "$json_config" | jq -r '.sniproxy.enabled')
 
-echo "Starting PKT Wallet..."
-/server/pktd/bin/pld --pktdir=/data/pktwallet/pkt > /dev/null 2>&1 &
-sleep 1
+if [ "$AKASH" != true ]; then
+    echo "Starting PKT Wallet..."
+    /server/pktd/bin/pld --pktdir=/data/pktwallet/pkt > /dev/null 2>&1 &
+    sleep 1
 
-# Check if wallet already exists
-if [ -f /data/pktwallet/pkt/wallet.db ]; then
-    echo "wallet.db exists. Skipping wallet creation..."
-    # unlock wallet
-    curl -m 10 -X POST -H "Content-Type: application/json" -d '{"wallet_passphrase":"password"}' http://localhost:8080/api/v1/wallet/unlock
-    if [ $? -eq 28 ]; then
-        echo "The request timed out, restarting pld"
-        killall pld
-        /server/pktd/bin/pld --pktdir=/data/pktwallet/pkt > /dev/null 2>&1 &
+    # Check if wallet already exists
+    if [ -f /data/pktwallet/pkt/wallet.db ]; then
+        echo "wallet.db exists. Skipping wallet creation..."
+        # unlock wallet
+        curl -m 10 -X POST -H "Content-Type: application/json" -d '{"wallet_passphrase":"password"}' http://localhost:8080/api/v1/wallet/unlock
+        if [ $? -eq 28 ]; then
+            echo "The request timed out, restarting pld"
+            killall pld
+            /server/pktd/bin/pld --pktdir=/data/pktwallet/pkt > /dev/null 2>&1 &
+        fi
     fi
 fi
 
@@ -96,7 +103,7 @@ if [ "$pktd_flag" = true ]; then
     $pktd_cmd > /dev/null 2>&1 &
 fi
 
-if [ "$cjdns_flag" = true ]; then
+if [ "$cjdns_flag" = true ] && [ "$AKASH" != true ]; then
     while true; do
         if ifconfig tun0 &> /dev/null; then
             echo "tun0 exists."
@@ -127,7 +134,7 @@ fi
 echo "Initializing nftables..."
 /server/init_nft.sh
 
-if [ "$vpn_flag" = true ]; then
+if [ "$vpn_flag" = true ] && [ "$AKASH" != true ]; then
     echo "Starting vpn server..."
     # Run nodejs anodevpn-server
     if [ -e /data/env/vpnprice ]; then
@@ -155,30 +162,32 @@ echo "Add cjdns peers..."
 
 # Setup and launch ikev2
 echo "IKEv2 enabled: $ike_enabled"
-if [ "$ike_enabled" = true ]; then
+if [ "$ike_enabled" = true ] && [ "$AKASH" != true ]; then
   /server/vpn_configure.sh
 fi
 
 # Setup and launch openvpn
 echo "OpenVPN enabled: $openvpn_enabled"
-if [ "$openvpn_enabled" = true ]; then
+if [ "$openvpn_enabled" = true ] && [ "$AKASH" != true ]; then
   /server/openvpn_configure.sh
 fi
 # Start node_exporter for prometheus
 /server/node_exporter/node_exporter &
 
 echo "sniproxy enabled: $sniproxy_enabled"
-if [ "$sniproxy_enabled" = true ]; then
+if [ "$sniproxy_enabled" = true ] && [ "$AKASH" != true ]; then
   /server/start-sni.sh
 fi
 
 # add cronjob for payments once every week
-(crontab -l 2>/dev/null; echo "0 0 * * 0 /server/payment.sh") | crontab -
-
+if [ "$AKASH" != true ]; then
+    (crontab -l 2>/dev/null; echo "0 0 * * 0 /server/payment.sh") | crontab -
+fi
 # Start watchdog
 if [ "$cjdns_flag" = true ]; then
     /server/watchdog.sh 
 fi
+
 
 # Keep the container alive
 tail -f /dev/null

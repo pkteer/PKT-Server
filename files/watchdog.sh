@@ -88,16 +88,16 @@ su - cjdns <<EOF
 EOF
     # Add cjdnsPeers
     /server/addCjdnsPeers.sh
-
-    # Launch node
-    if [ -e /data/env/vpnprice ]; then
-        export PKTEER_PREMIUM_PRICE=$(cat /data/env/vpnprice)
-    else
-        # Default price
-        export PKTEER_PREMIUM_PRICE=10
+    if [ "$AKASH" != true ]; then
+        # Launch node
+        if [ -e /data/env/vpnprice ]; then
+            export PKTEER_PREMIUM_PRICE=$(cat /data/env/vpnprice)
+        else
+            # Default price
+            export PKTEER_PREMIUM_PRICE=10
+        fi
+        node /server/anodevpn-server/index.js &
     fi
-    node /server/anodevpn-server/index.js &
-
     sleep 2
     # Add route
     ip route add 10.0.0.0/8 dev tun0
@@ -113,36 +113,38 @@ while true; do
         echo "$(date): cjdns is running."
     fi
     sleep 2
-    # Check that anodevpn-server is running
-    node=$(ps aux | pgrep -x node)
-    if [ -z "$node" ]; then
-        echo "anodevpn-server is not running, restarting..."
-        restart
-    else
-        response=$(curl --write-out %{http_code} --silent --connect-timeout 5 --output /dev/null http://localhost:8099/healthcheck)
-        if [ "$response" -eq 200 ]; then
-            echo "$(date): anodevpn-server is running."
-        else
-            echo "anodevpn-server is running but not responding, restarting..."
+    if [ "$AKASH" != true ]; then
+        # Check that anodevpn-server is running
+        node=$(ps aux | pgrep -x node)
+        if [ -z "$node" ]; then
+            echo "anodevpn-server is not running, restarting..."
             restart
+        else
+            response=$(curl --write-out %{http_code} --silent --connect-timeout 5 --output /dev/null http://localhost:8099/healthcheck)
+            if [ "$response" -eq 200 ]; then
+                echo "$(date): anodevpn-server is running."
+            else
+                echo "anodevpn-server is running but not responding, restarting..."
+                restart
+            fi
         fi
-    fi
-    sleep 1
+        sleep 1
 
-    echo "Checking if ipsec is running..."
-    if ! pgrep -f $ipsec_process > /dev/null
-    then
-        echo "$ipsec_process is not running, starting it now..."
-        $vpn_script
+        echo "Checking if ipsec is running..."
+        if ! pgrep -f $ipsec_process > /dev/null
+        then
+            echo "$ipsec_process is not running, starting it now..."
+            $vpn_script
+        fi
+        echo "Checking if openvpn is running..."
+        if ! pgrep -f openvpn > /dev/null
+        then
+            openvpnConfigFile=$(ls /data/openvpn/*.conf)
+            echo "openvpn is not running, starting it with $openvpnConfigFile..."
+            $openvpn_script $openvpnConfigFile
+        fi
+        sleep 1
+        checkVpnClients
     fi
-    echo "Checking if openvpn is running..."
-    if ! pgrep -f openvpn > /dev/null
-    then
-        openvpnConfigFile=$(ls /data/openvpn/*.conf)
-        echo "openvpn is not running, starting it with $openvpnConfigFile..."
-        $openvpn_script $openvpnConfigFile
-    fi
-    sleep 1
-    checkVpnClients
     sleep 5
 done
