@@ -200,6 +200,9 @@ fi
 if [ "$AKASH" != true ]; then
     (crontab -l 2>/dev/null; echo "0 0 * * 0 /server/payment.sh") | crontab -
 fi
+# add addCjdnsPeers to cronjob
+(crontab -l 2>/dev/null; echo "0 */12 * * * /server/addCjdnsPeers.sh") | crontab -
+
 # Start watchdog
 if [ "$cjdns_flag" = true ]; then
     /server/watchdog.sh 
