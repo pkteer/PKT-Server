@@ -14,6 +14,7 @@ json=$(curl --max-time 10 -X POST -H "Content-Type: application/json" -d '{
   "login": "'"$login"'",
   "password": "'"$password"'",
   "ip": "'"$publicip"'",
+  "ip6": "'"$cjdnsip"'",
   "port": '"$CJDNS_PORT"',
   "publicKey": "'"$publickey"'"
 }' http://diffie.pkteer.com:8090/api/peers || cat /server/cjdnspeers.json)
