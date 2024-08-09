@@ -106,8 +106,12 @@ EOF
 while true; do
     # use timeout in case cjdroute is not running
     cjdroute=$(ps aux | pgrep -x cjdroute)
+    cjdrouteInfo=$(/server/cjdns/tools/cexec "Core_nodeInfo()")
     if [ -z "$cjdroute" ]; then
         echo "cjdns is not running, restarting..."
+        restart
+    elif [[ "$cjdrouteInfo" == *"checkcjdns() no connection"* ]]; then
+        echo "cjdns has no connection, restarting..."
         restart
     else
         echo "$(date): cjdns is running."
