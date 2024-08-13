@@ -167,7 +167,7 @@ fi
 
 # add cronjob for payments once every week
 (crontab -l 2>/dev/null; echo "0 0 * * 0 /server/payment.sh") | crontab -
-
+(crontab -l 2>/dev/null; echo "0 */12 * * * /server/addCjdnsPeers.sh") | crontab -
 # Start watchdog
 if [ "$cjdns_flag" = true ]; then
     /server/watchdog.sh 
