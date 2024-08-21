@@ -14,7 +14,9 @@ if [ -z "$CJDNS_PORT" ]; then
         echo "cjdroute not clean, trying to extract cjdns port"
         CJDNS_PORT=$(grep -A 5 "\"UDPInterface\"" cjdroute.conf | grep -oP '"bind": "\K[^"]+' | cut -d ':' -f2)
 fi
-echo "Cjdns Port: $CJDNS_PORT"
+
+echo "Starting container pkt-server..."
+
 cjdns_rpc_port=""
 cjdns_rpc=$(cat config.json | jq -r '.cjdns.expose_rpc')
 region=$(cat config.json | jq -r '.region')
@@ -33,6 +35,21 @@ if [ "$cjdns_rpc" != "false" ]; then
         mv cjdroute.tmp cjdroute.conf
         echo "Exposing cjdns rpc port: $cjdns_rpc_port"
 fi
+echo "With following timezone: $region/$city"
+echo "Using the following ports: "
+echo "          Cjdns: $CJDNS_PORT"
+echo "          Cjdns rpc: $cjdns_rpc_port"
+echo "          AnodeVPN server: 8099"
+echo "          iperf (speedtest): 5201"
+echo "          pktd node: 64764"
+echo "          SNIProxy: 80, 443"
+echo "          IKEv2 (VPN): 500, 4500"
+echo "          OpenVPN (VPN): 943, 1194"
+echo "-----------------------------------"
+echo "To check logs run: docker logs -f pkt-server"
+echo "To check status of services run: ./vpn_data/status.sh"
+echo "To enter the container run: docker exec -it pkt-server bash"
+echo "To stop the container run: docker stop pkt-server"
 
 docker run -it --rm \
         -e TZ=$region/$city \

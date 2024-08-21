@@ -86,6 +86,15 @@ if [ -n "$wd" ]; then
     json_output=$(jq --argjson watchdog "$wd" '.watchdog = $watchdog' <<<"$json_output")
 fi
 
+# Add peers section
+if [ "$inside" = true ]; then
+    peer_stats=$(/server/cjdns/tools/peerStats)
+    peers=$(echo "$peer_stats" | awk '{print $1, $3}' | sed 's/\.k//g' | awk '{print "{\"ip\":\""$1"\", \"status\":\""$2"\"}"}' | jq -s .)
+else
+    peers=$(docker ps -a | grep $dockername | awk '{print $1}' | xargs -I {} docker exec {} /server/cjdns/tools/peerStats | awk '{print $1, $3}' | sed 's/\.k//g' | awk '{print "{\"ip\":\""$1"\", \"status\":\""$2"\"}"}' | jq -s .)
+fi
+json_output=$(jq --argjson peers "$peers" '. + {"peers": $peers}' <<<"$json_output")
+
 # Add current date and time
 current_date_time=$(date '+%Y-%m-%d %H:%M:%S')
 json_output=$(jq --arg current_date_time "$current_date_time" '. + {date_time: $current_date_time}' <<<"$json_output")

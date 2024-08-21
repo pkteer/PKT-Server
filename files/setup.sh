@@ -83,11 +83,13 @@ read pktd_rpcpass
 update_json "pktd.rpcpass" "$pktd_rpcpass"
 
 echo "Enter your PKT address where you want to receive payments: "
+echo "This will be used to periodically send the earnings from VPN clients to you."
 read pkt_pay_to_address
 update_json "pkt.pay_to_address" "$pkt_pay_to_address"
 
 # enable ikev2 service
 echo "Do you want to enable IKEv2 service? (true/false)"
+echo "This service is used by VPN clients of iOS,OSX,Android and Linux devices."
 read ikev2
 update_json "ikev2.enabled" "$ikev2"
 if [ "$ikev2" == "true" ]; then
@@ -117,6 +119,7 @@ fi
 
 # enable openvpn service
 echo "Do you want to enable OpenVPN service? (true/false)"
+echo "This service is used to offer support for VPN clients of Windows but also works on other devices."
 read openvpn
 update_json "openvpn.enabled" "$openvpn"
 if [ "$openvpn" == "true" ]; then
@@ -130,6 +133,7 @@ fi
 
 # enable sniproxy?
 echo "Do you want to enable SNI Proxy service? (true/false)"
+echo "This service offers a wya for admins to register their domains in order for users to access to CJDNS network sites."
 read sniproxy
 update_json "sniproxy.enabled" "$sniproxy"
 if [ "$sniproxy" == "true" ]; then
