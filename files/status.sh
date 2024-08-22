@@ -75,6 +75,17 @@ if [ -n "$openvpn" ]; then
     json_output=$(jq --argjson openvpn "$openvpn" '.openvpn = $openvpn' <<<"$json_output")
 fi
 
+# SNIProxy
+json_output=$(jq '. + {"sniproxy": 0}' <<<"$json_output")
+if [ "$inside" = true ]; then
+    sniproxy=$(pgrep -fl sniproxy | awk '{print $1}' | head -n 1)
+else
+    sniproxy=$(docker ps -a | grep $dockername | awk '{print $1}' | xargs -I {} docker exec {} pgrep -fl sniproxy | awk '{print $1}' | head -n 1)
+fi
+if [ -n "$sniproxy" ]; then
+    json_output=$(jq --argjson sniproxy "$sniproxy" '.sniproxy = $sniproxy' <<<"$json_output")
+fi
+
 # CJDNS Watchdog
 json_output=$(jq '. + {"watchdog": 0}' <<<"$json_output")
 if [ "$inside" = true ]; then
